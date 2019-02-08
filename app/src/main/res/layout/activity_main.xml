@@ -55,7 +55,7 @@
         android:layout_marginBottom="8dp"
         android:text="@string/welcome_to_pacepal"
         android:textSize="30sp"
-        android:fontFamily="@font/Montserrat"
+        android:fontFamily="@font/montserrat"
         app:layout_constraintBottom_toTopOf="@+id/fnameField"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.412"

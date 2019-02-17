@@ -1,11 +1,15 @@
 package com.group2.pacepal;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -13,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.facebook.CallbackManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -39,10 +44,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 public class MainActivity extends AppCompatActivity  implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -55,6 +64,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     Map<String, Object> data = new HashMap<>();
+
+    private callbackManager = CallbackManager.Factory.create();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +95,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        printHashKey(this);
     }
 
     @Override
@@ -106,12 +119,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
 
 
+    //this function makes it so that a user does not have to sign in upon closing the application and re-opening it
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        //FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
     }
 
     @Override
@@ -285,6 +299,20 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
 
+    }
+
+    public static void printHashKey(Context context) {
+        try {
+            final PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+            for (android.content.pm.Signature signature : info.signatures) {
+                final MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                final String hashKey = new String(Base64.encode(md.digest(), 0));
+                Log.i("AppLog", "key:" + hashKey + "=");
+            }
+        } catch (Exception e) {
+            Log.e("AppLog", "error:", e);
+        }
     }
 
 

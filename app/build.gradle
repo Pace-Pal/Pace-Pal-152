@@ -60,6 +60,10 @@ dependencies {
 
     //implementation "com.mapzen.android:lost:3.0.2"
 
+
+    //firebase messaging
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+
     //for kotlin annotations
     apply plugin: 'kotlin-kapt'
 

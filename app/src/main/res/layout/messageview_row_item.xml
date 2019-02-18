@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/messageItemView"
-    android:layout_width="match_parent"
+<FrameLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginTop="8dp"
+android:layout_marginBottom="8dp"
+android:layout_marginEnd="8dp"
+android:layout_marginStart="8dp">
+<RelativeLayout
+    android:id="@+id/message_root"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <!-- TODO: Remember this id for messages. It is the thing getting wrapped -->
-
+    android:layout_gravity="end"
+    android:background="@drawable/rect_round_primary_color">
     <TextView
         android:id="@+id/messageText"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:maxWidth="250dp"
+        android:minWidth="120dp"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:text="TextView" />
-
-    <Button
-        android:id="@+id/chat_channel_test_button"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="match_parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="4dp"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+        tools:text="@string/lorem_ipsum" />
+    <TextView
+        android:id="@+id/messageTextTime"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:text="Message" />
-
-
-
-
-</LinearLayout>
+        android:layout_below="@id/messageText"
+        android:layout_alignEnd="@id/messageText"
+        android:layout_marginEnd="8dp"
+        android:textSize="12sp"
+        tools:text="3/15/2018 3:00 PM"/>
+</RelativeLayout>
+</FrameLayout>

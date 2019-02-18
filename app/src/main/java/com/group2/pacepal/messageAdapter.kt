@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.messageview_row_item.view.*
+import java.text.SimpleDateFormat
 
 internal class messageAdapter constructor( private var messages: ArrayList<TextMessage>): RecyclerView.Adapter<messageAdapter.messageHolder>() {
 
@@ -45,8 +46,11 @@ internal class messageAdapter constructor( private var messages: ArrayList<TextM
         //TODO: Implement a database listener so the view automatically refreshes when a new message arrives (don't know if that goes here)
         fun bindMessage(message: TextMessage) { //TODO: Bind views to test
             this.message = message
-            view.messageText.text = "Wheeew"
-            //Picasso.with(view.context).load(friend.profilePictureURL).fit().into(view.profilePic)
+            view.messageText.text = message.text
+
+            val dateFormat = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT)
+            view.messageTextTime.text = dateFormat.format(message.time)
+            //Picasso.with(view.context).load(friend.profilePvictureURL).fit().into(view.profilePic)
 
         }
     }

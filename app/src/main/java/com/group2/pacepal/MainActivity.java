@@ -61,6 +61,7 @@ import com.facebook.appevents.AppEventsLogger;
 //todo: handle email sign in.
 //todo: allow a user to safely sign in with multiple methods using firebase auth tutorial
 //todo: make usernames unique b/c they ain't yet
+
 public class MainActivity extends AppCompatActivity  implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     private SignInButton signIn;

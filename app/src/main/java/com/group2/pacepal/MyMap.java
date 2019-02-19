@@ -85,14 +85,19 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     double p2Dist = 0;
     double p2Long = 0;                   //"p2" is always the remote player
     double p2Lat = 0;
+    double colabDistance = 0;
+    String textColabDistance = "0";
 
+    String sessionType;
     String sessionID;
     Boolean sessionHost = false;
+
+    TextView sessionStatus;
 
     Boolean stopUpdates = false;             //stop interacting with database after session end
 
     boolean locLineInit = false;            //variables for creating the line on the map view
-    boolean p2LieInit = false;
+    boolean p2LineInit = false;
 
     private GoogleApiClient googleApiClient;         //for location API
     private LocationRequest mLocationRequest;
@@ -112,8 +117,11 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
+        sessionStatus = findViewById(R.id.sessionStatus);
+
         //gets shared preferences to find current session
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyMap.this);
+
 
         findViewById(R.id.sessionExitButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,7 +135,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
         //pulls info on where to find session in database
         String friendUID = sharedPref.getString("friendUID","");
-        String sessionType = sharedPref.getString("sessionType", "");
+        sessionType = sharedPref.getString("sessionType", "");
         sessionID = sharedPref.getString("sessionID", "");
         if(sessionID == userid)
             sessionHost = true;
@@ -242,6 +250,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                         .title("Player 2")
                         .snippet("Player 2 location");*/
 
+                //case for ending session
                 if(p2Dist == -1 || p2Dist == -1){
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").removeEventListener(postListener);
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).removeValue();
@@ -251,6 +260,22 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                 else if(stopUpdates) {
 
                     return;
+                }
+
+                //case for collaborative session
+                if(sessionType == "2"){
+                    colabDistance = localDistance + p2Dist;
+                    textColabDistance = "Total Distance: " + String.valueOf(round(colabDistance,2));
+                    sessionStatus.setText(textColabDistance);
+                }
+
+                if(sessionType == "1"){
+                    if(localDistance > p2Dist)
+                        textColabDistance = "You are leading by: " + String.valueOf(round(localDistance - p2Dist,2));
+                    else
+                        textColabDistance = "You are behind by: " + String.valueOf(round(p2Dist - localDistance,2));
+
+                    sessionStatus.setText(textColabDistance);
                 }
 
                 //associates distance texts to update
@@ -272,16 +297,20 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                             locLine.color(Color.GREEN);
                             locLine.width(3);
                             mapboxMap.addPolyline(locLine);
-                            p2Line.add(new LatLng(locLat, locLong));
-                            p2Line.color(Color.GRAY);
-                            p2Line.width(3);
-                            mapboxMap.addPolyline(p2Line);
                             locLineInit = true;
                         }
                         else {   //add new point to polyline
                             locLine.add(new LatLng(locLat, locLong));
+                        }
+                        if(!p2LineInit){
+                            p2Line.add(new LatLng(locLat, locLong));
+                            p2Line.color(Color.GRAY);
+                            p2Line.width(3);
+                            mapboxMap.addPolyline(p2Line);
+                            p2LineInit = true;
+                        }
+                        else{
                             p2Line.add(new LatLng(p2Lat, p2Long));
-
                         }
 
 

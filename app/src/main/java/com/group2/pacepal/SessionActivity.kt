@@ -49,8 +49,6 @@ class SessionActivity : AppCompatActivity() {
         }
 
 
-
-
             quitButton.setOnClickListener{this.finish()}
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -144,7 +142,6 @@ class SessionActivity : AppCompatActivity() {
         val editor = preferences.edit()
         editor.clear()
         editor.apply()
-
 
     }
 

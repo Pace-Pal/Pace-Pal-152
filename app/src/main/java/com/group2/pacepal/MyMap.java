@@ -214,6 +214,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
         //declares local players line on the map
         PolylineOptions locLine = new com.mapbox.mapboxsdk.annotations.PolylineOptions();
+        PolylineOptions p2Line = new com.mapbox.mapboxsdk.annotations.PolylineOptions();
 
         //runnable for updating location
         handler.postDelayed(new Runnable() {
@@ -230,7 +231,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
                 //associates distance texts to update
                 TextView palDistText = findViewById(R.id.palSessionMiles);
-                palDistText.setText(String.valueOf(p2Dist));
+                palDistText.setText(String.valueOf(round(p2Dist,2)));
 
                 TextView localDistText = findViewById(R.id.localSessionMiles);
                 String setMilesText = String.valueOf(round(localDistance,2)) + " Miles";
@@ -247,10 +248,18 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                             locLine.color(Color.GREEN);
                             locLine.width(3);
                             mapboxMap.addPolyline(locLine);
+                            p2Line.add(new LatLng(locLat, locLong));
+                            p2Line.color(Color.GRAY);
+                            p2Line.width(3);
+                            mapboxMap.addPolyline(p2Line);
                             locLineInit = true;
                         }
-                        else   //add new point to polyline
-                            locLine.add(new LatLng(locLat,locLong));
+                        else {   //add new point to polyline
+                            locLine.add(new LatLng(locLat, locLong));
+                            p2Line.add(new LatLng(p2Lat, p2Long));
+
+                        }
+
 
                         //mapboxMap.clear();/
                         //add simple marker to map

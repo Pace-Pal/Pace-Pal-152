@@ -89,6 +89,8 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     String sessionID;
     Boolean sessionHost = false;
 
+    Boolean stopUpdates = false;             //stop interacting with database after session end
+
     boolean locLineInit = false;            //variables for creating the line on the map view
     boolean p2LieInit = false;
 
@@ -98,7 +100,6 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();     //gets firebase info for current user and databases
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DatabaseReference rtdb = FirebaseDatabase.getInstance().getReference();
-
 
 
     @Override
@@ -113,6 +114,13 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
         //gets shared preferences to find current session
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyMap.this);
+
+        findViewById(R.id.sessionExitButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                endingInit();
+            }
+        });
 
         //start updating location variables
         startLocationUpdates();
@@ -208,18 +216,23 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
         //creates handler to handle runnable for updating location
-        Handler handler = new Handler();
+
         //interval to update location
         int delay = 2000; //milliseconds
+
+
 
         //declares local players line on the map
         PolylineOptions locLine = new com.mapbox.mapboxsdk.annotations.PolylineOptions();
         PolylineOptions p2Line = new com.mapbox.mapboxsdk.annotations.PolylineOptions();
 
+        TextView palDistText = findViewById(R.id.palSessionMiles);
+        Handler handler = new Handler();
+
         //runnable for updating location
         handler.postDelayed(new Runnable() {
             public void run() {
-                MarkerOptions marker2 = new MarkerOptions()
+                /*MarkerOptions marker2 = new MarkerOptions()
                         .position(new LatLng(locLat, locLong))
                         .title("Player1")
                         .snippet("Player 1 location");
@@ -227,10 +240,21 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                 MarkerOptions marker3 = new MarkerOptions()
                         .position(new LatLng(p2Lat,p2Long))
                         .title("Player 2")
-                        .snippet("Player 2 location");
+                        .snippet("Player 2 location");*/
+
+                if(p2Dist == -1 || p2Dist == -1){
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").removeEventListener(postListener);
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).removeValue();
+                    finish();
+                    return;
+                }
+                else if(stopUpdates) {
+
+                    return;
+                }
 
                 //associates distance texts to update
-                TextView palDistText = findViewById(R.id.palSessionMiles);
+
                 palDistText.setText(String.valueOf(round(p2Dist,2)));
 
                 TextView localDistText = findViewById(R.id.localSessionMiles);
@@ -267,6 +291,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                         //mapboxMap.addMarker(marker3);
 
                         Log.d("MapRefresh", "refreshed");
+
 
                     }
                 });
@@ -405,6 +430,12 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         return bd.doubleValue();
     }
 
+    private void endingInit(){
+        rtdb = FirebaseDatabase.getInstance().getReference();
+        stopUpdates = true;
+        finish();
+    }
+
 
        @Override
     public void onResume() {
@@ -430,6 +461,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+
     }
 
     @Override

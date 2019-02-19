@@ -132,7 +132,7 @@ class SessionActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        val rtdb = FirebaseDatabase.getInstance().reference
+        /*val rtdb = FirebaseDatabase.getInstance().reference
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         val sessionID = preferences.getString("sessionID", "")
@@ -141,7 +141,7 @@ class SessionActivity : AppCompatActivity() {
 
         val editor = preferences.edit()
         editor.clear()
-        editor.apply()
+        editor.apply()*/
 
     }
 

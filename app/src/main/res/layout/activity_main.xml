@@ -5,19 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    >
+
 
     <Button
         android:id="@+id/continue_button"
         android:layout_width="158dp"
-        android:layout_height="48dp"
+        android:layout_height="50dp"
         android:layout_marginStart="113dp"
         android:layout_marginEnd="113dp"
-        android:layout_marginBottom="31dp"
+        android:layout_marginBottom="4dp"
+        android:background="#00000000"
         android:text="@string/continue_to_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.gms.common.SignInButton
@@ -26,9 +29,10 @@
         android:layout_height="45dp"
         android:layout_marginStart="137dp"
         android:layout_marginEnd="136dp"
-        android:layout_marginBottom="71dp"
+        android:layout_marginBottom="64dp"
         app:layout_constraintBottom_toTopOf="@+id/continue_button"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -39,11 +43,14 @@
         android:layout_marginTop="7dp"
         android:layout_marginEnd="144dp"
         android:layout_marginBottom="16dp"
+        android:background="@color/transparentWhite"
         android:text="@string/sign_out"
         app:layout_constraintBottom_toTopOf="@+id/continue_button"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.407"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sign_in_button" />
+        app:layout_constraintTop_toBottomOf="@+id/sign_in_button"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView10"
@@ -55,7 +62,7 @@
         android:layout_marginBottom="8dp"
         android:text="@string/welcome_to_pacepal"
         android:textSize="30sp"
-        android:fontFamily="@font/Montserrat"
+        android:fontFamily="@font/mfont"
         app:layout_constraintBottom_toTopOf="@+id/fnameField"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.412"
@@ -103,7 +110,8 @@
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/submitButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="@color/textfield_color" />
 
     <Button
         android:id="@+id/submitButton"
@@ -111,10 +119,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:text="@string/submit"
+        android:background="@color/transparentWhite"
         app:layout_constraintBottom_toTopOf="@+id/sign_in_button"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent" />
-
 </android.support.constraint.ConstraintLayout>

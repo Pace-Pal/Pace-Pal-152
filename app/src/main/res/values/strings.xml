@@ -28,4 +28,11 @@
     <string name="last_name">Last Name</string>
     <string name="username">Username</string>
     <string name="submit">Submit</string>
+
+    //Facebook sign in strings
+    <string name="facebook_app_id">2166744710299582</string>
+    <string name="fb_login_protocol_scheme">fb2166744710299582</string>
+
+
+
 </resources>

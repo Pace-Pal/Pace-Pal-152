@@ -1,11 +1,15 @@
 package com.group2.pacepal;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -13,6 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -27,6 +37,7 @@ import com.google.android.gms.tasks.OnCompleteListener; //may need to update oth
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -39,10 +50,17 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+//todo: handle email sign in.
+//todo: allow a user to safely sign in with multiple methods using firebase auth tutorial
+//todo: make usernames unique b/c they ain't yet
 
 public class MainActivity extends AppCompatActivity  implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -56,6 +74,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     Map<String, Object> data = new HashMap<>();
 
+    CallbackManager mCallbackManager = CallbackManager.Factory.create();
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,15 +86,49 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         setContentView(R.layout.activity_main);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.continue_button).setOnClickListener(this);
-        findViewById(R.id.sign_out).setOnClickListener(this);
+
         findViewById(R.id.submitButton).setOnClickListener(this);
         findViewById(R.id.continue_button).setVisibility(View.INVISIBLE);
-        findViewById(R.id.sign_out).setVisibility(View.INVISIBLE);
-        findViewById(R.id.fnameField).setVisibility(View.INVISIBLE);
-        findViewById(R.id.lnameField).setVisibility(View.INVISIBLE);
-        findViewById(R.id.unameField).setVisibility(View.INVISIBLE);
+
+        findViewById(R.id.fnameField).setVisibility(View.VISIBLE);
+        findViewById(R.id.lnameField).setVisibility(View.VISIBLE);
+        findViewById(R.id.unameField).setVisibility(View.VISIBLE);
         findViewById(R.id.submitButton).setVisibility(View.INVISIBLE);
         findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+        findViewById(R.id.emailField).setVisibility(View.VISIBLE);
+        findViewById(R.id.email_sign_in).setVisibility(View.VISIBLE);
+        findViewById(R.id.enter_more_info_text).setVisibility(View.INVISIBLE);
+
+
+
+        //facebook shite
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+        LoginButton loginButton = findViewById(R.id.login_button);
+
+
+        loginButton.setReadPermissions("email", "public_profile");
+        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "facebook:onCancel");
+                // ...
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "facebook:onError", error);
+                // ...
+            }
+        });
+// ...
+
 
 
         // Configure sign-in to request the user's ID, email address, and basic
@@ -84,6 +140,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        printHashKey(this);
     }
 
     @Override
@@ -95,9 +153,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             case R.id.continue_button:
                 toMenu();
                 break;
-            case R.id.sign_out:
-                signOut();
-                break;
             case R.id.submitButton:
                 toMenuSubmit();
                 break;
@@ -106,12 +161,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
 
 
+    //this function makes it so that a user does not have to sign in upon closing the application and re-opening it
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        //FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
     }
 
     @Override
@@ -153,14 +209,20 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 // ...
             }
         }
+
+        //Facebook's sign in manager. If the above isn't true, then it wasn';t a google sign in so call this ( I think is how this works)
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+
     }
 
-    //third step of signing in
+
+
+    //third step of signing in via google
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
+        mAuth.signInWithCredential(credential) //TODO: Get rid of this when integrating multiple auth sign in I am trying to implement
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -180,13 +242,44 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     }
                 });
     }
+    //third step of signing in via Facebook
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
 
-    //fourth step of signing in
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
+    //fourth step of signing in no matter the method
+    //All of the UI is updated here accordingly
     private void updateUI(FirebaseUser account) {
         if (account != null) {
             //user has account
 
             findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.login_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.email_sign_in).setVisibility(View.INVISIBLE);
+            findViewById(R.id.sign_in_options_text).setVisibility(View.INVISIBLE);
+            findViewById(R.id.emailField).setVisibility(View.INVISIBLE);
             String userid = FirebaseAuth.getInstance().getCurrentUser().getUid(); //may need to switch back to acquiring a new instance altogether
 
             //Attempt to grab the UID from the firestore database and then check if that retrieval was successful and respond accordingly
@@ -196,19 +289,18 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
+                        if (document.exists()) { //in this scenario a user has already signed in once before and has a username, first name, and last name in the system. Simply continue to main menu now
                             Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            findViewById(R.id.continue_button).setVisibility(View.VISIBLE);
-                            findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
-                        } else {
+                           // findViewById(R.id.continue_button).setVisibility(View.VISIBLE);
+                            //findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
+                            toMenu();
+                        } else { //in this scenario a user has signed in either with email, FB, or google, for the very first time. So we prompt the user to give fname, lname, and username to store in the database
                             Log.d(TAG, "No such document");
                             findViewById(R.id.fnameField).setVisibility(View.VISIBLE);
                             findViewById(R.id.lnameField).setVisibility(View.VISIBLE);
                             findViewById(R.id.unameField).setVisibility(View.VISIBLE);
                             findViewById(R.id.submitButton).setVisibility(View.VISIBLE);
-
-
-
+                            findViewById(R.id.enter_more_info_text).setVisibility(View.VISIBLE);
                         }
                     } else {
                         Log.d(TAG, "get failed with ", task.getException());
@@ -220,7 +312,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             //user does not have an account yet
             //display google sign in button to start the sign in flow that brings the user back to this function
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            //findViewById(R.id.sign_out).setVisibility(View.INVISIBLE);
+
         }
     }
 
@@ -232,6 +324,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     //after hitting the submit button to send user information to the firestore realtime database
     //submit shouldn't send user to main menu unless they are already signed in, which at this point it does anyways. Need to fix
+    //Todo: Change implementation so that user no longer has to click on the to menu button to be taken to the new activity
     public void toMenuSubmit() {
         EditText fName = (EditText)findViewById(R.id.fnameField);
         EditText lName = (EditText) findViewById(R.id.lnameField);
@@ -286,6 +379,23 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
     }
+
+    //easy way to generate a key necessary for FaceBook sign in integration on development machines
+    public static void printHashKey(Context context) {
+        try {
+            final PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+            for (android.content.pm.Signature signature : info.signatures) {
+                final MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                final String hashKey = new String(Base64.encode(md.digest(), 0));
+                Log.i("AppLog", "key:" + hashKey + "=");
+            }
+        } catch (Exception e) {
+            Log.e("AppLog", "error:", e);
+        }
+    }
+
+
 
 
 

@@ -32,7 +32,6 @@
     //Facebook sign in strings
     <string name="facebook_app_id">2166744710299582</string>
     <string name="fb_login_protocol_scheme">fb2166744710299582</string>
-
-
+    <string name="lorem_ipsum">lorem ipsum</string>
 
 </resources>

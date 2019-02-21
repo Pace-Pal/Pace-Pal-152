@@ -20,8 +20,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.user_profile.view.*
 import java.security.AccessController.getContext
 import android.os.Bundle
-
-
+import android.widget.Button
 
 
 internal class FriendsAdapter constructor (private var friends: ArrayList<Friend>): RecyclerView.Adapter<FriendsAdapter.FriendHolder>() {
@@ -29,8 +28,9 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
     //val friendAdaptorCommunication = com.group2.pacepal.friendAdaptorCommunication
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendHolder{ //try creatig an if statement to tell the adapter to use a different view depending upon context later maybe
         val inflatedView = LayoutInflater.from(parent.context).inflate(R.layout.friendview_row_item,parent,false)
+
         return FriendHolder(inflatedView)
     }
 
@@ -53,6 +53,7 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
 
         private var view : View = v
         private var friend : Friend? = null
+
 
         init {
             v.setOnClickListener {this}
@@ -140,6 +141,31 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                 Log.d("friendAdapter", "ran as " + friend.activityType)
             }
 
+            //test to make chat channel open
+            view.open_chat_channel.setOnClickListener() {
+
+                    val myFragment = chatChannelFragment()
+                    val bundle = Bundle()
+                    bundle.putString("friend_uid", friend.uid)
+                    bundle.putString("friend_userName", friend.userName)
+                    bundle.putString("friend_real_name", friend.realName)
+
+
+                    myFragment.setArguments(bundle)
+                    //refers to the primary activity's (the mainActivity2) context to create a new fragement within a fragment and still
+                    //keep track of the fragemnt's position on the stack
+                    //potentially buggy so we can take more looks at this in the future.
+                    val activity = view.context as AppCompatActivity
+                    activity.supportFragmentManager.beginTransaction().replace(R.id.container, myFragment).addToBackStack(null).commit() //test
+
+
+
+                }
+
+
+
+
+
 
 
             //view.profilePic
@@ -158,6 +184,10 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
 
 
 
+}
+
+private fun Button.setOnClickListener() {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 }
 
 

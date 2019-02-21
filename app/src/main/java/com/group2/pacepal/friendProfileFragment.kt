@@ -1,5 +1,9 @@
 package com.group2.pacepal
 
+
+
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -10,7 +14,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.user_profile.*
 
-class friendProfileFragment: Fragment() {
+
+
+class friendProfileFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         //grab the bundled arguments passed in from the friendsAdapter , activityType == 1
         val friendUID = arguments!!.getString("friend_uid")
@@ -19,7 +25,7 @@ class friendProfileFragment: Fragment() {
 
 
         val db = FirebaseFirestore.getInstance()
-       // val view = inflater.inflate(R.layout.friend_profile, container, false)
+        // val view = inflater.inflate(R.layout.friend_profile, container, false)
 
         Log.d("New Fragemnt", "friend_profile success")
 

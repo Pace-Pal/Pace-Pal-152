@@ -124,11 +124,13 @@
         android:id="@+id/sessionStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginBottom="20dp"
         android:text="   "
         android:textSize="17sp"
         mapbox:layout_constraintBottom_toTopOf="@+id/mapView"
-        tools:layout_editor_absoluteX="199dp" />
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/palMileTEXT"
@@ -151,7 +153,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Button"
+        android:text="Quit"
         mapbox:layout_constraintBottom_toBottomOf="parent"
         mapbox:layout_constraintEnd_toEndOf="parent"
         mapbox:layout_constraintStart_toStartOf="parent" />

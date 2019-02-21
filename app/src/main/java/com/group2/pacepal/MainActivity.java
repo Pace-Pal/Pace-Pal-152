@@ -85,10 +85,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.continue_button).setOnClickListener(this);
+
 
         findViewById(R.id.submitButton).setOnClickListener(this);
-        findViewById(R.id.continue_button).setVisibility(View.INVISIBLE);
+
 
         findViewById(R.id.fnameField).setVisibility(View.VISIBLE);
         findViewById(R.id.lnameField).setVisibility(View.VISIBLE);
@@ -149,9 +149,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signIn();
-                break;
-            case R.id.continue_button:
-                toMenu();
                 break;
             case R.id.submitButton:
                 toMenuSubmit();
@@ -234,7 +231,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.continue_button), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+
                             updateUI(null);
                         }
 

@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -57,6 +58,7 @@ import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -71,53 +73,74 @@ import java.math.RoundingMode;
 import timber.log.Timber;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+import static java.util.logging.Logger.global;
 
 public class MyMap extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    private MapView mapView;
+    private MapView mapView;              //declares map
 
-    private double locLong = 0;
-    private double locLat = 0;
+    private double locLong = 0;          //declares variables for location
+    private double locLat = 0;           //"loc" is always the local player
     double oldLon,oldLat;
-    double localDistance = 0;
+    double localDistance = 0;            //variables for calculating total distance
     double p2Dist = 0;
-    double p2Long = 0;
+    double p2Long = 0;                   //"p2" is always the remote player
     double p2Lat = 0;
+    double colabDistance = 0;
+    String textColabDistance = "0";
 
+    String sessionType;
     String sessionID;
     Boolean sessionHost = false;
 
-    private GoogleApiClient googleApiClient;
+    TextView sessionStatus;
+
+    Boolean stopUpdates = false;             //stop interacting with database after session end
+
+    boolean locLineInit = false;            //variables for creating the line on the map view
+    boolean p2LineInit = false;
+
+    private GoogleApiClient googleApiClient;         //for location API
     private LocationRequest mLocationRequest;
 
-    String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();     //gets firebase info for current user and databases
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     DatabaseReference rtdb = FirebaseDatabase.getInstance().getReference();
-
-
-
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        //various map elements
         Mapbox.getInstance(this, getString(R.string.access_token));
         setContentView(R.layout.my_map);
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
+        sessionStatus = findViewById(R.id.sessionStatus);
+
+        //gets shared preferences to find current session
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyMap.this);
 
 
+        findViewById(R.id.sessionExitButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                endingInit();
+            }
+        });
 
+        //start updating location variables
+        startLocationUpdates();
+
+        //pulls info on where to find session in database
         String friendUID = sharedPref.getString("friendUID","");
-        String sessionType = sharedPref.getString("sessionType", "");
+        sessionType = sharedPref.getString("sessionType", "");
         sessionID = sharedPref.getString("sessionID", "");
         if(sessionID == userid)
             sessionHost = true;
 
+        //accessess and displays profile for current user from firestore
         DocumentReference docRef = db.collection("users").document(userid);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -133,11 +156,12 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                         //Log.d(TAG, "No such document");
                     }
                 } else {
-                   // Log.d(TAG, "get failed with ", task.getException());
+                    // Log.d(TAG, "get failed with ", task.getException());
                 }
             }
         });
 
+        //accesses and displays player 2 from firestore
         DocumentReference docRef2 = db.collection("users").document(friendUID);
         docRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -158,19 +182,12 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
             }
         });
 
+        //updates location data from other player on each change
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
                 if(sessionHost){
-                    /*String tempdist = (String) dataSnapshot.child("p2distance").getValue();
-                    String templat = (String) dataSnapshot.child("p2lat").getValue();
-                    String templong  = (String) dataSnapshot.child("p2long").getValue();
-
-                    p2Dist = Double.parseDouble(tempdist);
-                    p2Long = Double.parseDouble(templong);
-                    p2Lat = Double.parseDouble(templat);*/
-
                     p2Dist = dataSnapshot.child("p2distance").getValue(Double.class);
                     p2Long = dataSnapshot.child("p2long").getValue(Double.class);
                     p2Lat = dataSnapshot.child("p2lat").getValue(Double.class);
@@ -192,7 +209,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         };
 
 
-
+        //starts listening for changes above
         rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").addValueEventListener(postListener);
 
 
@@ -205,40 +222,104 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        startLocationUpdates();
 
-        Handler handler = new Handler();
+        //creates handler to handle runnable for updating location
+
+        //interval to update location
         int delay = 2000; //milliseconds
 
+
+
+        //declares local players line on the map
+        PolylineOptions locLine = new com.mapbox.mapboxsdk.annotations.PolylineOptions();
+        PolylineOptions p2Line = new com.mapbox.mapboxsdk.annotations.PolylineOptions();
+
+        TextView palDistText = findViewById(R.id.palSessionMiles);
+        Handler handler = new Handler();
+
+        //runnable for updating location
         handler.postDelayed(new Runnable() {
             public void run() {
-                MarkerOptions marker2 = new MarkerOptions()
+                /*MarkerOptions marker2 = new MarkerOptions()
                         .position(new LatLng(locLat, locLong))
                         .title("Player1")
                         .snippet("Player 1 location");
-
                 MarkerOptions marker3 = new MarkerOptions()
                         .position(new LatLng(p2Lat,p2Long))
                         .title("Player 2")
-                        .snippet("Player 2 location");
+                        .snippet("Player 2 location");*/
 
-                TextView palDistText = findViewById(R.id.palSessionMiles);
-                palDistText.setText(String.valueOf(p2Dist));
+                //case for ending session
+                if(p2Dist == -1 || p2Dist == -1){
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").removeEventListener(postListener);
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).removeValue();
+                    finish();
+                    return;
+                }
+                else if(stopUpdates) {
+
+                    return;
+                }
+
+                //case for collaborative session
+                if(sessionType == "2"){
+                    colabDistance = localDistance + p2Dist;
+                    textColabDistance = "Total Distance: " + String.valueOf(round(colabDistance,2));
+                    sessionStatus.setText(textColabDistance);
+                }
+
+                if(sessionType == "1"){
+                    if(localDistance > p2Dist)
+                        textColabDistance = "You are leading by: " + String.valueOf(round(localDistance - p2Dist,2));
+                    else
+                        textColabDistance = "You are behind by: " + String.valueOf(round(p2Dist - localDistance,2));
+
+                    sessionStatus.setText(textColabDistance);
+                }
+
+                //associates distance texts to update
+
+                palDistText.setText(String.valueOf(round(p2Dist,2)));
 
                 TextView localDistText = findViewById(R.id.localSessionMiles);
                 String setMilesText = String.valueOf(round(localDistance,2)) + " Miles";
                 localDistText.setText(setMilesText);
 
+                //code for updating map view markers
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(MapboxMap mapboxMap) {
 
-                        mapboxMap.clear();
+                        //if the line had not been initialized, add it to the map
+                        if(!locLineInit){
+                            locLine.add(new LatLng(locLat, locLong));
+                            locLine.color(Color.GREEN);
+                            locLine.width(3);
+                            mapboxMap.addPolyline(locLine);
+                            locLineInit = true;
+                        }
+                        else {   //add new point to polyline
+                            locLine.add(new LatLng(locLat, locLong));
+                        }
+                        if(!p2LineInit){
+                            p2Line.add(new LatLng(locLat, locLong));
+                            p2Line.color(Color.GRAY);
+                            p2Line.width(3);
+                            mapboxMap.addPolyline(p2Line);
+                            p2LineInit = true;
+                        }
+                        else{
+                            p2Line.add(new LatLng(p2Lat, p2Long));
+                        }
 
-                        mapboxMap.addMarker(marker2);
-                        mapboxMap.addMarker(marker3);
+
+                        //mapboxMap.clear();/
+                        //add simple marker to map
+                        //mapboxMap.addMarker(marker2);
+                        //mapboxMap.addMarker(marker3);
 
                         Log.d("MapRefresh", "refreshed");
+
 
                     }
                 });
@@ -273,6 +354,8 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
     }
+
+    //location code I dont entirely understand
 
     protected void startLocationUpdates() {
 
@@ -343,7 +426,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
     public void distance(double lat1, double lat2, double lon1,
-                                  double lon2) {
+                         double lon2) {
 
         loc1.setLatitude(lat1);
         loc1.setLongitude(lon1);
@@ -375,8 +458,14 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         return bd.doubleValue();
     }
 
+    private void endingInit(){
+        rtdb = FirebaseDatabase.getInstance().getReference();
+        stopUpdates = true;
+        finish();
+    }
 
-       @Override
+
+    @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
@@ -400,6 +489,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+
     }
 
     @Override

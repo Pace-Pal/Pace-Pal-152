@@ -74,9 +74,40 @@ class SessionFragment : Fragment() {
             val parentContext = context
             val intent = Intent(parentContext, SessionActivity::class.java)
             parentContext!!.startActivity(intent)
-
-
         }
+
+        val compButton = view.findViewById<Button>(R.id.compCreate)      //sets listener for creating Social session
+        compButton.setOnClickListener{
+            val editor = preferences.edit()
+            editor.clear()
+            editor.commit()
+            //editor.putBoolean("readyState", false)
+            //editor.putBoolean("initState", false)
+            editor.putString("sessionID", userid)
+            editor.putString("sessionType","1")
+            //editor.putBoolean("friendInvited", false)
+            editor.commit()
+            val parentContext = context
+            val intent = Intent(parentContext, SessionActivity::class.java)
+            parentContext!!.startActivity(intent)
+        }
+
+        val colabButton = view.findViewById<Button>(R.id.colabCreate)      //sets listener for creating Social session
+        colabButton.setOnClickListener{
+            val editor = preferences.edit()
+            editor.clear()
+            editor.commit()
+            //editor.putBoolean("readyState", false)
+            //editor.putBoolean("initState", false)
+            editor.putString("sessionID", userid)
+            editor.putString("sessionType","2")
+            //editor.putBoolean("friendInvited", false)
+            editor.commit()
+            val parentContext = context
+            val intent = Intent(parentContext, SessionActivity::class.java)
+            parentContext!!.startActivity(intent)
+        }
+
 
         refreshInvites()                        //initial refresh for invites
 
@@ -136,18 +167,18 @@ class SessionFragment : Fragment() {
                                                 invitesList.add(Invite(hostUsername, hostUID, sessionType,intentContext))
                                                 adapter.notifyDataSetChanged()
                                             }
-                                    }
+                                        }
 
-                                }}
+                                    }}
 
                                 override fun onCancelled(databaseError: DatabaseError) {
                                     println("loadPost:onCancelled ${databaseError.toException()}")
                                 }
-                           }
+                            }
 
                             rtdb.child("sessionManager").child("sessionIndex").child(document.id).addListenerForSingleValueEvent(invListener)
 
-                            }
+                        }
 
 
                         adapter.notifyDataSetChanged()

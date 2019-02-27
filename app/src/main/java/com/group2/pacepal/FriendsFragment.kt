@@ -16,8 +16,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class FriendsFragment : Fragment() {
 
-    //Test Commit Only
-    
     private val fsdb = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
     private val userid = user!!.uid

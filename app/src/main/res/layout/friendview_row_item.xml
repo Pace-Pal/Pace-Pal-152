@@ -38,5 +38,13 @@
         android:layout_weight="3"
         android:background="?android:attr/listDivider" />
 
+    <Button
+        android:id="@+id/open_chat_channel"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:text="Message" />
+
 
 </LinearLayout>

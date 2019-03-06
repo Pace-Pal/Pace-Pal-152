@@ -20,7 +20,9 @@ class FriendsFragment : Fragment() {
     private val user = FirebaseAuth.getInstance().currentUser
     private val userid = user!!.uid
     private val friendsList = ArrayList<Friend>(0)
+    //private val friendRequestList = ArrayList<Friend>(0)
     private val adapter = FriendsAdapter(friendsList)
+    //private val adapterReq = FriendRequestsAdapter(friendsList)
     //private val rtdb = FirebaseDatabase.getInstance().reference
 
     private lateinit var friendReference: DatabaseReference
@@ -31,16 +33,26 @@ class FriendsFragment : Fragment() {
         val view = inflater.inflate(R.layout.friends_list, container, false)
 
         //initializes the recyclerView with its adapter
-        val invView = view?.findViewById(R.id.friendsList) as RecyclerView
+        val invView = view.findViewById(R.id.friendsList) as RecyclerView
         invView.layoutManager = LinearLayoutManager(this.context)
         invView.adapter = adapter
 
+
         //refresh button to refresh friends list
         val refreshButton = view.findViewById<Button>(R.id.friendsRefresh)
-        refreshButton.setOnClickListener { refreshFriends() }
+        refreshButton.setOnClickListener {
+
+            refreshFriends()
+        }
+
+        val friendRequestBtn = view.findViewById<Button>(R.id.friendRequestsBtn)
+        friendRequestBtn.setOnClickListener{
+            friendRequests()
+        }
 
         //initial load of friends list
         refreshFriends()
+        Toast.makeText(context, "Clicked 2", Toast.LENGTH_SHORT).show()
         return view
     }
 
@@ -61,6 +73,7 @@ class FriendsFragment : Fragment() {
     }
 
     private fun refreshFriends() {
+
         friendsList.clear() //starting here on updates
         //inviteRefresh.text = "loading.."
         val intentContext = this.context!!
@@ -84,7 +97,6 @@ class FriendsFragment : Fragment() {
                                         intentContext
                                 ))
                                 adapter.notifyDataSetChanged()
-
                             }
 
                         }
@@ -95,6 +107,44 @@ class FriendsFragment : Fragment() {
                         Toast.makeText(context,"Connection error.", Toast.LENGTH_SHORT)
                 }
 
+
+
+    }
+
+    private fun friendRequests(){
+        friendsList.clear() //starting here on updates
+        //inviteRefresh.text = "loading.."
+        val intentContext = this.context!!
+        val friendsFromFS = fsdb.collection("users").document(userid).collection("friendRequests")
+        friendsFromFS.get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (task.result!!.size() == 0)
+                            Toast.makeText(context, "No requests at this time!", Toast.LENGTH_SHORT).show()
+                        for (document in task.result!!) {
+
+                            val friendGet = fsdb.collection("users").document(document.id)
+                            friendGet.get().addOnSuccessListener { friendProfile ->
+
+                                friendsList.add(Friend(
+                                        friendProfile.getString("profilepic").toString(),
+                                        friendProfile.getString("username").toString(),
+                                        friendProfile.getString("first") + " " + friendProfile.getString("last"),
+                                        document.id,
+                                        0,
+                                        intentContext
+                                ))
+                                adapter.notifyDataSetChanged()
+
+                            }
+
+                        }
+                        //adapter.notifyDataSetChanged()
+
+                    }
+                    else
+                        Toast.makeText(context,"Connection error.", Toast.LENGTH_SHORT)
+                }
 
 
     }

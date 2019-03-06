@@ -37,14 +37,12 @@
 
     <Button
         android:id="@+id/friendsRefresh"
-        android:layout_width="match_parent"
+        android:layout_width="126dp"
         android:layout_height="45dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="13dp"
-        android:text="Refresh"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginEnd="8dp"
+        android:text="Friends"
+        app:layout_constraintEnd_toStartOf="@+id/addFriendsBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
@@ -52,15 +50,36 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/friendsList"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="568dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
         android:background="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/friendsRefresh" />
+        app:layout_constraintTop_toBottomOf="@+id/friendsRefresh"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/addFriendsBtn"
+        android:layout_width="126dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Add Friends"
+        app:layout_constraintEnd_toStartOf="@+id/friendRequestsBtn"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
+    <Button
+        android:id="@+id/friendRequestsBtn"
+        android:layout_width="126dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Requests"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
 </android.support.constraint.ConstraintLayout>

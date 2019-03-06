@@ -358,6 +358,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                             }
                         }
                     });
+
+
             if(usernameExists[0]){
                 Toast.makeText(this,"Username taken!", Toast.LENGTH_SHORT).show();
             }

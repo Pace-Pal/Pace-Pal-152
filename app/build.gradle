@@ -56,7 +56,6 @@ dependencies {
     //to allow facebook signin
     implementation 'com.facebook.android:facebook-login:[4,5)'
 
-
     //glide (for images messaging)
     implementation 'com.github.bumptech.glide:glide:4.6.1'
     kapt 'com.github.bumptech.glide:compiler:4.6.1'
@@ -65,7 +64,6 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-storage:3.2.2'
 
     //implementation "com.mapzen.android:lost:3.0.2"
-
 
     //firebase messaging
     implementation 'com.google.firebase:firebase-messaging:17.3.4'

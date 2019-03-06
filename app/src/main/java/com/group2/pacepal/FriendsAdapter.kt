@@ -28,6 +28,7 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
     //val friendAdaptorCommunication = com.group2.pacepal.friendAdaptorCommunication
 
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendHolder{ //try creatig an if statement to tell the adapter to use a different view depending upon context later maybe
         val inflatedView = LayoutInflater.from(parent.context).inflate(R.layout.friendview_row_item,parent,false)
 
@@ -162,6 +163,8 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
 
                 }
 
+            view.friendFuncBtn.setOnClickListener {deleteFriend()}
+
 
 
 
@@ -179,6 +182,10 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                 //intent.putExtra("sessionID", invite.hostID)
                // parentContext.startActivity(intent)
             }*/
+        }
+
+        fun deleteFriend(){
+
         }
     }
 

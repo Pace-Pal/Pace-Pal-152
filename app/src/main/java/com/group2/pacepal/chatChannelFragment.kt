@@ -55,7 +55,7 @@ class chatChannelFragment: Fragment() {
 
         //create fragment view
         val view =  inflater.inflate(R.layout.fragment_chat_channel, container, false)
-       // val imgView_send  =  findViewById(R.id.imageView_send) as ImageView
+        // val imgView_send  =  findViewById(R.id.imageView_send) as ImageView
         // TODO: Fix this issue with ImageView not being clickable then test if messages are sending . Directly related to line 95
         //TODO: Move the editText view higher b/c the action bar on the bottom is covering it up right now
 
@@ -69,18 +69,6 @@ class chatChannelFragment: Fragment() {
 
         val contexts = context!! //big what?
 
-
-        //test to fill in adapter with a TextMessage object
-        val test = Date()
-        //test the message
-        textMessages.add(TextMessage(
-                "hey",
-                       test,
-                "to me",
-                "jason",
-                "TEXT",
-                "TEXT"
-        ))
         adapter.notifyDataSetChanged()
 
         //testing this to pass current context of the app to the rest of everything
@@ -93,14 +81,14 @@ class chatChannelFragment: Fragment() {
 
             messagesListenerRegistration = addChatMessagesListener(channelId, contexts, this::updateRecyclerView) //where it gets different
 
-            /*imgView_send.setOnClickListener {
+            imageView_send.setOnClickListener {
                 val messageToSend =
                         TextMessage(editText_message.text.toString(), Calendar.getInstance().time,
                                 FirebaseAuth.getInstance().currentUser!!.uid,
-                                otherUserId, "test_name")
+                                otherUserId, "test_name") //todo: Change test name
                 editText_message.setText("")
                 sendMessage(messageToSend, channelId)
-            } */
+            }
 
             /*
             fab_send_image.setOnClickListener {
@@ -169,6 +157,7 @@ class chatChannelFragment: Fragment() {
                 }
     }
 
+    //This function will 
     fun updateRecyclerView(messages:ArrayList<TextMessage>) {
         //want to add the list of text messages that are not already in the list of ArrayList<TextMessage> so that they do not all reload
         Log.v("Listener Active", "The listener is active")
@@ -179,6 +168,12 @@ class chatChannelFragment: Fragment() {
                 textMessages.add(i)
 
         }
+        //val size = messages.size
+       messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
+       /* if(size > 0)
+            textMessages.add(messages[size-1])
+        else
+            textMessages.add(messages[0]) */
         adapter.notifyDataSetChanged()  //notify the adapter that we have a change so that we can display the new text messages
     }
 

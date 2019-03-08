@@ -1,5 +1,6 @@
 package com.group2.pacepal
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -12,6 +13,8 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
+
+
 
 
 class FriendsFragment : Fragment() {
@@ -41,18 +44,47 @@ class FriendsFragment : Fragment() {
         //refresh button to refresh friends list
         val refreshButton = view.findViewById<Button>(R.id.friendsRefresh)
         refreshButton.setOnClickListener {
-
             refreshFriends()
         }
 
         val friendRequestBtn = view.findViewById<Button>(R.id.friendRequestsBtn)
-        friendRequestBtn.setOnClickListener{
-            friendRequests()
-        }
+
+
+        friendRequestBtn.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+
+                val friendRequests = FriendRequestFragment()
+
+                val fragmentTransaction = fragmentManager?.beginTransaction()
+                fragmentTransaction?.replace(R.id.container, friendRequests)
+                fragmentTransaction?.addToBackStack(null)
+                fragmentTransaction?.commit()
+
+
+            }
+        })
+
+
+        val addFriendsBtn = view.findViewById<Button>(R.id.addFriendsBtn)
+        addFriendsBtn.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?){
+                val startIntent = Intent(activity, AddFriendsActivity::class.java)
+                startActivity(startIntent)
+            }
+        })
+            /*
+            val friendRequests = FriendRequestFragment()
+
+            val fragmentTransaction = activity!!.supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(android.R.id.content, friendRequests)
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
+            */
+
 
         //initial load of friends list
         refreshFriends()
-        Toast.makeText(context, "Clicked 2", Toast.LENGTH_SHORT).show()
+
         return view
     }
 

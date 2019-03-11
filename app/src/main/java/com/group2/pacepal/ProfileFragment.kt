@@ -59,20 +59,6 @@ class ProfileFragment : Fragment() {
                     profileRealName.text = currentProfile.get("first").toString() + " " + currentProfile.get("last").toString()
                     Picasso.with(context).load(currentProfile.getString("profilepic")).fit().into(profileImage)
 
-                    //Signs the user out and returns them to the signin screen.
-                    signOutBtn.setOnClickListener(object : View.OnClickListener{
-                        override fun onClick(v: View?) {
-                            Toast.makeText(context, "Signing Out!", Toast.LENGTH_SHORT).show()
-                            FirebaseAuth.getInstance().signOut()
-
-                            //finishes the current activity and starts the login activity.
-                            //finishes to prevent user from attempting to go back to profile when already signed out.
-                            activity?.finish()
-                            val startIntent = Intent(activity, MainActivity::class.java)
-                            startActivity(startIntent)
-                        }
-                    })
-
 
                     val firebasedb = db.collection("users").document(userid).collection("friends")
                     firebasedb.get().addOnCompleteListener { task ->

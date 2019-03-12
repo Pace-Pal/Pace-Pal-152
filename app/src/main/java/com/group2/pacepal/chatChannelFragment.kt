@@ -23,6 +23,15 @@ import kotlinx.android.synthetic.main.fragment_chat_channel.*
 import kotlinx.android.synthetic.main.user_profile.*
 import java.util.*
 
+/*
+Purpose:This class is what is used to handle the chatChannel functionality. It defines the user's ability to edit text and send a message. It is also
+        the container where two users communicate. Their messages are sent to the Firebase Firestore from this class, and shown to them by way of a
+        adapter that stores a list of TextMessage data objects. When there is an update in the Firestore, the adapter is notified and the recycler
+        view is updated to store the new message. This class also creates new chat channels between users if one does not yet already exist.
+
+        TODO: Chat room messages all reload each time a message is sent. This is not good behavior. Better would be if the new message was added to the recycler view rather than every message.
+        TODO: The app crashes when the chat is opened, used, closed, then reopened and used again. This is related to the scrollToPosition function so that will need to be addressed eventually.
+ */
 
 class chatChannelFragment: Fragment() {
 
@@ -56,8 +65,7 @@ class chatChannelFragment: Fragment() {
         //create fragment view
         val view =  inflater.inflate(R.layout.fragment_chat_channel, container, false)
         // val imgView_send  =  findViewById(R.id.imageView_send) as ImageView
-        // TODO: Fix this issue with ImageView not being clickable then test if messages are sending . Directly related to line 95
-        //TODO: Move the editText view higher b/c the action bar on the bottom is covering it up right now
+
 
 
 

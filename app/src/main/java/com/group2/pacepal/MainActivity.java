@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -23,12 +21,10 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
@@ -47,20 +43,22 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-//todo: handle email sign in.
-//todo: allow a user to safely sign in with multiple methods using firebase auth tutorial
-//todo: make usernames unique b/c they ain't yet
+/*
+
+Purpose: This class handles login/register functionality. It currently utilizes Google, FaceBook, and email registration/login.
+         The key to understanding the sign in flow is that Google and Facebook methods both converge into the FirebaseAuth function,
+         whereas the email sign in/registration route does not.
+TODO: allow a user to safely sign in with multiple methods using firebase auth tutorial
+TODO: make usernames unique b/c they ain't yet
+ */
+
+
 
 public class MainActivity extends AppCompatActivity  implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -78,6 +76,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,19 +84,24 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-
-
-        findViewById(R.id.submitButton).setOnClickListener(this);
-
-
-        findViewById(R.id.fnameField).setVisibility(View.VISIBLE);
-        findViewById(R.id.lnameField).setVisibility(View.VISIBLE);
-        findViewById(R.id.unameField).setVisibility(View.VISIBLE);
-        findViewById(R.id.submitButton).setVisibility(View.INVISIBLE);
+        findViewById(R.id.createAccount2).setOnClickListener(this);
+        findViewById(R.id.create_account_with_email_btn).setOnClickListener(this);
+        findViewById(R.id.fnameField).setVisibility(View.INVISIBLE);
+        findViewById(R.id.lnameField).setVisibility(View.INVISIBLE);
+        findViewById(R.id.unameField).setVisibility(View.INVISIBLE);
+        findViewById(R.id.createAccount2).setVisibility(View.INVISIBLE);
+        findViewById(R.id.create_account_with_email_btn).setVisibility(View.VISIBLE);
         findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
         findViewById(R.id.emailField).setVisibility(View.VISIBLE);
         findViewById(R.id.email_sign_in).setVisibility(View.VISIBLE);
         findViewById(R.id.enter_more_info_text).setVisibility(View.INVISIBLE);
+
+
+        EditText email = findViewById(R.id.emailField);
+        EditText password = findViewById(R.id.password_field);
+        EditText lastname = findViewById(R.id.lnameField);
+        EditText firstname = findViewById(R.id.fnameField);
+        EditText username = findViewById(R.id.unameField);
 
 
 
@@ -126,8 +130,14 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 Log.d(TAG, "facebook:onError", error);
                 // ...
             }
+
+
+
+
         });
-// ...
+
+
+
 
 
 
@@ -142,19 +152,84 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         printHashKey(this);
+
+
+
+        String emailParam = email.getText().toString();
+        String usernameParam = username.getText().toString();
+        String passwordParam = password.getText().toString();
+        String firstnameParam = firstname.getText().toString();
+        String lastnameParam = lastname.getText().toString();
+
+
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sign_in_button:
-                signIn();
-                break;
-            case R.id.submitButton:
-                toMenuSubmit();
-                break;
 
-        }
+
+    //todo: ensure fields for email and password are unique before getting here
+    private void createAccount() {
+
+        EditText passwordParam = findViewById(R.id.password_field);
+        EditText emailParam = findViewById(R.id.emailField);
+        EditText fName = (EditText)findViewById(R.id.fnameField);
+        EditText lName = (EditText) findViewById(R.id.lnameField);
+        EditText uName = (EditText) findViewById(R.id.unameField);
+
+        String passwordParamString = passwordParam.getText().toString();
+        String emailParamString = emailParam.getText().toString();
+
+        mAuth.createUserWithEmailAndPassword(emailParamString, passwordParamString)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+
+
+                    }
+                });
+
+        //remember to make checks for fields before this. Also need to add username and the other fields into the database
+
+        Map<String, Object> data = new HashMap<>();
+
+        String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        data.put("first", fName.getText().toString());
+        data.put("last", lName.getText().toString());
+        data.put("username", uName.getText().toString());
+        data.put("email", emailParamString);
+        data.put("password", passwordParamString);
+        data.put("miles", 0);
+        data.put("friends",0);
+        data.put("challenges",0);
+        data.put("profilepic", "https://firebasestorage.googleapis.com/v0/b/pace-pal-ad8c4.appspot.com/o/defaultAVI.png?alt=media&token=6c9c47df-8151-4e5b-8843-3440e317346c");
+        db.collection("users").document(userid).set(data);
+
+
+
+        toMenu();
+
+    }
+
+    private void displayEmailAcctCreationForm() {
+        findViewById(R.id.email_sign_in).setVisibility(View.INVISIBLE);
+        findViewById(R.id.or).setVisibility(View.INVISIBLE);
+        findViewById(R.id.create_account_with_email_btn).setVisibility(View.INVISIBLE);
+        findViewById(R.id.fnameField).setVisibility(View.VISIBLE);
+        findViewById(R.id.lnameField).setVisibility(View.VISIBLE);
+        findViewById(R.id.unameField).setVisibility(View.VISIBLE);
+        findViewById(R.id.createAccount2).setVisibility(View.VISIBLE);
+        findViewById(R.id.login_button).setVisibility(View.INVISIBLE);
     }
 
 
@@ -172,23 +247,14 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     }
 
-    private void signOut() {
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
-    }
-
-    //sign in flow starts here
+    //This function will activate when the app opens. It checks if the user is already signed in, and takes them to the app's main menu if they are
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    //second step of signing in
+    //The second step of signing in using the Google sign in button. After this the account object generated in the function is passed to the FirebeAuth
+    //function where it is converted to a Firebase Auth token and signs the user in to the Firebase Auth database.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -271,12 +337,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private void updateUI(FirebaseUser account) {
         if (account != null) {
             //user has account
-
-            findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
-            findViewById(R.id.login_button).setVisibility(View.INVISIBLE);
-            findViewById(R.id.email_sign_in).setVisibility(View.INVISIBLE);
-            findViewById(R.id.sign_in_options_text).setVisibility(View.INVISIBLE);
-            findViewById(R.id.emailField).setVisibility(View.INVISIBLE);
             String userid = FirebaseAuth.getInstance().getCurrentUser().getUid(); //may need to switch back to acquiring a new instance altogether
 
             //Attempt to grab the UID from the firestore database and then check if that retrieval was successful and respond accordingly
@@ -296,8 +356,14 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                             findViewById(R.id.fnameField).setVisibility(View.VISIBLE);
                             findViewById(R.id.lnameField).setVisibility(View.VISIBLE);
                             findViewById(R.id.unameField).setVisibility(View.VISIBLE);
-                            findViewById(R.id.submitButton).setVisibility(View.VISIBLE);
+                            findViewById(R.id.createAccount2).setVisibility(View.VISIBLE);
+                            findViewById(R.id.create_account_with_email_btn).setVisibility(View.INVISIBLE);
                             findViewById(R.id.enter_more_info_text).setVisibility(View.VISIBLE);
+                            findViewById(R.id.email_sign_in).setVisibility(View.INVISIBLE);
+                            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+                            findViewById(R.id.login_button).setVisibility(View.VISIBLE);
+                            findViewById(R.id.or).setVisibility(View.INVISIBLE);
+
                         }
                     } else {
                         Log.d(TAG, "get failed with ", task.getException());
@@ -310,6 +376,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             //display google sign in button to start the sign in flow that brings the user back to this function
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
 
+
         }
     }
 
@@ -319,14 +386,15 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
 
 
-    //after hitting the submit button to send user information to the firestore realtime database
-    //submit shouldn't send user to main menu unless they are already signed in, which at this point it does anyways. Need to fix
-    //Todo: Change implementation so that user no longer has to click on the to menu button to be taken to the new activity
+    //This function covers a general case. If the user does not yet have an account created, it will scan the forms and make sure all fields are valid.
+    //THis function does not cover the user email account creation case. In this case, the user wants to create an acct with email. There are different checks
+    //and different actions required.
+    //TODO: Make unqiue username checking work
     public void toMenuSubmit() {
         EditText fName = (EditText)findViewById(R.id.fnameField);
         EditText lName = (EditText) findViewById(R.id.lnameField);
         EditText uName = (EditText) findViewById(R.id.unameField);
-        final boolean[] usernameExists = new boolean[1];
+         boolean[] usernameExists = new boolean[1];
 
         if((fName.getText().toString().matches("") == false) && (lName.getText().toString().matches("") == false) && (uName.getText().toString().matches("") == false))
         {
@@ -352,12 +420,18 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Log.d(TAG, document.getId() + " => " + document.getData());
                                     usernameExists[0] = true;
+
+                                    Log.v("Usernames:", "Usernames are " + document.getData());
+                                    Log.v("Bool array value", "Bool value is: " + usernameExists[0]);
                                 }
                             } else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }
                         }
                     });
+
+            Log.v("After", "Bool value after is" + usernameExists[0]);
+
             if(usernameExists[0]){
                 Toast.makeText(this,"Username taken!", Toast.LENGTH_SHORT).show();
             }
@@ -377,6 +451,32 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     }
 
+    //TODO: Make pop up for when form is not valid
+    public boolean validateEmailAccountCreationForm() {
+        boolean formValid = false;
+
+        EditText fName = (EditText)findViewById(R.id.fnameField);
+        EditText lName = (EditText) findViewById(R.id.lnameField);
+        EditText uName = (EditText) findViewById(R.id.unameField);
+        EditText email = (EditText) findViewById(R.id.emailField);
+        EditText pwWord = (EditText) findViewById(R.id.password_field);
+
+        if((fName.getText().toString().matches("") == false)
+                && (lName.getText().toString().matches("") == false)
+                && (uName.getText().toString().matches("") == false)
+                && (email.getText().toString().matches("") == false)
+                && (pwWord.getText().toString().matches("") == false)) {
+
+            formValid = true;
+
+        }
+
+
+        return formValid;
+    }
+
+
+
     //easy way to generate a key necessary for FaceBook sign in integration on development machines
     public static void printHashKey(Context context) {
         try {
@@ -391,6 +491,91 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             Log.e("AppLog", "error:", e);
         }
     }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                signIn();
+                break;
+            case R.id.createAccount2:
+                if(validateEmailAccountCreationForm()) {
+                    createAccount();
+                }
+                break;
+            case R.id.create_account_with_email_btn:
+                displayEmailAcctCreationForm();
+                break;
+            case R.id.email_sign_in:
+                if(validateEmailSignInForm()) {
+                    emailSignIn();
+                }
+
+        }
+    }
+
+   //TODO: Validate that the form with the database. Basically we need to make sure that the email and password are actually in the database before continuing
+    private boolean validateEmailSignInForm() {
+        boolean formValid = false;
+
+        EditText email = (EditText) findViewById(R.id.emailField);
+        EditText pwWord = (EditText) findViewById(R.id.password_field);
+
+        if((email.getText().toString().matches("") == false)
+                && (pwWord.getText().toString().matches("") == false)) {
+
+            String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+            formValid = true;
+
+        }
+
+
+        return formValid;
+    }
+
+    void emailSignIn() {
+
+        EditText email = (EditText) findViewById(R.id.emailField);
+        EditText passWord = (EditText) findViewById(R.id.password_field);
+
+        String emailStringParam = email.getText().toString();
+        String passWordStringParam = passWord.getText().toString();
+
+
+        mAuth.signInWithEmailAndPassword(emailStringParam, passWordStringParam)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
+        return;
+    }
+
+
+    /************************Email Sign In *********************************************************/
+
+/*
+    */
+
+
+
+
 
 
 

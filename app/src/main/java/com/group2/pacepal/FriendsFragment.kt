@@ -68,8 +68,12 @@ class FriendsFragment : Fragment() {
         val addFriendsBtn = view.findViewById<Button>(R.id.addFriendsBtn)
         addFriendsBtn.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?){
-                val startIntent = Intent(activity, AddFriendsActivity::class.java)
-                startActivity(startIntent)
+                val addFriendsFragment = AddFriendsFragment()
+
+                val fragmentTransaction = fragmentManager?.beginTransaction()
+                fragmentTransaction?.replace(R.id.container, addFriendsFragment)
+                fragmentTransaction?.addToBackStack(null)
+                fragmentTransaction?.commit()
             }
         })
             /*

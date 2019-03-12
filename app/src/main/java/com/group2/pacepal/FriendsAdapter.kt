@@ -184,8 +184,15 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                 override fun onClick(v: View?){
                     Toast.makeText(par.context, "Unfriending " + friendName , Toast.LENGTH_SHORT).show()
 
-
+                    //Removes user's friend from his/hers friends list
                     fsdb.collection("users").document(currentUser).collection("friends").document(friendUserId)
+                            .delete()
+                            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+                            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+
+
+                    //Removes the user from the friend's friends list
+                    fsdb.collection("users").document(friendUserId).collection("friends").document(currentUser)
                             .delete()
                             .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
                             .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
@@ -194,31 +201,6 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                 }
 
             })
-
-
-            /*
-            view.unfriendBtn.setOnClickListener{
-                Toast.makeText(par.context, "Unfriending!", Toast.LENGTH_SHORT).show()
-            }
-            */
-
-
-
-
-
-
-
-            //view.profilePic
-            //val displayText = friend.userName
-
-            /*view.friend_button.setOnClickListener{
-                val parentContext = friend.feature
-                view.friend_button.text = displayText
-                Toast.makeText(parentContext, "WIP", Toast.LENGTH_SHORT).show(); //questionable context
-               // val intent = Intent(parentContext, SessionActivity::class.java)
-                //intent.putExtra("sessionID", invite.hostID)
-               // parentContext.startActivity(intent)
-            }*/
         }
 
 

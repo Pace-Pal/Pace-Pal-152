@@ -76,14 +76,7 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
             Picasso.with(view.context).load(friend.profilePictureURL).fit().into(view.profilePic)
 
             view.friendSelection.setOnClickListener{
-                if(friend.activityType == 1){
-                    //Toast.makeText(friend.feature,"TODO: open friend profile", Toast.LENGTH_SHORT).show()
-                    //openFragment(friendProfileFragment.newInstance())
-                    //val preferences = PreferenceManager.getDefaultSharedPreferences(friend.feature.applicationContext)
-                    //val editor = preferences.edit()
-                   // editor.putString("friend_profile", friend.uid) //experiment here
-                   // editor.commit()
-
+                if(friend.activityType == 1){                  //case for view in friends list
 
                     val myFragment = friendProfileFragment()
                     val bundle = Bundle()
@@ -92,15 +85,12 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                     bundle.putString("friend_real_name", friend.realName)
 
                     myFragment.setArguments(bundle)
-                    //refers to the primary activity's (the mainActivity2) context to create a new fragement within a fragment and still
-                    //keep track of the fragemnt's position on the stack
-                    //potentially buggy so we can take more looks at this in the future.
+
                     val activity = view.context as AppCompatActivity
                     activity.supportFragmentManager.beginTransaction().replace(R.id.container, myFragment).addToBackStack(null).commit() //test
 
 
-
-                }else if(friend.activityType == 2){
+                }else if(friend.activityType == 2){        //case for view in
 
 
                     val preferences = PreferenceManager.getDefaultSharedPreferences(friend.feature.applicationContext)
@@ -112,7 +102,16 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                     val sessionID = preferences.getString("sessionID", "")
                     val sessionType = preferences.getString("sessionType","")
 
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("P2").setValue(friend.uid)
+                    //inits new players locations
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("long").setValue(0)
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("lat").setValue(0)
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("distance").setValue(0)
+
+                    //inits new players ready up
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child(friend.uid).setValue(false)
+
+                    //safe to delete after new session
+                    /* rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("P2").setValue(friend.uid)
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("type").setValue(sessionType)
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child("absoluteReady").setValue(false)
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child("p1Ready").setValue(false)
@@ -122,9 +121,7 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p1lat").setValue(0)
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p2distance").setValue(0)
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p2long").setValue(0)
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p2lat").setValue(0)
-
-                    editor.putString("friendUID",friend.uid)
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p2lat").setValue(0) */
 
                     editor.commit()
 

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/friendSelection"
+    android:id="@+id/friendRequest"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/profilePic"
+        android:id="@+id/profilePicReq"
         android:layout_width="85dp"
         android:layout_height="83dp"
         android:layout_gravity="center_horizontal"
@@ -15,7 +15,7 @@
         app:srcCompat="@drawable/circle_profile_stats" />
 
     <TextView
-        android:id="@+id/uName"
+        android:id="@+id/uNameR"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="3"
@@ -24,7 +24,7 @@
         android:textSize="22sp" />
 
     <TextView
-        android:id="@+id/realName"
+        android:id="@+id/realNameR"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="3"
@@ -39,19 +39,19 @@
         android:background="?android:attr/listDivider" />
 
     <Button
-        android:id="@+id/open_chat_channel"
+        android:id="@+id/acceptBtn"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-        android:text="Message" />
+        android:text="Accept" />
 
     <Button
-        android:id="@+id/unfriendBtn"
+        android:id="@+id/declineBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-        android:text="Unfriend" />
+        android:text="Decline" />
 
 
 </LinearLayout>

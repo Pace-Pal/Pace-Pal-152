@@ -165,7 +165,6 @@ class chatChannelFragment: Fragment() {
                 }
     }
 
-    //This function will
     fun updateRecyclerView(messages:ArrayList<TextMessage>) {
         //want to add the list of text messages that are not already in the list of ArrayList<TextMessage> so that they do not all reload
         Log.v("Listener Active", "The listener is active")

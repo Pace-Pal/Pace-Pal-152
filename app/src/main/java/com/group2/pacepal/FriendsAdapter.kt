@@ -20,18 +20,26 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.user_profile.view.*
 import java.security.AccessController.getContext
 import android.os.Bundle
+import android.support.constraint.Constraints.TAG
 import android.widget.Button
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 internal class FriendsAdapter constructor (private var friends: ArrayList<Friend>): RecyclerView.Adapter<FriendsAdapter.FriendHolder>() {
 
+
+
     //val friendAdaptorCommunication = com.group2.pacepal.friendAdaptorCommunication
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendHolder{ //try creatig an if statement to tell the adapter to use a different view depending upon context later maybe
         val inflatedView = LayoutInflater.from(parent.context).inflate(R.layout.friendview_row_item,parent,false)
 
-        return FriendHolder(inflatedView)
+
+
+        return FriendHolder(inflatedView, parent)
     }
 
     override fun getItemCount() = friends.size
@@ -49,10 +57,15 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
 
     }*/
 
-    class FriendHolder(v:View) : RecyclerView.ViewHolder(v){
+    class FriendHolder(v:View, parent: ViewGroup) : RecyclerView.ViewHolder(v){
+        private val fsdb = FirebaseFirestore.getInstance()
+        private val user = FirebaseAuth.getInstance().currentUser
+        private val userid = user!!.uid
 
         private var view : View = v
         private var friend : Friend? = null
+        private var par: ViewGroup = parent
+
 
 
         init {
@@ -163,23 +176,35 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                 }
 
 
+            view.unfriendBtn.setOnClickListener(object : View.OnClickListener{
+                val friendName = friend.userName.toString()
+                val friendUserId = friend.uid.toString()
+                val currentUser = userid.toString()
+
+                //find a way to
+                override fun onClick(v: View?){
+                    Toast.makeText(par.context, "Unfriending " + friendName , Toast.LENGTH_SHORT).show()
+
+                    //Removes user's friend from his/hers friends list
+                    fsdb.collection("users").document(currentUser).collection("friends").document(friendUserId)
+                            .delete()
+                            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+                            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
 
 
+                    //Removes the user from the friend's friends list
+                    fsdb.collection("users").document(friendUserId).collection("friends").document(currentUser)
+                            .delete()
+                            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+                            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
 
 
+                }
 
-            //view.profilePic
-            //val displayText = friend.userName
-
-            /*view.friend_button.setOnClickListener{
-                val parentContext = friend.feature
-                view.friend_button.text = displayText
-                Toast.makeText(parentContext, "WIP", Toast.LENGTH_SHORT).show(); //questionable context
-               // val intent = Intent(parentContext, SessionActivity::class.java)
-                //intent.putExtra("sessionID", invite.hostID)
-               // parentContext.startActivity(intent)
-            }*/
+            })
         }
+
+
     }
 
 
@@ -189,5 +214,3 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
 private fun Button.setOnClickListener() {
     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 }
-
-

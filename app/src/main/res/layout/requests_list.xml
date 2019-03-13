@@ -8,14 +8,14 @@
     tools:context=".Main2Activity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/friendRequestView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="162dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="162dp"
         android:layout_marginBottom="8dp"
-        android:text="Friends"
+        android:text="Friend Requests"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/searchView"
@@ -33,47 +33,47 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.09"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/friendRequestView" />
 
     <Button
-        android:id="@+id/friendsRefresh"
+        android:id="@+id/friendsRefreshR"
         android:layout_width="126dp"
         android:layout_height="45dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="Friends"
-        app:layout_constraintEnd_toStartOf="@+id/addFriendsBtn"
+        app:layout_constraintEnd_toStartOf="@+id/addFriendsBtnR"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
     <!-- A RecyclerView with some commonly used attributes -->
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/friendsList"
+        android:id="@+id/friendRequestList"
         android:layout_width="0dp"
         android:layout_height="568dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
         android:background="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/friendsRefresh" />
+        app:layout_constraintTop_toBottomOf="@+id/friendsRefreshR"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/addFriendsBtn"
+        android:id="@+id/addFriendsBtnR"
         android:layout_width="126dp"
         android:layout_height="45dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="Add Friends"
-        app:layout_constraintEnd_toStartOf="@+id/friendRequestsBtn"
+        app:layout_constraintEnd_toStartOf="@+id/friendRequestsBtnR"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
     <Button
-        android:id="@+id/friendRequestsBtn"
+        android:id="@+id/friendRequestsBtnR"
         android:layout_width="126dp"
         android:layout_height="45dp"
         android:layout_marginTop="8dp"

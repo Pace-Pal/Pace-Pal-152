@@ -62,7 +62,10 @@ class SessionActivity : AppCompatActivity() {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 //if absoluteReady for the session is true, the session is ready to start
-                if(dataSnapshot.value == "true") {                       //checks for any friend sessions where user is an invites player
+                Log.d("sessionAct", "state checked")
+                Log.d("sessionAct", dataSnapshot.value.toString())
+                if(dataSnapshot.value == true) {                       //checks for any friend sessions where user is an invites player
+                    Log.d("sessionActivity", "Launching session")
                     val intent = Intent(this@SessionActivity, MyMap::class.java)
                     android.os.SystemClock.sleep(1000)
                     this@SessionActivity.startActivity(intent)
@@ -71,7 +74,7 @@ class SessionActivity : AppCompatActivity() {
         }
         //starts absoluteReady listener
         rtdb.child("sessionManager").child("sessionIndex").child(sessionID)
-                .child("ready").child("absoluteReady").addListenerForSingleValueEvent(stateCheck)
+                .child("ready").child("absoluteReady").addValueEventListener(stateCheck)
 
 
         Log.d("sessionID", sessionID)

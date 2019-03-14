@@ -15,6 +15,10 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.session_activity.*
+import com.google.firebase.firestore.auth.User
+import com.google.firebase.database.DataSnapshot
+
+
 
 
 class ReadyUpFragment : Fragment() {
@@ -27,8 +31,6 @@ class ReadyUpFragment : Fragment() {
     var playercount = 0
     var players: MutableList<String> = ArrayList()
 
-
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         //listens for state changes of other players
@@ -36,20 +38,27 @@ class ReadyUpFragment : Fragment() {
         val sessionID = preferences.getString("sessionID", "")
         val playerlistener = object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                val allPlayers = p0.children
-                allPlayers.forEach{
-                    var temparray: MutableList<String> = ArrayList()
-                    var tempcount = 0
-                    if(it.value != user!!.uid) {
+                var tempTracker = false
+
+                for(x in players)
+                    if(x == p0.key)
+                        tempTracker = true
+
+                if(!tempTracker){
+                    if((p0.key != user!!.uid)&&(p0.key != "absoluteReady")){
+                        var temparray: MutableList<String> = ArrayList()
+                        var tempcount = 0
                         tempcount++
-                        textViews += palStatus
-                        temparray.add(it.key.toString())
-                        Log.d("addingplayer",it.key.toString())
+                        temparray.add(p0.key.toString())
+                        Log.d("addingplayer",p0.key.toString())
+                        playercount = tempcount
+                        players = temparray
                     }
-                    playercount = tempcount
-                    players = temparray
                 }
+
             }
+
+
 
             override fun onCancelled(p0: DatabaseError) {
                 Log.d("rtdb error", "lost connection to database profile updates")
@@ -57,28 +66,30 @@ class ReadyUpFragment : Fragment() {
 
             //android studio yelled at me if i didn't include these three functions
             override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                //nothing
             }
 
             override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                //nothing
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                //nothing
             }
         }
+
+        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").addChildEventListener(playerlistener)
 
 
         return inflater.inflate(R.layout.readyup_fragment, container, false)
         }
 
 
+    override fun onActivityCreated(savedInstanceState: Bundle?)
 
-
-    override fun onResume() {
-        super.onResume()
-
+ {
+        //super.onResume()
+     super.onActivityCreated(savedInstanceState)
         val preferences = PreferenceManager.getDefaultSharedPreferences(this.context)
         val sessionID = preferences.getString("sessionID", "")
         Log.d("readyUP", "resumed")
@@ -112,11 +123,11 @@ class ReadyUpFragment : Fragment() {
 
 
 
-        val p2Listener = object : ValueEventListener {
+        val readyListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
                 var tempAbsolute = buttonState
-
+                Log.d("DATABASE_CHANGE", "changed")
                 players.forEach{
                     if((dataSnapshot.child(it).value == false)){
                         tempAbsolute = false
@@ -124,8 +135,9 @@ class ReadyUpFragment : Fragment() {
                 }
 
                 if(tempAbsolute)
-                    rtdb.child("absoluteReady").setValue(tempAbsolute)
-
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID)
+                            .child("ready").child("absoluteReady").setValue(tempAbsolute)
+                    //launch session
 
                 if(playercount == 0)
                     Log.d("playercount",":0")
@@ -143,8 +155,12 @@ class ReadyUpFragment : Fragment() {
 
         //Log.d("init readyUp session", sessionID)
         //Toast.makeText(context,sessionID,Toast.LENGTH_SHORT)
-        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").addValueEventListener(p2Listener)
+        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").addValueEventListener(readyListener)
 
+    }
+
+    override fun onPause() {
+        super.onPause()
     }
 
 

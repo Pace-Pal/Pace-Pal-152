@@ -73,12 +73,6 @@ dependencies {
     //for kotlin annotations
     apply plugin: 'kotlin-kapt'
 
-    //firebase messaging
-    implementation 'com.google.firebase:firebase-messaging:17.3.4'
-
-    //for kotlin annotations
-    apply plugin: 'kotlin-kapt'
-
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -83,9 +83,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
+        //set the onclick listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.createAccount2).setOnClickListener(this);
         findViewById(R.id.create_account_with_email_btn).setOnClickListener(this);
+        findViewById(R.id.Submit).setOnClickListener(this);
+
+        //Set visibility for buttons and fields
         findViewById(R.id.fnameField).setVisibility(View.INVISIBLE);
         findViewById(R.id.lnameField).setVisibility(View.INVISIBLE);
         findViewById(R.id.unameField).setVisibility(View.INVISIBLE);
@@ -95,8 +99,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         findViewById(R.id.emailField).setVisibility(View.VISIBLE);
         findViewById(R.id.email_sign_in).setVisibility(View.VISIBLE);
         findViewById(R.id.enter_more_info_text).setVisibility(View.INVISIBLE);
+        findViewById(R.id.Submit).setVisibility(View.INVISIBLE);
 
-
+        //create the edite text fields
         EditText email = findViewById(R.id.emailField);
         EditText password = findViewById(R.id.password_field);
         EditText lastname = findViewById(R.id.lnameField);
@@ -184,12 +189,28 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
+                            Log.d("CUEAS", "createUserWithEmail:success");
+
+                            Map<String, Object> data = new HashMap<>();
+
+                            String userid = mAuth.getInstance().getCurrentUser().getUid();
+
+                            data.put("first", fName.getText().toString());
+                            data.put("last", lName.getText().toString());
+                            data.put("username", uName.getText().toString());
+                            data.put("email", emailParamString);
+                            data.put("password", passwordParamString);
+                            data.put("miles", 0);
+                            data.put("friends",0);
+                            data.put("challenges",0);
+                            data.put("profilepic", "https://firebasestorage.googleapis.com/v0/b/pace-pal-ad8c4.appspot.com/o/defaultAVI.png?alt=media&token=6c9c47df-8151-4e5b-8843-3440e317346c");
+                            db.collection("users").document(userid).set(data);
+
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Log.w("CUEAF", "createUserWithEmail:failure", task.getException());
                             Toast.makeText(MainActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
@@ -201,23 +222,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         //remember to make checks for fields before this. Also need to add username and the other fields into the database
 
-        Map<String, Object> data = new HashMap<>();
-
-        String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        data.put("first", fName.getText().toString());
-        data.put("last", lName.getText().toString());
-        data.put("username", uName.getText().toString());
-        data.put("email", emailParamString);
-        data.put("password", passwordParamString);
-        data.put("miles", 0);
-        data.put("friends",0);
-        data.put("challenges",0);
-        data.put("profilepic", "https://firebasestorage.googleapis.com/v0/b/pace-pal-ad8c4.appspot.com/o/defaultAVI.png?alt=media&token=6c9c47df-8151-4e5b-8843-3440e317346c");
-        db.collection("users").document(userid).set(data);
 
 
 
-        toMenu();
+
+        //toMenu();
 
     }
 
@@ -230,6 +239,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         findViewById(R.id.unameField).setVisibility(View.VISIBLE);
         findViewById(R.id.createAccount2).setVisibility(View.VISIBLE);
         findViewById(R.id.login_button).setVisibility(View.INVISIBLE);
+        findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
+        findViewById(R.id.sign_in_options_text).setVisibility(View.INVISIBLE);
+        findViewById(R.id.enter_more_info_text).setVisibility(View.VISIBLE);
     }
 
 
@@ -239,6 +251,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        Log.v("User", "The user value is " + currentUser);
         updateUI(currentUser);
     }
 
@@ -268,7 +281,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
+                Log.w("GSF", "Google sign in failed", e);
                 // ...
             }
         }
@@ -282,7 +295,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     //third step of signing in via google
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+        Log.d("FAGA", "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential) //TODO: Get rid of this when integrating multiple auth sign in I am trying to implement
@@ -291,12 +304,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
+                            Log.d("FAGAS", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Log.d("FAGASU", "The user google found is" + user); 
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Log.w("FAGAF", "signInWithCredential:failure", task.getException());
 
                             updateUI(null);
                         }
@@ -338,7 +352,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         if (account != null) {
             //user has account
             String userid = FirebaseAuth.getInstance().getCurrentUser().getUid(); //may need to switch back to acquiring a new instance altogether
-
+            Log.d("retUid", "The found user in updateUI is: " + userid);
             //Attempt to grab the UID from the firestore database and then check if that retrieval was successful and respond accordingly
             DocumentReference docRef = db.collection("users").document(userid);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -347,7 +361,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) { //in this scenario a user has already signed in once before and has a username, first name, and last name in the system. Simply continue to main menu now
-                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            Log.d("User exists", "DocumentSnapshot data: " + document.getData());
                            // findViewById(R.id.continue_button).setVisibility(View.VISIBLE);
                             //findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
                             toMenu();
@@ -356,14 +370,18 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                             findViewById(R.id.fnameField).setVisibility(View.VISIBLE);
                             findViewById(R.id.lnameField).setVisibility(View.VISIBLE);
                             findViewById(R.id.unameField).setVisibility(View.VISIBLE);
-                            findViewById(R.id.createAccount2).setVisibility(View.VISIBLE);
+                            findViewById(R.id.createAccount2).setVisibility(View.INVISIBLE);
                             findViewById(R.id.create_account_with_email_btn).setVisibility(View.INVISIBLE);
                             findViewById(R.id.enter_more_info_text).setVisibility(View.VISIBLE);
                             findViewById(R.id.email_sign_in).setVisibility(View.INVISIBLE);
-                            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+                            findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
                             findViewById(R.id.login_button).setVisibility(View.VISIBLE);
                             findViewById(R.id.or).setVisibility(View.INVISIBLE);
-
+                            findViewById(R.id.emailField).setVisibility(View.INVISIBLE);
+                            findViewById(R.id.password_field).setVisibility(View.INVISIBLE);
+                            findViewById(R.id.login_button).setVisibility(View.INVISIBLE);
+                            findViewById(R.id.sign_in_options_text).setVisibility(View.INVISIBLE);
+                            findViewById(R.id.Submit).setVisibility(View.VISIBLE);
                         }
                     } else {
                         Log.d(TAG, "get failed with ", task.getException());
@@ -418,14 +436,14 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    Log.v("Queryidpull", document.getId() + " => " + document.getData());
                                     usernameExists[0] = true;
 
                                     Log.v("Usernames:", "Usernames are " + document.getData());
                                     Log.v("Bool array value", "Bool value is: " + usernameExists[0]);
                                 }
                             } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
+                                Log.v("queryidError", "Error getting documents: ", task.getException());
                             }
                         }
                     });
@@ -443,7 +461,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
 
-        } else {
+        }
+        else {
             Toast.makeText(this, "All fields required", Toast.LENGTH_SHORT).show();
         }
 
@@ -511,7 +530,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 if(validateEmailSignInForm()) {
                     emailSignIn();
                 }
-
+                break;
+            case R.id.Submit:
+                toMenuSubmit();
+                break;
         }
     }
 
@@ -566,19 +588,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 });
         return;
     }
-
-
-    /************************Email Sign In *********************************************************/
-
-/*
-    */
-
-
-
-
-
-
-
 
 
 }

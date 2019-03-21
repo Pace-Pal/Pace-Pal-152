@@ -4,6 +4,7 @@
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@drawable/gradient"
     android:layout_height="match_parent">
 
     <com.mapbox.mapboxsdk.maps.MapView
@@ -152,6 +153,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="Button"
+        android:background="@color/transparentWhite"
         mapbox:layout_constraintBottom_toBottomOf="parent"
         mapbox:layout_constraintEnd_toEndOf="parent"
         mapbox:layout_constraintStart_toStartOf="parent" />

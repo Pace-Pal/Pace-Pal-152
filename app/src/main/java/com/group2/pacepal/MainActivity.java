@@ -55,7 +55,7 @@ Purpose: This class handles login/register functionality. It currently utilizes 
          The key to understanding the sign in flow is that Google and Facebook methods both converge into the FirebaseAuth function,
          whereas the email sign in/registration route does not.
 TODO: allow a user to safely sign in with multiple methods using firebase auth tutorial
-TODO: make usernames unique b/c they ain't yet
+TODO: make usernames unique b/c they ain't yet [looked into the firebase rules but that may require a write before a check so that is a pain given the flow]
  */
 
 

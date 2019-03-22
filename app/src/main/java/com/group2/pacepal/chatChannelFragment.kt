@@ -41,15 +41,15 @@ class chatChannelFragment: Fragment() {
     private val fsdb = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
     private val userid = user!!.uid
-    private val dbChatChannels = fsdb.collection("chatChanels") //mispelled it, whoops
-
+    private val dbChatChannels = fsdb.collection("chatChannels") //mispelled it, whoops
+    var firstMessage = true
 
     //current user we want to use for later
     private val currentUserDocRef: DocumentReference
         get() = FirebaseFirestore.getInstance().document("users/${FirebaseAuth.getInstance().currentUser?.uid
                 ?: throw NullPointerException("UID is null.")}")
 
-    private val chatChannelsCollectionRef = FirebaseFirestore.getInstance().collection("chatChanels")
+    private val chatChannelsCollectionRef = FirebaseFirestore.getInstance().collection("chatChannels")
     private lateinit var currentChannelId: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?{
@@ -133,7 +133,7 @@ class chatChannelFragment: Fragment() {
 
                     currentUserDocRef.collection("engagedChatChannels")
                             .document(otheruserId)
-                            .set(mapOf("channelID" to newChannel.id)) //a newChannel.id is a id to refer to the document we just created in the chatChanels collection
+                            .set(mapOf("channelID" to newChannel.id)) //a newChannel.id is a id to refer to the document we just created in the chatChannels collection
 
                     fsdb.collection("users").document(otheruserId) //todo: change this document
                             .collection("engagedChatChannels")
@@ -168,19 +168,25 @@ class chatChannelFragment: Fragment() {
     fun updateRecyclerView(messages:ArrayList<TextMessage>) {
         //want to add the list of text messages that are not already in the list of ArrayList<TextMessage> so that they do not all reload
         Log.v("Listener Active", "The listener is active")
-        val count = 0
-        //basic version though
-        for(i in messages) {   // update the current TextMessage Adapter to have the new messages (I am not getting rid of the old yet)
+        var count = 1
 
+        if (firstMessage == true) {
+            for(i in messages) {
                 textMessages.add(i)
-
+            }
+            firstMessage = false
+        }
+        for(i in messages) {   // update the current TextMessage Adapter to have the new messages (I am not getting rid of the old yet)
+             if(count == messages.size ) {
+                 textMessages.add(i)
+              
+             } else {
+                 count = count + 1
+                 continue
+             }
         }
         //val size = messages.size
        messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
-       /* if(size > 0)
-            textMessages.add(messages[size-1])
-        else
-            textMessages.add(messages[0]) */
         adapter.notifyDataSetChanged()  //notify the adapter that we have a change so that we can display the new text messages
     }
 

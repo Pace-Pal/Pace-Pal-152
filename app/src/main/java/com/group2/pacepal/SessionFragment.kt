@@ -110,6 +110,12 @@ class SessionFragment : Fragment() {
             parentContext!!.startActivity(intent)
         }
 
+        val textToSpeechBtn = view.findViewById<Button>(R.id.textToSpeechBtn)
+        textToSpeechBtn.setOnClickListener {
+            val intent = Intent(context, textToSPeech::class.java )
+            context!!.startActivity(intent) 
+        }
+
 
         refreshInvites()                        //initial refresh for invites
 

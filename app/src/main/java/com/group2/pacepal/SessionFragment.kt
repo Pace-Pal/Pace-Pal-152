@@ -139,7 +139,8 @@ class SessionFragment : Fragment() {
                             val invListener = object : ValueEventListener {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                                    if(dataSnapshot.child("P2").value.toString() == userid) {                       //checks for any friend sessions where user is an invites player
+
+                                    if(dataSnapshot.child("players").hasChild(userid)){                       //checks for any friend sessions where user is an invites player
 
                                         val host = fsdb.collection("users").document(document.id)
                                         host.get().addOnSuccessListener { hostProfile ->

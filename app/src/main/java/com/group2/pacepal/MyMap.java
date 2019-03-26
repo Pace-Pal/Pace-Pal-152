@@ -102,6 +102,8 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     private GoogleApiClient googleApiClient;         //for location API
     private LocationRequest mLocationRequest;
 
+
+
     String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();     //gets firebase info for current user and databases
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DatabaseReference rtdb = FirebaseDatabase.getInstance().getReference();
@@ -134,11 +136,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         startLocationUpdates();
 
         //pulls info on where to find session in database
-        String friendUID = sharedPref.getString("friendUID","");
-        sessionType = sharedPref.getString("sessionType", "");
         sessionID = sharedPref.getString("sessionID", "");
-        if(sessionID == userid)
-            sessionHost = true;
 
         //accessess and displays profile for current user from firestore
         DocumentReference docRef = db.collection("users").document(userid);
@@ -214,7 +212,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
 
-
+        //NOT SURE IF NEEDED
         //Instantiating the GoogleApiClient
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -312,11 +310,6 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                             p2Line.add(new LatLng(p2Lat, p2Long));
                         }
 
-
-                        //mapboxMap.clear();/
-                        //add simple marker to map
-                        //mapboxMap.addMarker(marker2);
-                        //mapboxMap.addMarker(marker3);
 
                         Log.d("MapRefresh", "refreshed");
 

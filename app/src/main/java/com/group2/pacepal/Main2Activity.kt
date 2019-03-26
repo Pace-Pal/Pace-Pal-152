@@ -68,18 +68,20 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.drawer_menu)
+        setContentView(R.layout.app_bar_main)
         //toolbar = supportActionBar!!
         val navigation: BottomNavigationView = findViewById(R.id.navigationView)
         setSupportActionBar(toolbar)
 
+        /*
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+        */
 
-        nav_view.setNavigationItemSelectedListener(this)
+        //nav_view.setNavigationItemSelectedListener(this)
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         val sessionFragment = SessionFragment.newInstance()
@@ -118,29 +120,7 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_camera -> {
-                // Handle the camera action
-                Toast.makeText(this, "Import Selected" , Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_gallery -> {
-                Toast.makeText(this, "Gallery Selected" , Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_slideshow -> {
-                Toast.makeText(this, "Slideshow Selected" , Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_manage -> {
-                Toast.makeText(this, "Tools Selected" , Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_share -> {
-                Toast.makeText(this, "Share Selected" , Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_send -> {
-                Toast.makeText(this, "Send Selected" , Toast.LENGTH_SHORT).show()
-            }
-        }
 
-        drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 

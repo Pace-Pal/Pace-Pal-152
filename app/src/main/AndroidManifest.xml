@@ -63,6 +63,10 @@
         <activity android:name=".SessionActivity" android:theme="@style/AppTheme">
 
         </activity>
+
+        <activity android:name=".textToSPeech" android:theme="@style/AppTheme">
+
+        </activity>
     </application>
 
     <!-- For FaceBook sign-in. Instructions dictate this goes after the application element, contrary to the norm -->

@@ -45,4 +45,10 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+
+    <!-- Text for the sessions that will be spoken -->
+    <string name="cm_you_are_winning">You are winning!</string>
+    <string name="cm_you_are_losing">You are losing!</string>
+    <string name="cm_you_are_tied">You and your enemy whom you are really actually pals with are currently tied for the winning!</string>
+
 </resources>

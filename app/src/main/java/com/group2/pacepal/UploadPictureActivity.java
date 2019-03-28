@@ -25,7 +25,7 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-public class ProfilePictureActivity extends AppCompatActivity {
+public class UploadPictureActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -74,7 +74,7 @@ public class ProfilePictureActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mUploadTask != null && mUploadTask.isInProgress()) {
-                    Toast.makeText(ProfilePictureActivity.this, "Upload in progress", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UploadPictureActivity.this, "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadFile();
                 }
@@ -84,7 +84,7 @@ public class ProfilePictureActivity extends AppCompatActivity {
         mTextViewShowUploads.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                openImagesActivity();
             }
         });
     }
@@ -129,7 +129,7 @@ public class ProfilePictureActivity extends AppCompatActivity {
                             }
                         }, 500);
 
-                        Toast.makeText(ProfilePictureActivity.this, "Upload successful", Toast.LENGTH_LONG).show();
+                        Toast.makeText(UploadPictureActivity.this, "Upload successful", Toast.LENGTH_LONG).show();
                         Upload upload = new Upload(mEditTextFileName.getText().toString().trim(),
                                 taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
                         String uploadId = mDatabaseRef.push().getKey();
@@ -137,7 +137,7 @@ public class ProfilePictureActivity extends AppCompatActivity {
                     })
 
                     .addOnFailureListener((@NonNull Exception e) -> {
-                        Toast.makeText(ProfilePictureActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UploadPictureActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     })
                     .addOnProgressListener((UploadTask.TaskSnapshot taskSnapshot) -> {
                         double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
@@ -146,5 +146,10 @@ public class ProfilePictureActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void openImagesActivity() {
+        Intent intent = new Intent(this, ProfileImagesActivity.class);
+        startActivity(intent);
     }
 }

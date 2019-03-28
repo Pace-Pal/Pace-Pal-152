@@ -23,6 +23,15 @@ import kotlinx.android.synthetic.main.fragment_chat_channel.*
 import kotlinx.android.synthetic.main.user_profile.*
 import java.util.*
 
+/*
+Purpose:This class is what is used to handle the chatChannel functionality. It defines the user's ability to edit text and send a message. It is also
+        the container where two users communicate. Their messages are sent to the Firebase Firestore from this class, and shown to them by way of a
+        adapter that stores a list of TextMessage data objects. When there is an update in the Firestore, the adapter is notified and the recycler
+        view is updated to store the new message. This class also creates new chat channels between users if one does not yet already exist.
+
+        TODO: Chat room messages all reload each time a message is sent. This is not good behavior. Better would be if the new message was added to the recycler view rather than every message.
+        TODO: The app crashes when the chat is opened, used, closed, then reopened and used again. This is related to the scrollToPosition function so that will need to be addressed eventually.
+ */
 
 class chatChannelFragment: Fragment() {
 
@@ -32,15 +41,15 @@ class chatChannelFragment: Fragment() {
     private val fsdb = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
     private val userid = user!!.uid
-    private val dbChatChannels = fsdb.collection("chatChanels") //mispelled it, whoops
-
+    private val dbChatChannels = fsdb.collection("chatChannels") //mispelled it, whoops
+    var firstMessage = true
 
     //current user we want to use for later
     private val currentUserDocRef: DocumentReference
         get() = FirebaseFirestore.getInstance().document("users/${FirebaseAuth.getInstance().currentUser?.uid
                 ?: throw NullPointerException("UID is null.")}")
 
-    private val chatChannelsCollectionRef = FirebaseFirestore.getInstance().collection("chatChanels")
+    private val chatChannelsCollectionRef = FirebaseFirestore.getInstance().collection("chatChannels")
     private lateinit var currentChannelId: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?{
@@ -55,9 +64,8 @@ class chatChannelFragment: Fragment() {
 
         //create fragment view
         val view =  inflater.inflate(R.layout.fragment_chat_channel, container, false)
-       // val imgView_send  =  findViewById(R.id.imageView_send) as ImageView
-        // TODO: Fix this issue with ImageView not being clickable then test if messages are sending . Directly related to line 95
-        //TODO: Move the editText view higher b/c the action bar on the bottom is covering it up right now
+        // val imgView_send  =  findViewById(R.id.imageView_send) as ImageView
+
 
 
 
@@ -69,18 +77,6 @@ class chatChannelFragment: Fragment() {
 
         val contexts = context!! //big what?
 
-
-        //test to fill in adapter with a TextMessage object
-        val test = Date()
-        //test the message
-        textMessages.add(TextMessage(
-                "hey",
-                       test,
-                "to me",
-                "jason",
-                "TEXT",
-                "TEXT"
-        ))
         adapter.notifyDataSetChanged()
 
         //testing this to pass current context of the app to the rest of everything
@@ -93,14 +89,14 @@ class chatChannelFragment: Fragment() {
 
             messagesListenerRegistration = addChatMessagesListener(channelId, contexts, this::updateRecyclerView) //where it gets different
 
-            /*imgView_send.setOnClickListener {
+            imageView_send.setOnClickListener {
                 val messageToSend =
                         TextMessage(editText_message.text.toString(), Calendar.getInstance().time,
                                 FirebaseAuth.getInstance().currentUser!!.uid,
-                                otherUserId, "test_name")
+                                otherUserId, "test_name") //todo: Change test name
                 editText_message.setText("")
                 sendMessage(messageToSend, channelId)
-            } */
+            }
 
             /*
             fab_send_image.setOnClickListener {
@@ -137,7 +133,7 @@ class chatChannelFragment: Fragment() {
 
                     currentUserDocRef.collection("engagedChatChannels")
                             .document(otheruserId)
-                            .set(mapOf("channelID" to newChannel.id)) //a newChannel.id is a id to refer to the document we just created in the chatChanels collection
+                            .set(mapOf("channelID" to newChannel.id)) //a newChannel.id is a id to refer to the document we just created in the chatChannels collection
 
                     fsdb.collection("users").document(otheruserId) //todo: change this document
                             .collection("engagedChatChannels")
@@ -172,13 +168,25 @@ class chatChannelFragment: Fragment() {
     fun updateRecyclerView(messages:ArrayList<TextMessage>) {
         //want to add the list of text messages that are not already in the list of ArrayList<TextMessage> so that they do not all reload
         Log.v("Listener Active", "The listener is active")
-        val count = 0
-        //basic version though
-        for(i in messages) {   // update the current TextMessage Adapter to have the new messages (I am not getting rid of the old yet)
+        var count = 1
 
+        if (firstMessage == true) {
+            for(i in messages) {
                 textMessages.add(i)
-
+            }
+            firstMessage = false
         }
+        for(i in messages) {   // update the current TextMessage Adapter to have the new messages (I am not getting rid of the old yet)
+             if(count == messages.size ) {
+                 textMessages.add(i)
+              
+             } else {
+                 count = count + 1
+                 continue
+             }
+        }
+        //val size = messages.size
+       messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
         adapter.notifyDataSetChanged()  //notify the adapter that we have a change so that we can display the new text messages
     }
 

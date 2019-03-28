@@ -1,5 +1,6 @@
 package com.group2.pacepal
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -14,13 +15,17 @@ import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 
 
+
+
 class FriendsFragment : Fragment() {
 
     private val fsdb = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
     private val userid = user!!.uid
     private val friendsList = ArrayList<Friend>(0)
+    //private val friendRequestList = ArrayList<Friend>(0)
     private val adapter = FriendsAdapter(friendsList)
+    //private val adapterReq = FriendRequestsAdapter(friendsList)
     //private val rtdb = FirebaseDatabase.getInstance().reference
 
     private lateinit var friendReference: DatabaseReference
@@ -31,16 +36,59 @@ class FriendsFragment : Fragment() {
         val view = inflater.inflate(R.layout.friends_list, container, false)
 
         //initializes the recyclerView with its adapter
-        val invView = view?.findViewById(R.id.friendsList) as RecyclerView
+        val invView = view.findViewById(R.id.friendsList) as RecyclerView
         invView.layoutManager = LinearLayoutManager(this.context)
         invView.adapter = adapter
 
+
         //refresh button to refresh friends list
         val refreshButton = view.findViewById<Button>(R.id.friendsRefresh)
-        refreshButton.setOnClickListener { refreshFriends() }
+        refreshButton.setOnClickListener {
+            refreshFriends()
+        }
+
+        val friendRequestBtn = view.findViewById<Button>(R.id.friendRequestsBtn)
+
+
+        friendRequestBtn.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+
+                val friendRequests = FriendRequestFragment()
+
+                val fragmentTransaction = fragmentManager?.beginTransaction()
+                fragmentTransaction?.replace(R.id.container, friendRequests)
+                fragmentTransaction?.addToBackStack(null)
+                fragmentTransaction?.commit()
+
+
+            }
+        })
+
+
+        val addFriendsBtn = view.findViewById<Button>(R.id.addFriendsBtn)
+        addFriendsBtn.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?){
+                val addFriendsFragment = AddFriendsFragment()
+
+                val fragmentTransaction = fragmentManager?.beginTransaction()
+                fragmentTransaction?.replace(R.id.container, addFriendsFragment)
+                fragmentTransaction?.addToBackStack(null)
+                fragmentTransaction?.commit()
+            }
+        })
+            /*
+            val friendRequests = FriendRequestFragment()
+
+            val fragmentTransaction = activity!!.supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(android.R.id.content, friendRequests)
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
+            */
+
 
         //initial load of friends list
         refreshFriends()
+
         return view
     }
 
@@ -61,6 +109,7 @@ class FriendsFragment : Fragment() {
     }
 
     private fun refreshFriends() {
+
         friendsList.clear() //starting here on updates
         //inviteRefresh.text = "loading.."
         val intentContext = this.context!!
@@ -84,7 +133,6 @@ class FriendsFragment : Fragment() {
                                         intentContext
                                 ))
                                 adapter.notifyDataSetChanged()
-
                             }
 
                         }
@@ -95,6 +143,44 @@ class FriendsFragment : Fragment() {
                         Toast.makeText(context,"Connection error.", Toast.LENGTH_SHORT)
                 }
 
+
+
+    }
+
+    private fun friendRequests(){
+        friendsList.clear() //starting here on updates
+        //inviteRefresh.text = "loading.."
+        val intentContext = this.context!!
+        val friendsFromFS = fsdb.collection("users").document(userid).collection("friendRequests")
+        friendsFromFS.get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (task.result!!.size() == 0)
+                            Toast.makeText(context, "No requests at this time!", Toast.LENGTH_SHORT).show()
+                        for (document in task.result!!) {
+
+                            val friendGet = fsdb.collection("users").document(document.id)
+                            friendGet.get().addOnSuccessListener { friendProfile ->
+
+                                friendsList.add(Friend(
+                                        friendProfile.getString("profilepic").toString(),
+                                        friendProfile.getString("username").toString(),
+                                        friendProfile.getString("first") + " " + friendProfile.getString("last"),
+                                        document.id,
+                                        0,
+                                        intentContext
+                                ))
+                                adapter.notifyDataSetChanged()
+
+                            }
+
+                        }
+                        //adapter.notifyDataSetChanged()
+
+                    }
+                    else
+                        Toast.makeText(context,"Connection error.", Toast.LENGTH_SHORT)
+                }
 
 
     }

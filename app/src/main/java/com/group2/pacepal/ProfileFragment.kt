@@ -1,5 +1,6 @@
 package com.group2.pacepal
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -19,21 +20,30 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.android.gms.tasks.Task
 import android.support.annotation.NonNull
+import android.widget.Button
+import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
 import com.squareup.picasso.Picasso
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import kotlin.math.sign
 
 
 class ProfileFragment : Fragment() {
+
+    lateinit var mAuth: FirebaseAuth
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val db = FirebaseFirestore.getInstance()
         val user = FirebaseAuth.getInstance().currentUser
 
 
+
         //findViewByID(R.id.profileUsername) =
 
         //val tv = findViewById(R.id.profileUsername) as TextView
         //tv.text = "this string is set dynamically from java code"
+        //val view = inflater.inflate(R.layout.user_profile, container, false)
 
         val userid = user!!.uid
 
@@ -48,7 +58,6 @@ class ProfileFragment : Fragment() {
                     profileChallenges.text = currentProfile.get("challenges").toString()
                     profileRealName.text = currentProfile.get("first").toString() + " " + currentProfile.get("last").toString()
                     Picasso.with(context).load(currentProfile.getString("profilepic")).fit().into(profileImage)
-
 
 
                     val firebasedb = db.collection("users").document(userid).collection("friends")
@@ -78,8 +87,8 @@ class ProfileFragment : Fragment() {
                 profileChallenges.text = "Na"
                 profileRealName.text = "Na"
             }
-        }
 
+        }
 
 
         return inflater.inflate(R.layout.user_profile, container, false)
@@ -88,4 +97,6 @@ class ProfileFragment : Fragment() {
     companion object {
         fun newInstance(): ProfileFragment = ProfileFragment()
     }
+
+
 }

@@ -303,4 +303,3 @@ class MyMap : AppCompatActivity() {
         return bd.toDouble()
     }
 }
-

@@ -49,7 +49,7 @@ class SessionActivity : AppCompatActivity() {
 
 
 
-            quitButton.setOnClickListener{this.finish()}
+        quitButton.setOnClickListener{this.finish()}
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         val sessionID = preferences.getString("sessionID", "")
@@ -76,7 +76,7 @@ class SessionActivity : AppCompatActivity() {
                             val otherProfile = task2.result
                             otherUsername.text = otherProfile!!.getString("username")
                             Picasso.with(this).load(otherProfile.getString("profilepic")).fit().into(otherPic)
-                            }
+                        }
                     }
                 }
 
@@ -154,46 +154,40 @@ class SessionActivity : AppCompatActivity() {
 
         //openFragment(SessionInitFragment.newInstance())
 
-       /* Log.d("sessionActivity", "resumed")
-
-        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val sessionID = preferences.getString("sessionID", "")
-        val readyState = preferences.getBoolean("readyState", false)
-        val initStater = preferences.getBoolean("initState", false)
-        val sessionType = preferences.getString("sessionType", "")
-
-        Log.d("readyState", readyState.toString())
-        Log.d("initState", initStater.toString())
-        Log.d("sessionID", sessionID)
-        Log.d("userID", userid)
-
-
-
-        if(sessionID == userid){
-            if(!initStater){
-                Log.d("initState", "launching Initstate fragment")
-                //val initFragment = SessionInitFragment.newInstance()
-                openFragment(SessionInitFragment.newInstance())
-            }
-            else if(!readyState){
-                Log.d("initState", "launching ready fragment")
-                val readyFragment = ReadyUpFragment.newInstance()
-                openFragment(readyFragment)
-            }
-            else{
-                //begin session
-            }
-
-        }
-        else{
-            if(!readyState){
-                val readyFragment = ReadyUpFragment.newInstance()
-                openFragment(readyFragment)
-            }
-            else{
-                //begin session
-            }
-        }*/
+        /* Log.d("sessionActivity", "resumed")
+         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+         val sessionID = preferences.getString("sessionID", "")
+         val readyState = preferences.getBoolean("readyState", false)
+         val initStater = preferences.getBoolean("initState", false)
+         val sessionType = preferences.getString("sessionType", "")
+         Log.d("readyState", readyState.toString())
+         Log.d("initState", initStater.toString())
+         Log.d("sessionID", sessionID)
+         Log.d("userID", userid)
+         if(sessionID == userid){
+             if(!initStater){
+                 Log.d("initState", "launching Initstate fragment")
+                 //val initFragment = SessionInitFragment.newInstance()
+                 openFragment(SessionInitFragment.newInstance())
+             }
+             else if(!readyState){
+                 Log.d("initState", "launching ready fragment")
+                 val readyFragment = ReadyUpFragment.newInstance()
+                 openFragment(readyFragment)
+             }
+             else{
+                 //begin session
+             }
+         }
+         else{
+             if(!readyState){
+                 val readyFragment = ReadyUpFragment.newInstance()
+                 openFragment(readyFragment)
+             }
+             else{
+                 //begin session
+             }
+         }*/
 
 
     }

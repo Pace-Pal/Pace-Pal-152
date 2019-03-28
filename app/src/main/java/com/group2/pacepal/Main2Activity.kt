@@ -9,9 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import android.view.View
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 
@@ -99,9 +97,9 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 
     private fun openSetting() {
+        //val intent = Intent(this, ProfilePictureActivity::class.java)
+        //startActivity(intent)
 
-        val intent = Intent(this, ProfileSettingActivity::class.java)
-        startActivity(intent)
     }
 
     fun signOut(){

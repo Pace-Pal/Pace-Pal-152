@@ -85,9 +85,9 @@ class SessionFragment : Fragment() {
 
     private fun createSession(sesType:Int) {  //create session
         //init info for leader location
-        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("players").child(user!!.uid).child("long").setValue(0)
-        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("players").child(user!!.uid).child("lat").setValue(0)
-        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("players").child(user!!.uid).child("distance").setValue(0)
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("players").child(user!!.uid).child("long").setValue(0.0)
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("players").child(user!!.uid).child("lat").setValue(0.0)
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("players").child(user!!.uid).child("distance").setValue(0.0)
         //init info for leader ready up
         rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("ready").child("absoluteReady").setValue(false)
         rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("ready").child(user!!.uid).setValue(false)
@@ -105,6 +105,8 @@ class SessionFragment : Fragment() {
         val parentContext = context
         val intent = Intent(parentContext, SessionActivity::class.java)
         parentContext!!.startActivity(intent)
+
+
 
     }
     companion object {

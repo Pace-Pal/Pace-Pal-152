@@ -103,9 +103,9 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                     val sessionType = preferences.getString("sessionType","")
 
                     //inits new players locations
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("long").setValue(0)
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("lat").setValue(0)
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("distance").setValue(0)
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("long").setValue(0.0)
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("lat").setValue(0.0)
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("distance").setValue(0.0)
 
                     //inits new players ready up
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child(friend.uid).setValue(false)

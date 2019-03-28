@@ -66,9 +66,10 @@ class SessionActivity : AppCompatActivity() {
                 Log.d("sessionAct", dataSnapshot.value.toString())
                 if(dataSnapshot.value == true) {                       //checks for any friend sessions where user is an invites player
                     Log.d("sessionActivity", "Launching session")
-                    val intent = Intent(this@SessionActivity, MyMap::class.java)
-                    android.os.SystemClock.sleep(1000)
-                    this@SessionActivity.startActivity(intent)
+                    //val intent = Intent(this@SessionActivity, MyMap::class.java)
+                    //android.os.SystemClock.sleep(1000)
+                    //this@SessionActivity.startActivity(intent)
+                    startActivity(Intent(this@SessionActivity, MyMap::class.java))
                 }
             }
         }

@@ -22,15 +22,15 @@ import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_chat_channel.*
 import kotlinx.android.synthetic.main.user_profile.*
 import java.util.*
-
 /*
 Purpose:This class is what is used to handle the chatChannel functionality. It defines the user's ability to edit text and send a message. It is also
         the container where two users communicate. Their messages are sent to the Firebase Firestore from this class, and shown to them by way of a
         adapter that stores a list of TextMessage data objects. When there is an update in the Firestore, the adapter is notified and the recycler
         view is updated to store the new message. This class also creates new chat channels between users if one does not yet already exist.
 
-        TODO: Chat room messages all reload each time a message is sent. This is not good behavior. Better would be if the new message was added to the recycler view rather than every message.
+
         TODO: The app crashes when the chat is opened, used, closed, then reopened and used again. This is related to the scrollToPosition function so that will need to be addressed eventually.
+        TODO: The chat channels are sorted by time created with the Date object. The problem with this is if the dates are off. Only new messages will be seen, with new being determined by the timestamp, the chronological message sending. So find a way to reconcile different date object's timestamps.
  */
 
 class chatChannelFragment: Fragment() {
@@ -93,7 +93,7 @@ class chatChannelFragment: Fragment() {
                 val messageToSend =
                         TextMessage(editText_message.text.toString(), Calendar.getInstance().time,
                                 FirebaseAuth.getInstance().currentUser!!.uid,
-                                otherUserId, "test_name") //todo: Change test name
+                                otherUserId, "test_name", System.currentTimeMillis())
                 editText_message.setText("")
                 sendMessage(messageToSend, channelId)
             }
@@ -148,7 +148,7 @@ class chatChannelFragment: Fragment() {
     fun addChatMessagesListener(channelId: String, context: Context,
                                 onListen: (ArrayList<TextMessage>) -> Unit): ListenerRegistration {
         return chatChannelsCollectionRef.document(channelId).collection("messages")
-                .orderBy("time")
+                .orderBy("epochTimeMilliseconds")
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     if (firebaseFirestoreException != null) {
                         Log.e("FIRESTORE", "ChatMessagesListener error.", firebaseFirestoreException)
@@ -175,34 +175,43 @@ class chatChannelFragment: Fragment() {
                 textMessages.add(i)
             }
             firstMessage = false
+        } else {
+
+
+        var messagesSize = messages.size
+        var textMessageSize = textMessages.size
+
+        var tempIndex = 1
+
+        var isElem = false
+
+        for (n in messages.size downTo 1) {
+            isElem = false
+            for (i in textMessages.size downTo 1) {
+                if (textMessages.get(i-1).text == messages.get(n-1).text && textMessages.get(i-1).time == messages.get(n-1).time ) {
+                       isElem = true
+                }
+            }
+
+            if (isElem == false) {
+                tempIndex = n-1
+                break
+            }
         }
-        for(i in messages) {   // update the current TextMessage Adapter to have the new messages (I am not getting rid of the old yet)
-             if(count == messages.size ) {
-                 textMessages.add(i)
-              
-             } else {
-                 count = count + 1
-                 continue
-             }
+
+        textMessages.add(messages.get(tempIndex))
         }
-        //val size = messages.size
-       messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
+
+        messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
         adapter.notifyDataSetChanged()  //notify the adapter that we have a change so that we can display the new text messages
     }
 
-    fun checkUniqueMessage() {
-        //body here
-    }
-
     fun sendMessage(message:TextMessage,  channelId: String) {
+
         chatChannelsCollectionRef.document(channelId)
                 .collection("messages")
                 .add(message)
     }
-
-
-
-
 
 
 }

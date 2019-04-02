@@ -42,8 +42,7 @@ internal class messageAdapter constructor( private var messages: ArrayList<TextM
 
 
         }*/
-        //TODO: Create a message on the database to show that it works
-        //TODO: Implement a database listener so the view automatically refreshes when a new message arrives (don't know if that goes here)
+
         fun bindMessage(message: TextMessage) { //TODO: Bind views to test
             this.message = message
             view.messageText.text = message.text

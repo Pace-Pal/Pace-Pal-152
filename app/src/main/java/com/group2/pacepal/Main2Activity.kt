@@ -13,6 +13,8 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 
+
+
 class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 
@@ -97,8 +99,14 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 
     private fun openSetting() {
-        val intent = Intent(this, UploadPictureActivity::class.java)
-        startActivity(intent)
+        //val intent = Intent(this, UploadPictureActivity::class.java)
+        //startActivity(intent)
+        val profileSet = ProfileSettingFragment()
+
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.container, profileSet)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
 
     }
 

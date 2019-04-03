@@ -50,15 +50,17 @@ class MyMap : AppCompatActivity() {
     private var localDistance: Double = 0.0
     private var colabDistance: Double = 0.0
     var players: MutableList<String> = ArrayList()
+    var playerClass: MutableList<RemotePlayer> = ArrayList()
     var distances: MutableList<Double> = ArrayList()
     var polylines: MutableList<PolylineOptions> = ArrayList()
+    var polylineInit = false
 
     //ONLY TEMPORARY until Players become their own class, will be removed in future iterations
     private var p2Dist = 0.0
     private var p2Long = 0.0
     private var p2Lat = 0.0
 
-    private var sessionType: Int = 0
+    //private var sessionType: Int = 0
 
     private var googleApiClient: GoogleApiClient? = null         //for location API
     private val mLocationRequest = LocationRequest()
@@ -104,7 +106,7 @@ class MyMap : AppCompatActivity() {
             }
         })
 
-        val postListener = object : ValueEventListener {
+        /*val postListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Get Post object and use the values to update the UI
                 Log.d("myMap", dataSnapshot.toString())
@@ -119,7 +121,7 @@ class MyMap : AppCompatActivity() {
                 //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
                 // ...
             }
-        }
+        }*/
 
         // TODO: load other players usernames and pictures
         val playersGet = object : ValueEventListener{
@@ -127,8 +129,10 @@ class MyMap : AppCompatActivity() {
                 Log.d("myMap",p0.toString())
                 p0.children.forEach{
                     if(it.key != userid) {
-                        players.add(it.key.toString())
-                        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(it.key.toString()).addValueEventListener(postListener)
+                        //players.add(it.key.toString())
+                        //rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(it.key.toString()).addValueEventListener(postListener)
+                        playerClass.add(RemotePlayer(it.key.toString(),sessionID))
+                        polylines.add(com.mapbox.mapboxsdk.annotations.PolylineOptions())
                     }
                 }
             }
@@ -140,28 +144,24 @@ class MyMap : AppCompatActivity() {
         rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").addListenerForSingleValueEvent(playersGet)
 
 
-
-
         //starts listening for changes above
 
 
         val locLine = com.mapbox.mapboxsdk.annotations.PolylineOptions()
-        val p2Line = com.mapbox.mapboxsdk.annotations.PolylineOptions()
-        polylines.add(com.mapbox.mapboxsdk.annotations.PolylineOptions())
+        //val p2Line = com.mapbox.mapboxsdk.annotations.PolylineOptions()
+        //polylines.add(com.mapbox.mapboxsdk.annotations.PolylineOptions())
 
-        locLine.add(LatLng(locLat, locLong))
-        locLine.color(Color.GREEN)
-        //locLine.width(3)
-        p2Line.add(LatLng(p2Lat,p2Long))
-        p2Line.color(Color.RED)
+        //p2Line.add(LatLng(p2Lat,p2Long))
+        //p2Line.color(Color.RED)
 
-        mapView.getMapAsync { mapboxMap ->
+
+        /*mapView.getMapAsync { mapboxMap ->
 
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 mapboxMap.addPolyline(locLine)
                 mapboxMap.addPolyline(p2Line)
             }
-        }
+        }*/
 
 
         mLocUpdate = Runnable {
@@ -195,21 +195,37 @@ class MyMap : AppCompatActivity() {
 
                 mapboxMap.setStyle(Style.MAPBOX_STREETS) {
 
-                    locLine.add(LatLng(locLat,locLong))
-                    p2Line.add(LatLng(p2Lat,p2Long))
+                    if(!polylineInit) {
+                        locLine.add(LatLng(locLat, locLong))
+                        locLine.color(Color.GREEN)
+                        locLine.width(3F)
+                        mapboxMap.addPolyline(locLine)
+                        var x = 0
+                        while(x < playerClass.size){
+                            polylines[x].add(LatLng(playerClass[0].getLat(),playerClass[0].getLong()))
+                            polylines[x].color(Color.RED)
+                            polylines[x].width(3F)
+                            mapboxMap.addPolyline(polylines[x])
+                            x++
+                        }
+                        polylineInit = true
+                    }
 
+                    locLine.add(LatLng(locLat,locLong))
+
+                    var x = 0
+                    while(x < playerClass.size){
+                        polylines[0].add(LatLng(playerClass[0].getLat(),playerClass[0].getLong()))
+                        x++
+                    }
 
                 }
 
             }
 
-
         }
+
         mHandler.postDelayed(mLocUpdate,delay)
-
-
-
-
         super.onCreate(savedInstanceState)
     }
 

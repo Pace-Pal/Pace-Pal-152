@@ -53,6 +53,7 @@ class MyMap : AppCompatActivity() {
     var playerClass: MutableList<RemotePlayer> = ArrayList()
     var distances: MutableList<Double> = ArrayList()
     var polylines: MutableList<PolylineOptions> = ArrayList()
+
     var polylineInit = false
 
     //ONLY TEMPORARY until Players become their own class, will be removed in future iterations
@@ -174,7 +175,6 @@ class MyMap : AppCompatActivity() {
             rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(userid).setValue(user)
 
 
-
             //case for collaborative session
             if (sessionType === "2") {
                 colabDistance = localDistance + p2Dist
@@ -200,27 +200,29 @@ class MyMap : AppCompatActivity() {
                     Log.d("myMap", "I got this far")
                     if(!polylineInit) {
                         locLine.add(LatLng(locLat, locLong))
+                        locLine.add(LatLng(locLat, locLong))
                         locLine.color(Color.GREEN)
                         locLine.width(3F)
                         mapboxMap.addPolyline(locLine)
-                        var x = 0
+                        /*var x = 0
                         while(x < playerClass.size){
+                            polylines[x].add(LatLng(playerClass[0].getLat(),playerClass[0].getLong()))
                             polylines[x].add(LatLng(playerClass[0].getLat(),playerClass[0].getLong()))
                             polylines[x].color(Color.RED)
                             polylines[x].width(3F)
                             mapboxMap.addPolyline(polylines[x])
                             x++
-                        }
+                        }*/
                         polylineInit = true
                     }
 
                     locLine.add(LatLng(locLat,locLong))
-                    var x = 0
+                    /*var x = 0
                     while(x < playerClass.size){
                         polylines[0].add(LatLng(playerClass[0].getLat(),playerClass[0].getLong()))
                         x++
-                    }
 
+                    }*/
 
                 }
 

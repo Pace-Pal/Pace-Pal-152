@@ -69,11 +69,6 @@ class MyMap : AppCompatActivity() {
     internal val fsdb = FirebaseFirestore.getInstance()
     internal val rtdb = FirebaseDatabase.getInstance().reference
 
-    private val delay:Long = 2000
-    private val mHandler = Handler()
-    private lateinit var mLocUpdate:Runnable
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("myMap","on Create Started")
@@ -163,9 +158,14 @@ class MyMap : AppCompatActivity() {
             }
         }*/
 
+        val delay:Long = 2000
+        //private val mHandler = Handler()
+        //private lateinit var mLocUpdate:Runnable
+        val mHandler:Handler = Handler()
 
-        mLocUpdate = Runnable {
+        mHandler.postDelayed({
 
+            Log.d("myMap","Map Updated")
             //updates local user distance locally
             distance(oldLat,locLat,oldLong,locLong)
 
@@ -189,12 +189,15 @@ class MyMap : AppCompatActivity() {
                     sessionStatus.text = "You are behind by: " + round(p2Dist - localDistance, 2).toString()
             }
 
-
+            Log.d("myMap", "playerClass size " + playerClass.size.toString())
             //TODO: Map marker updates
             mapView.getMapAsync { mapboxMap ->
 
+
                 mapboxMap.setStyle(Style.MAPBOX_STREETS) {
 
+
+                    Log.d("myMap", "I got this far")
                     if(!polylineInit) {
                         locLine.add(LatLng(locLat, locLong))
                         locLine.color(Color.GREEN)
@@ -212,20 +215,21 @@ class MyMap : AppCompatActivity() {
                     }
 
                     locLine.add(LatLng(locLat,locLong))
-
                     var x = 0
                     while(x < playerClass.size){
                         polylines[0].add(LatLng(playerClass[0].getLat(),playerClass[0].getLong()))
                         x++
                     }
 
+
                 }
 
             }
 
-        }
+        },delay)
+        //mLocUpdate =
 
-        mHandler.postDelayed(mLocUpdate,delay)
+        //mHandler.postDelayed(this.mLocUpdate,delay)
         super.onCreate(savedInstanceState)
     }
 

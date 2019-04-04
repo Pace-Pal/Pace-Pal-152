@@ -27,9 +27,9 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Get Post object and use the values to update the UI
                 Log.d("myMap", dataSnapshot.toString())
-                distance = dataSnapshot.child("distance").value as Double
-                long = dataSnapshot.child("long").value as Double
-                lat = dataSnapshot.child("lat").value as Double
+                distance = dataSnapshot.child("distance").value.toString().toDouble()
+                long = dataSnapshot.child("long").value.toString().toDouble()
+                lat = dataSnapshot.child("lat").value.toString().toDouble()
                 // ...
             }
 

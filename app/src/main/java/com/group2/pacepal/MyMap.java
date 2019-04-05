@@ -247,6 +247,11 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(MapboxMap mapboxMap) {
+                        
+                        Player tempPlayer = new Player(locLong,locLat,localDistance);
+                        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players")
+                                .child(userid).setValue(tempPlayer);
+
 
                         //if the line had not been initialized, add it to the map
                         if(!lineInit){
@@ -258,7 +263,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                             for(int x = 0; x < remotePlayerClass.getPlayerCount();x++){
                                 PolylineOptions templine = new PolylineOptions();
 
-                                
+
                                 templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
                                 templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
                                 templine.color(Color.RED);
@@ -321,6 +326,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
     }
+
 
     //location code I dont entirely understand
 

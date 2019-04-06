@@ -247,7 +247,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(MapboxMap mapboxMap) {
-                        
+
                         Player tempPlayer = new Player(locLong,locLat,localDistance);
                         rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players")
                                 .child(userid).setValue(tempPlayer);
@@ -261,15 +261,15 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                             mapboxMap.addPolyline(locLine);
                             Log.d("myMap", "remotePlayerCount " + remotePlayerClass.getPlayerCount());
                             for(int x = 0; x < remotePlayerClass.getPlayerCount();x++){
-                                PolylineOptions templine = new PolylineOptions();
+                                //PolylineOptions templine = new PolylineOptions();
 
 
-                                templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
-                                templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
-                                templine.color(Color.RED);
-                                templine.width(3);
-                                polylines.add(templine);
-                                mapboxMap.addPolyline(templine);
+                                //templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
+                                //templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
+                                //templine.color(Color.RED);
+                                //templine.width(3);
+                                //polylines.add(templine);
+                                mapboxMap.addPolyline(remotePlayers.get(x).getPolyline());
                             }
                             lineInit = true;
                         }
@@ -278,11 +278,11 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
                         locLine.add(new LatLng(locLat, locLong));
 
-                        for(int x = 0; x < remotePlayerClass.getPlayerCount();x++){
+                        /*for(int x = 0; x < remotePlayerClass.getPlayerCount();x++){
                             PolylineOptions templine = new PolylineOptions();
                             templine = polylines.get(x);
                             templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
-                        }
+                        }*/
 
 
                         //mapboxMap.clear();/

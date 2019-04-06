@@ -85,9 +85,6 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     double oldLon,oldLat;
     double localDistance = 0;            //variables for calculating total distance
 
-    double colabDistance = 0;
-    String textColabDistance = "0";
-
     String sessionType;
     String sessionID;
 
@@ -198,46 +195,6 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         //runnable for updating location
         handler.postDelayed(new Runnable() {
             public void run() {
-                /*MarkerOptions marker2 = new MarkerOptions()
-                        .position(new LatLng(locLat, locLong))
-                        .title("Player1")
-                        .snippet("Player 1 location");
-                MarkerOptions marker3 = new MarkerOptions()
-                        .position(new LatLng(p2Lat,p2Long))
-                        .title("Player 2")
-                        .snippet("Player 2 location");*/
-
-                //case for ending session
-                /*if(p2Dist == -1 || p2Dist == -1){
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").removeEventListener(postListener);
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).removeValue();
-                    finish();
-                    return;
-                }
-                else if(stopUpdates) {
-
-                    return;
-                }
-
-                //case for collaborative session
-                if(sessionType == "2"){
-                    colabDistance = localDistance + p2Dist;
-                    textColabDistance = "Total Distance: " + String.valueOf(round(colabDistance,2));
-                    sessionStatus.setText(textColabDistance);
-                }
-
-                if(sessionType == "1"){
-                    if(localDistance > p2Dist)
-                        textColabDistance = "You are leading by: " + String.valueOf(round(localDistance - p2Dist,2));
-                    else
-                        textColabDistance = "You are behind by: " + String.valueOf(round(p2Dist - localDistance,2));
-
-                    sessionStatus.setText(textColabDistance);
-                }
-                */
-                //associates distance texts to update
-
-                //palDistText.setText(String.valueOf(round(p2Dist,2)));
 
                 TextView localDistText = findViewById(R.id.localSessionMiles);
                 String setMilesText = String.valueOf(round(localDistance,2)) + " Miles";

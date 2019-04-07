@@ -92,7 +92,7 @@ class SessionActivity : AppCompatActivity() {
             }
         }
 
-        otherUsername.text = "pending.."
+        //otherUsername.text = "pending.."
 
         openFragment(ReadyUpFragment.newInstance())
 

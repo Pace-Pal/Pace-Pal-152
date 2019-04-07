@@ -19,6 +19,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -119,7 +121,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
-        sessionStatus = findViewById(R.id.sessionStatus);
+        //sessionStatus = findViewById(R.id.sessionStatus);
 
         //gets shared preferences to find current session
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyMap.this);
@@ -142,9 +144,10 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         remotePlayers = remotePlayerClass.getPlayerList();
 
         //pulls info on where to find session in database
-        String friendUID = sharedPref.getString("friendUID","");
+        //String friendUID = sharedPref.getString("friendUID","");
         sessionType = sharedPref.getString("sessionType", "");
         sessionID = sharedPref.getString("sessionID", "");
+
 
         //accessess and displays profile for current user from firestore
         DocumentReference docRef = db.collection("users").document(userid);
@@ -169,7 +172,12 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
 
-
+        RecyclerView recyclerView = findViewById(R.id.remotePlayerRecycler);
+        RemotePlayerRecyclerAdapter adapter = new RemotePlayerRecyclerAdapter(remotePlayers);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        recyclerView.setAdapter(adapter);
+        Log.d("mymap",remotePlayers.toString());
 
 
 
@@ -185,7 +193,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         //declares local players line on the map
         PolylineOptions locLine = new com.mapbox.mapboxsdk.annotations.PolylineOptions();
 
-        TextView palDistText = findViewById(R.id.palSessionMiles);
+        //TextView palDistText = findViewById(R.id.palSessionMiles);
 
         //creates handler to handle runnable for updating location
         //interval to update location
@@ -199,6 +207,13 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                 TextView localDistText = findViewById(R.id.localSessionMiles);
                 String setMilesText = String.valueOf(round(localDistance,2)) + " Miles";
                 localDistText.setText(setMilesText);
+                Log.d("mymap",remotePlayers.toString());
+
+                if(remotePlayers.size() != 0)
+                {
+                    adapter.notifyDataSetChanged();
+                }
+
 
                 //code for updating map view markers
                 mapView.getMapAsync(new OnMapReadyCallback() {

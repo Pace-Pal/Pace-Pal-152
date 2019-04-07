@@ -1,10 +1,13 @@
 package com.group2.pacepal
 
+import android.graphics.Color
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.mapbox.mapboxsdk.annotations.PolylineOptions
+import com.mapbox.mapboxsdk.geometry.LatLng
 
 
 //listens for location changes for a specific player
@@ -15,7 +18,7 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
     private var distance = 0.0
     private var long = 0.0
     private var lat = 0.0
-    val remotePolyline = com.mapbox.mapboxsdk.annotations.PolylineOptions()
+    private var remotePolyline = PolylineOptions()
 
     //attaches a listener for the passed in player
     init{attachListener()}
@@ -23,6 +26,8 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
 
     private fun attachListener(){
 
+        remotePolyline.color(Color.RED)
+        remotePolyline.width(3F)
         val postListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Get Post object and use the values to update the UI
@@ -30,6 +35,7 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
                 distance = dataSnapshot.child("distance").value.toString().toDouble()
                 long = dataSnapshot.child("long").value.toString().toDouble()
                 lat = dataSnapshot.child("lat").value.toString().toDouble()
+                remotePolyline.add(LatLng(lat,long))
                 // ...
             }
 
@@ -49,4 +55,6 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
     fun getLong():Double {return this.long }
     fun getLat():Double {return this.lat }
     fun getID():String { return this.userID }
+    fun getPolyline(): PolylineOptions {return this.remotePolyline}
+    //fun setPolyline(newPline:PolylineOptions) {this.remotePolyline = newPline}
 }

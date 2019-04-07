@@ -36,6 +36,7 @@ class ReadyUpFragment : Fragment() {
         //listens for state changes of other players
         val preferences = PreferenceManager.getDefaultSharedPreferences(this.context)
         val sessionID = preferences.getString("sessionID", "")
+
         val playerlistener = object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                 var tempTracker = false

@@ -143,11 +143,6 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         GetRemotePlayers remotePlayerClass = new GetRemotePlayers(sessionID);
         remotePlayers = remotePlayerClass.getPlayerList();
 
-        //pulls info on where to find session in database
-        //String friendUID = sharedPref.getString("friendUID","");
-        sessionType = sharedPref.getString("sessionType", "");
-        sessionID = sharedPref.getString("sessionID", "");
-
 
         //accessess and displays profile for current user from firestore
         DocumentReference docRef = db.collection("users").document(userid);
@@ -173,7 +168,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
         RecyclerView recyclerView = findViewById(R.id.remotePlayerRecycler);
-        RemotePlayerRecyclerAdapter adapter = new RemotePlayerRecyclerAdapter(remotePlayers);
+        RemotePlayerRecyclerAdapter adapter = new RemotePlayerRecyclerAdapter(remotePlayers,"players",this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
         recyclerView.setAdapter(adapter);

@@ -6,6 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 
@@ -14,15 +15,21 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 data class RemotePlayer(val userID:String, val sessionID:String) {
 
     val rtdb = FirebaseDatabase.getInstance().reference
+    val fsdb = FirebaseFirestore.getInstance()
 
     private var distance = 0.0
     private var long = 0.0
     private var lat = 0.0
     private var remotePolyline = PolylineOptions()
 
-    //attaches a listener for the passed in player
-    init{attachListener()}
+    private var pictureURL = ""
+    private var username = ""
 
+    //attaches a listener for the passed in player
+    init{
+    attachListener()
+    getFirestoreInfo()
+    }
 
     private fun attachListener(){
 
@@ -51,10 +58,27 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
                 .addValueEventListener(postListener)
     }
 
+    private fun getFirestoreInfo(){
+        val docRef = fsdb.collection("users").document(userID)
+        docRef.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val currentProfile = task.result
+                pictureURL = currentProfile!!.getString("profilepic").toString()
+                username = currentProfile!!.getString("username").toString()
+            } else {
+
+            }
+
+        }
+    }
+
+    fun getUID(): String {return userID}
     fun getDistance():Double {return this.distance }
     fun getLong():Double {return this.long }
     fun getLat():Double {return this.lat }
     fun getID():String { return this.userID }
+    fun getUsername():String {return this.username}
+    fun getPic():String {return this.pictureURL}
     fun getPolyline(): PolylineOptions {return this.remotePolyline}
     //fun setPolyline(newPline:PolylineOptions) {this.remotePolyline = newPline}
 }

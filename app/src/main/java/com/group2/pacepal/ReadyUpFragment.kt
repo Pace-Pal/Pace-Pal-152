@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.readyup_fragment.*
 import android.preference.PreferenceManager
 import android.content.SharedPreferences
+import android.renderscript.Sampler
 import android.support.v4.app.FragmentManager
 import android.util.Log
 import android.widget.TextView
@@ -27,15 +28,34 @@ class ReadyUpFragment : Fragment() {
     private val user = FirebaseAuth.getInstance().currentUser
     private val userid = user!!.uid
     private val rtdb = FirebaseDatabase.getInstance().reference
-    var textViews = emptyList<TextView>()
     var playercount = 0
-    var players: MutableList<String> = ArrayList()
+    //var players: MutableList<String> = ArrayList()
+    var players: MutableList<RemotePlayer> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         //listens for state changes of other players
         val preferences = PreferenceManager.getDefaultSharedPreferences(this.context)
         val sessionID = preferences.getString("sessionID", "")
+
+
+        val playersGet = object : ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                    p0.children.forEach{
+                        players.add(RemotePlayer(it.key.toString(),sessionID))
+                }
+            }
+
+        }
+
+
+
+
+
 
         val playerlistener = object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {

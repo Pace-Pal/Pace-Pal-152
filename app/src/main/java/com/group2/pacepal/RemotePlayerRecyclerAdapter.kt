@@ -8,39 +8,48 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
-import kotlinx.android.synthetic.main.inviteview_row_item.view.*
+import kotlinx.android.synthetic.main.remote_player_row_item.view.*
 
-import kotlinx.android.synthetic.main.session_menu.view.*
 import android.support.v4.content.ContextCompat.startActivity
 import android.R.id.edit
+import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.widget.TextView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.mapbox.mapboxsdk.geometry.LatLng
+import com.squareup.picasso.Picasso
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlin.coroutines.coroutineContext
+import kotlin.math.round
 
 
-
-
-
-
-class RemotePlayerRecyclerAdapter (private val players: MutableList<RemotePlayer>)  : RecyclerView.Adapter<RemotePlayerRecyclerAdapter.PlayerHolder>()  {
+class RemotePlayerRecyclerAdapter (private val players: MutableList<RemotePlayer>,private val listenerOption:String,private val actContext: Context)  : RecyclerView.Adapter<RemotePlayerRecyclerAdapter.PlayerHolder>()  {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerHolder {
-        val inflatedView = LayoutInflater.from(parent.context).inflate(R.layout.readyup_row_item,null,false)
-        return PlayerHolder(inflatedView)
+        val inflatedView = LayoutInflater.from(parent.context).inflate(R.layout.remote_player_row_item,null,false)
+        return PlayerHolder(inflatedView,listenerOption,actContext)
     }
 
     override fun getItemCount() = players.size
 
     override fun onBindViewHolder(holder: RemotePlayerRecyclerAdapter.PlayerHolder, position: Int) {
         val itemPlayer = players[position]
-        //readys[position]
 
         holder.bindPlayer(itemPlayer)
     }
 
-    class PlayerHolder(v: View) : RecyclerView.ViewHolder(v) , View.OnClickListener {
+    class PlayerHolder(v: View,s:String,c:Context) : RecyclerView.ViewHolder(v) , View.OnClickListener {
 
         private var view : View = v
-        private var ready : String? = null
+        private var player : String? = null
+        private var listenerOption: String = s
+        private var parentContext = c
+        val rtdb = FirebaseDatabase.getInstance().reference
 
         init {
             v.setOnClickListener {this}
@@ -51,13 +60,48 @@ class RemotePlayerRecyclerAdapter (private val players: MutableList<RemotePlayer
 
         }
 
-        fun bindPlayer(ready: RemotePlayer) {
-            //lookup profile picture from database and set to view
-            //lookup username too
-            //set listener for status
+        fun bindPlayer(player: RemotePlayer) {
 
-            Log.d("RPrecycler","doest this even run")
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(parentContext)
+            val sessionID = sharedPref.getString("sessionID", "")
 
+            view.playerName.text = player.getUsername()
+            Picasso.with(parentContext).load(player.getPic()).fit().into(view.playerPicture)
+
+            val postListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    view.playerStatus.text = round((dataSnapshot.value.toString().toDouble()),2).toString() + " mi"
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Getting Post failed, log a message
+                    //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                    // ...
+                }
+            }
+
+
+            if(listenerOption == "players")
+                rtdb.child("sessionManager").child("sessionIndex")
+                    .child(sessionID).child(listenerOption).child(player.getUID()).child("distance")
+                    .addValueEventListener(postListener)
+            else if(listenerOption == "ready")
+                rtdb.child("sessionManager").child("sessionIndex")
+                        .child(sessionID).child(listenerOption).child(player.getUID())
+                        .addValueEventListener(postListener)
+
+
+
+
+
+        }
+
+        fun round(value: Double, places: Int): Double {
+            if (places < 0) throw IllegalArgumentException()
+
+            var bd = BigDecimal(value)
+            bd = bd.setScale(places, RoundingMode.HALF_UP)
+            return bd.toDouble()
         }
     }
 }

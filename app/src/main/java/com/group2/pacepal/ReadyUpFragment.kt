@@ -42,11 +42,19 @@ class ReadyUpFragment : Fragment() {
         val playerlistener = object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
 
-                if((p0.key.toString() != "absoluteReady") && (p0.key.toString() != userid)) {
+                if((p0.key.toString() != "absoluteReady") && (p0.key.toString() != userid) && !players.contains(p0.key.toString())) {
+
                     players.add(p0.key.toString())
-                    Thread.sleep(1_000)
-                    adapter.notifyDataSetChanged()
                 }
+
+                if(!recyclerInit && (players.size > 0)){
+                    val invView = remotePlayersRecycler      //defines adapter for RecyclerView for invites
+                    invView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+                    invView.adapter = adapter
+                    recyclerInit = true
+
+                }
+                adapter.notifyDataSetChanged()
 
             }
             override fun onCancelled(p0: DatabaseError) {
@@ -97,13 +105,6 @@ class ReadyUpFragment : Fragment() {
 
         val readyListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                if(!recyclerInit && dataSnapshot.childrenCount>2){
-                    val invView = remotePlayersRecycler      //defines adapter for RecyclerView for invites
-                    invView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
-                    invView.adapter = adapter
-                    recyclerInit = true
-                }
 
                 var tempAbsolute = buttonState
                 Log.d("DATABASE_CHANGE", "changed")

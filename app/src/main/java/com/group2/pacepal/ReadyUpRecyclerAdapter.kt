@@ -22,7 +22,7 @@ class ReadyUpRecyclerAdapter (private val readys: MutableList<String>, private v
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReadyHolder {
-        val inflatedView = LayoutInflater.from(parent.context).inflate(R.layout.readyup_row_item,parent,false)
+        val inflatedView = LayoutInflater.from(parent.context).inflate(R.layout.remote_player_row_item,parent,false)
         return ReadyHolder(inflatedView,parentContext)
     }
 

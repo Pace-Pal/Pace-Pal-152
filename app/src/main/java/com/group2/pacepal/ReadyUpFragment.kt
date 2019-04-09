@@ -10,10 +10,15 @@ import kotlinx.android.synthetic.main.readyup_fragment.*
 import android.preference.PreferenceManager
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.TextView
+
 import com.google.firebase.database.*
 import com.google.firebase.database.DataSnapshot
 
-
+//add the mile that is clicked on , or the default of 1 mile, to the database at the root of the sessionIndex as the end condition for that session
 class ReadyUpFragment : Fragment() {
 
 
@@ -28,6 +33,34 @@ class ReadyUpFragment : Fragment() {
 
         return inflater.inflate(R.layout.readyup_fragment, container, false)
         }
+
+    //Add to the ReadyUpFragment
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val spinner = Options_Spinner
+
+        spinner.adapter = ArrayAdapter(activity,
+                R.layout.support_simple_spinner_dropdown_item,
+                resources.getStringArray(R.array.Miles_Array)
+        )
+
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                Log.v("Item Value", "This: " + parent.getItemAtPosition(position))
+                rtdb.child("sessionManager")
+                        .child("sessionIndex")
+                        .child(userid)
+                        .child("winCondition")
+                        .setValue(parent.getItemAtPosition(position))
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                /*Do something if nothing selected*/
+            }
+        }
+    }
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

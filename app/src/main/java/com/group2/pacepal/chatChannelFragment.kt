@@ -36,7 +36,7 @@ Purpose:This class is what is used to handle the chatChannel functionality. It d
 class chatChannelFragment: Fragment() {
 
     private val textMessages = ArrayList<TextMessage>(0)
-    private val adapter = messageAdapter(textMessages)
+    private val adapter = messageAdapterMultipleViews(textMessages)
     private lateinit var messagesListenerRegistration: ListenerRegistration //will attach to other user's document to notify client of database message updates
     private val fsdb = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
@@ -60,7 +60,7 @@ class chatChannelFragment: Fragment() {
         val friendUsername = arguments!!.getString("friend_userName")
         val friendRealName= arguments!!.getString("friend_real_name")
 
-        Log.d("New Fragemnt", "chat channel success")
+
 
         //create fragment view
         val view =  inflater.inflate(R.layout.fragment_chat_channel, container, false)
@@ -76,10 +76,6 @@ class chatChannelFragment: Fragment() {
         invView.adapter = adapter
 
         val contexts = context!! //big what?
-
-        adapter.notifyDataSetChanged()
-
-        //testing this to pass current context of the app to the rest of everything
 
 
         //want to attach a listener to the friend's chatChannel so clientside knows to update the client when the database updates
@@ -164,30 +160,39 @@ class chatChannelFragment: Fragment() {
                     onListen(items)
                 }
     }
-
+    //TODO: Why is first message not appearing/ Fix that
+    //TODO: How in the heck to fix the first user message second message first cannot message anymore issue?
     fun updateRecyclerView(messages:ArrayList<TextMessage>) {
         //want to add the list of text messages that are not already in the list of ArrayList<TextMessage> so that they do not all reload
         Log.v("Listener Active", "The listener is active")
         var count = 1
-
-        if (firstMessage == true) {
+        Log.v("Bool Value in update", "Bool is: " + firstMessage)
+        Log.v("IM_Message_Array_Size", "Size is: " + messages.size)
+        if (firstMessage == true && messages.size >= 1) {
+            Log.v("In first message loop", "Success")
             for(i in messages) {
+                Log.v("MSG contents", "Msg text: " + i.text)
                 textMessages.add(i)
             }
             firstMessage = false
+            messageList.scrollToPosition(messageList.adapter!!.itemCount ) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
+
         }
-        for(i in messages) {   // update the current TextMessage Adapter to have the new messages (I am not getting rid of the old yet)
-             if(count == messages.size ) {
-                 textMessages.add(i)
-              
-             } else {
-                 count = count + 1
-                 continue
-             }
+        else {
+            for (i in messages) {   // update the current TextMessage Adapter to have the new messages (I am not getting rid of the old yet)
+
+                if (count == messages.size) {
+                    textMessages.add(i)
+
+                } else {
+                    count = count + 1
+                    continue
+                }
+            }
+            messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
         }
-        //val size = messages.size
-       messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
-        adapter.notifyDataSetChanged()  //notify the adapter that we have a change so that we can display the new text messages
+
+
     }
 
     fun checkUniqueMessage() {
@@ -199,10 +204,5 @@ class chatChannelFragment: Fragment() {
                 .collection("messages")
                 .add(message)
     }
-
-
-
-
-
 
 }

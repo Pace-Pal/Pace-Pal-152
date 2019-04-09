@@ -10,9 +10,11 @@ import kotlinx.android.synthetic.main.readyup_fragment.*
 import android.preference.PreferenceManager
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+
 import com.google.firebase.database.*
 import com.google.firebase.database.DataSnapshot
 
@@ -24,28 +26,11 @@ class ReadyUpFragment : Fragment() {
     private val userid = user!!.uid
     private val rtdb = FirebaseDatabase.getInstance().reference
     var playercount = 0
-    //var players: MutableList<String> = ArrayList()
-    var players: MutableList<RemotePlayer> = ArrayList()
+    var players: MutableList<String> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        //listens for state changes of other players
-        val preferences = PreferenceManager.getDefaultSharedPreferences(this.context)
-        val sessionID = preferences.getString("sessionID", "")
 
-
-        val playersGet = object : ValueEventListener{
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onDataChange(p0: DataSnapshot) {
-                    p0.children.forEach{
-                        players.add(RemotePlayer(it.key.toString(),sessionID))
-                }
-            }
-
-        }
         return inflater.inflate(R.layout.readyup_fragment, container, false)
         }
 
@@ -85,17 +70,14 @@ class ReadyUpFragment : Fragment() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this.context)
         val sessionID = preferences.getString("sessionID", "")
 
-
-        val adapter = RemotePlayerRecyclerAdapter(players,"ready",this.context!!)
-        val invView = remotePlayersRecycler      //defines adapter for RecyclerView for invites
-        invView.layoutManager = LinearLayoutManager(this.context,LinearLayoutManager.HORIZONTAL,false)
-        invView.adapter = adapter
+        val adapter = ReadyUpRecyclerAdapter(players,this.context!!)
+        var recyclerInit = false
 
         val playerlistener = object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
 
                 if((p0.key.toString() != "absoluteReady") && (p0.key.toString() != userid)) {
-                    players.add(RemotePlayer(p0.key.toString(), sessionID))
+                    players.add(p0.key.toString())
                     Thread.sleep(1_000)
                     adapter.notifyDataSetChanged()
                 }
@@ -150,13 +132,20 @@ class ReadyUpFragment : Fragment() {
         val readyListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
+                if(!recyclerInit && dataSnapshot.childrenCount>2){
+                    val invView = remotePlayersRecycler      //defines adapter for RecyclerView for invites
+                    invView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+                    invView.adapter = adapter
+                    recyclerInit = true
+                }
+
                 var tempAbsolute = buttonState
                 Log.d("DATABASE_CHANGE", "changed")
 
                 for(p in players){
                     if(!tempAbsolute)
                         break
-                    tempAbsolute = dataSnapshot.child(p.getUID()).value.toString().toBoolean()
+                    tempAbsolute = dataSnapshot.child(p).value.toString().toBoolean()
                 }
 
                 if(tempAbsolute && (dataSnapshot.childrenCount > 2))

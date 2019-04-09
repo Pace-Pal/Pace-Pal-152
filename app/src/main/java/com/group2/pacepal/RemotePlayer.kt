@@ -66,7 +66,7 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
                 pictureURL = currentProfile!!.getString("profilepic").toString()
                 username = currentProfile!!.getString("username").toString()
             } else {
-
+                Log.d("RemotePlayer ","Unable to contact FireStore")
             }
 
         }

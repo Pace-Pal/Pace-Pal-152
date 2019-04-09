@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/.idea/Pace-Pal-152.iml" filepath="$PROJECT_DIR$/.idea/Pace-Pal-152.iml" />
+=======
+>>>>>>> addfriend_login_message_merge_delux_sessions
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

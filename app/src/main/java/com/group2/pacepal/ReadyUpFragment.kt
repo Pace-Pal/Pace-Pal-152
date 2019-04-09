@@ -48,13 +48,12 @@ class ReadyUpFragment : Fragment() {
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                /* val num = when (spinner.selectedItem.toString()) {
-                     "H" -> editText.setText("1")
-                     "He" -> editText.setText("4")
-                     "C" -> editText.setText("12")
-                     "O" -> editText.setText("16")
-                     else -> editText.setText("")
-                 } */
+                Log.v("Item Value", "This: " + parent.getItemAtPosition(position))
+                rtdb.child("sessionManager")
+                        .child("sessionIndex")
+                        .child(userid)
+                        .child("winCondition")
+                        .setValue(parent.getItemAtPosition(position))
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {

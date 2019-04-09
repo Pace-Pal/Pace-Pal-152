@@ -90,7 +90,10 @@ class RemotePlayerRecyclerAdapter (private val players: MutableList<RemotePlayer
             else if(listenerOption == "ready") {
                 val postListener = object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        view.playerStatus.text = dataSnapshot.value.toString()
+                        if(dataSnapshot.value.toString().toBoolean())
+                            view.playerStatus.text = "Ready"
+                        else
+                            view.playerStatus.text = "Not Ready"
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {

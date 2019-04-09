@@ -48,6 +48,7 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
         val itemFriend = friends[position]
         friends[position].feature
 
+
         friend.bindFriend(itemFriend)
     }
 
@@ -197,6 +198,8 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
 
 
                 }
+
+
 
             })
         }

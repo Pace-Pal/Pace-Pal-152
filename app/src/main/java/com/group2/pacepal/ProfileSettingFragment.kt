@@ -32,8 +32,14 @@ class ProfileSettingFragment : Fragment() {
         list.onItemClickListener = object : AdapterView.OnItemClickListener {
 
             override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                val intent = Intent(context, ProfileImagesActivity::class.java)
-                startActivity(intent)
+                if (position == 0){
+                    Toast.makeText(context, "Coming Soon!", Toast.LENGTH_SHORT).show()
+                }
+                else if (position==1){
+                    val intent = Intent(context, ProfileImagesActivity::class.java)
+                    startActivity(intent)
+                }
+
             }
 
         }

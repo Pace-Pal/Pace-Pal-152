@@ -111,7 +111,7 @@ public class ProfileImagesActivity extends AppCompatActivity implements ImageAda
 
     @Override
     public void onWhatEverClick(int position) {
-        Toast.makeText(this, "Whatever click at position: " + position, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Coming Soon!", Toast.LENGTH_SHORT).show();
     }
 
     @Override

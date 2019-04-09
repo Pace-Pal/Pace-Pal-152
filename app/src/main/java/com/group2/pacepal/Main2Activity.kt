@@ -18,22 +18,23 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 
+
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_friends -> {
-                //toolbar.title = "Friends"
+                toolbar.setTitle("Friends")
                 val friendsFragment = FriendsFragment.newInstance()
                 openFragment(friendsFragment)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_home -> {
-                //toolbar.title = "Home"
+                toolbar.setTitle("Home")
                 val sessionFragment = SessionFragment.newInstance()
                 openFragment(sessionFragment)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_profile -> {
-                //toolbar.title = "Profile"
+                toolbar.setTitle("Profile")
                 val profileFragment = ProfileFragment.newInstance()
                 openFragment(profileFragment)
                 return@OnNavigationItemSelectedListener true
@@ -46,7 +47,7 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     private fun openFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, fragment)
+        transaction.replace(R.id.frameLayout, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
     }
@@ -104,7 +105,7 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         val profileSet = ProfileSettingFragment()
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.container, profileSet)
+        fragmentTransaction.replace(R.id.frameLayout, profileSet)
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
 

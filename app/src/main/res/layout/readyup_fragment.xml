@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="200dp"
+        android:layout_marginBottom="76dp"
         android:background="@color/transparentWhite"
         android:text="Ready!"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="148dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="8dp"
         android:text="Not Ready"
         android:textColor="#ffcc0000"
         android:textSize="25sp"
@@ -37,8 +37,8 @@
         android:id="@+id/yourStatusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="132dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginBottom="24dp"
         android:text="Your Status:"
         android:textSize="25sp"
         app:layout_constraintBottom_toTopOf="@+id/yourStatus"
@@ -57,7 +57,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.922" />
+        app:layout_constraintVertical_bias="0.949" />
 
     <Spinner
         android:id="@+id/Options_Spinner"
@@ -69,7 +69,9 @@
         android:layout_marginBottom="149dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/readyButton" />
+        app:layout_constraintTop_toBottomOf="@+id/readyButton"
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

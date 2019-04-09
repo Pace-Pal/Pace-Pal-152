@@ -101,7 +101,7 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                     myFragment.setArguments(bundle)
 
                     val activity = view.context as AppCompatActivity
-                    activity.supportFragmentManager.beginTransaction().replace(R.id.container, myFragment).addToBackStack(null).commit() //test
+                    activity.supportFragmentManager.beginTransaction().replace(R.id.frameLayout, myFragment).addToBackStack(null).commit() //test
 
                 }else if(friend.activityType == 2){        //case for view in
 

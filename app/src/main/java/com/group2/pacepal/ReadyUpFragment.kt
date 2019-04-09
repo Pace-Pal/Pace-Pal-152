@@ -8,18 +8,11 @@ import android.view.ViewGroup
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.readyup_fragment.*
 import android.preference.PreferenceManager
-import android.content.SharedPreferences
-import android.renderscript.Sampler
-import android.support.v4.app.FragmentManager
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.widget.TextView
-import android.widget.Toast
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.session_activity.*
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.database.DataSnapshot
-
-
 
 
 class ReadyUpFragment : Fragment() {
@@ -51,36 +44,32 @@ class ReadyUpFragment : Fragment() {
             }
 
         }
+        return inflater.inflate(R.layout.readyup_fragment, container, false)
+        }
 
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        //super.onResume()
+        super.onActivityCreated(savedInstanceState)
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this.context)
+        val sessionID = preferences.getString("sessionID", "")
 
 
-
+        val adapter = RemotePlayerRecyclerAdapter(players,"ready",this.context!!)
+        val invView = remotePlayersRecycler      //defines adapter for RecyclerView for invites
+        invView.layoutManager = LinearLayoutManager(this.context,LinearLayoutManager.HORIZONTAL,false)
+        invView.adapter = adapter
 
         val playerlistener = object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                var tempTracker = false
 
-                for(x in players)
-                    if(x == p0.key)
-                        tempTracker = true
-
-                if(!tempTracker){
-                    if((p0.key != user!!.uid)&&(p0.key != "absoluteReady")){
-                        var temparray: MutableList<String> = ArrayList()
-                        var tempcount = 0
-                        tempcount++
-                        temparray.add(p0.key.toString())
-                        Log.d("addingplayer",p0.key.toString())
-                        playercount = tempcount
-                        players = temparray
-                    }
+                if((p0.key.toString() != "absoluteReady") && (p0.key.toString() != userid)) {
+                    players.add(RemotePlayer(p0.key.toString(), sessionID))
+                    Thread.sleep(1_000)
+                    adapter.notifyDataSetChanged()
                 }
 
             }
-
-
-
             override fun onCancelled(p0: DatabaseError) {
                 Log.d("rtdb error", "lost connection to database profile updates")
             }
@@ -102,25 +91,9 @@ class ReadyUpFragment : Fragment() {
         rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").addChildEventListener(playerlistener)
 
 
-        return inflater.inflate(R.layout.readyup_fragment, container, false)
-        }
 
-
-    override fun onActivityCreated(savedInstanceState: Bundle?)
-
- {
-        //super.onResume()
-     super.onActivityCreated(savedInstanceState)
-        val preferences = PreferenceManager.getDefaultSharedPreferences(this.context)
-        val sessionID = preferences.getString("sessionID", "")
-        Log.d("readyUP", "resumed")
-
-        val palStatus = view!!.findViewById<TextView>(R.id.palStatus)
-
-        var absReady = false
 
         var buttonState = false
-
 
         val readyClicker = readyButton
 
@@ -139,7 +112,6 @@ class ReadyUpFragment : Fragment() {
                 rtdb.child("sessionManager").child("sessionIndex").child(sessionID)
                         .child("ready").child(user!!.uid)
                             .setValue(buttonState)
-
             }
 
 
@@ -149,23 +121,17 @@ class ReadyUpFragment : Fragment() {
 
                 var tempAbsolute = buttonState
                 Log.d("DATABASE_CHANGE", "changed")
-                players.forEach{
-                    if((dataSnapshot.child(it).value == false)){
-                        tempAbsolute = false
-                    }
+
+                for(p in players){
+                    if(!tempAbsolute)
+                        break
+                    tempAbsolute = dataSnapshot.child(p.getUID()).value.toString().toBoolean()
                 }
 
-                if(tempAbsolute)
+                if(tempAbsolute && (dataSnapshot.childrenCount > 2))
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID)
                             .child("ready").child("absoluteReady").setValue(tempAbsolute)
                     //launch session
-
-                if(playercount == 0)
-                    Log.d("playercount",":0")
-                else if(dataSnapshot.child(players[0]).value == true)
-                    palStatus.text = "Ready"
-                else
-                    palStatus.text = "Not Ready"
 
             }
 

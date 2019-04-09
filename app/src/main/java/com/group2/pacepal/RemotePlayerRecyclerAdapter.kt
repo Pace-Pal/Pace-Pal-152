@@ -65,30 +65,44 @@ class RemotePlayerRecyclerAdapter (private val players: MutableList<RemotePlayer
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(parentContext)
             val sessionID = sharedPref.getString("sessionID", "")
 
+            Log.d("remoteRecycler",player.getUID())
+
             view.playerName.text = player.getUsername()
             Picasso.with(parentContext).load(player.getPic()).fit().into(view.playerPicture)
 
-            val postListener = object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    view.playerStatus.text = round((dataSnapshot.value.toString().toDouble()),2).toString() + " mi"
+
+            if(listenerOption == "players") {
+                val postListener = object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        view.playerStatus.text = round((dataSnapshot.value.toString().toDouble()),2).toString() + " mi"
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // Getting Post failed, log a message
+                        //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                        // ...
+                    }
                 }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    // Getting Post failed, log a message
-                    //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                    // ...
-                }
-            }
-
-
-            if(listenerOption == "players")
                 rtdb.child("sessionManager").child("sessionIndex")
-                    .child(sessionID).child(listenerOption).child(player.getUID()).child("distance")
-                    .addValueEventListener(postListener)
-            else if(listenerOption == "ready")
+                        .child(sessionID).child(listenerOption).child(player.getUID()).child("distance")
+                        .addValueEventListener(postListener)
+            }
+            else if(listenerOption == "ready") {
+                val postListener = object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        view.playerStatus.text = dataSnapshot.value.toString()
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // Getting Post failed, log a message
+                        //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                        // ...
+                    }
+                }
                 rtdb.child("sessionManager").child("sessionIndex")
                         .child(sessionID).child(listenerOption).child(player.getUID())
                         .addValueEventListener(postListener)
+            }
 
 
 

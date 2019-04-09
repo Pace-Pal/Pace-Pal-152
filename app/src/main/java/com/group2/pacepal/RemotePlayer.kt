@@ -22,7 +22,7 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
     private var lat = 0.0
     private var remotePolyline = PolylineOptions()
 
-    private var pictureURL = ""
+    private var pictureURL = "https://firebasestorage.googleapis.com/v0/b/pace-pal-ad8c4.appspot.com/o/defaultAVI.png?alt=media&token=6c9c47df-8151-4e5b-8843-3440e317346c"
     private var username = ""
 
     //attaches a listener for the passed in player

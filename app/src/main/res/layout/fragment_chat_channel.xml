@@ -13,7 +13,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/messageList"
-        android:layout_width="0dp"
+        android:layout_width="366dp"
         android:layout_height="430dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/relativeLayout_message"

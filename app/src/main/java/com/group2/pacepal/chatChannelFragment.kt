@@ -66,10 +66,6 @@ class chatChannelFragment: Fragment() {
         val view =  inflater.inflate(R.layout.fragment_chat_channel, container, false)
         // val imgView_send  =  findViewById(R.id.imageView_send) as ImageView
 
-
-
-
-
         //initializes the recyclerView with its adapter
         val invView = view?.findViewById(R.id.messageList) as RecyclerView
         invView.layoutManager = LinearLayoutManager(this.context)
@@ -160,8 +156,8 @@ class chatChannelFragment: Fragment() {
                     onListen(items)
                 }
     }
-    //TODO: Why is first message not appearing/ Fix that
     //TODO: How in the heck to fix the first user message second message first cannot message anymore issue?
+    //TODO: Firebase functions to add timestamp to the messages so they can be sorted based off a timestamp that belongs oto the server
     fun updateRecyclerView(messages:ArrayList<TextMessage>) {
         //want to add the list of text messages that are not already in the list of ArrayList<TextMessage> so that they do not all reload
         Log.v("Listener Active", "The listener is active")
@@ -191,8 +187,7 @@ class chatChannelFragment: Fragment() {
             }
             messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
         }
-
-
+        adapter.notifyDataSetChanged()
     }
 
     fun checkUniqueMessage() {

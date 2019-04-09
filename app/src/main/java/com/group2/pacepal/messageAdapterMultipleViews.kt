@@ -22,8 +22,10 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
         val type : Int
         if (messages[position].senderId  == FirebaseAuth.getInstance().currentUser!!.uid) { //TODO: Better way than this find it
             type = USER_MESSAGE
+            Log.v("IMUW", "App says I am me")
         } else {
             type = OTHER_USER_MESSAGE
+            Log.v("IMUW", "App says I am not me")
         }
         return type
     }
@@ -32,15 +34,18 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
         val viewHolder: RecyclerView.ViewHolder = when (viewType) {
             USER_MESSAGE -> UserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.messageview_row_item, parent, false))
             // other view holders...
-            else -> OtherUserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.messageview_row_item_otheruser, parent, false))
+            OTHER_USER_MESSAGE -> OtherUserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.messageview_row_item_otheruser, parent, false))
+
+            else ->  UserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.messageview_row_item, parent, false))
         }
         return viewHolder
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) { //TODO: Used to be ViewHolder?
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        (holder as UpdateViewHolder).bindViews(messages[position])
-        Log.v("Adapter I Pos", "Value is: " + (position-1))
+        (holder as UpdateViewHolder).bindViews(messages.get(position))
+
+        Log.v("Adapter I Pos", "Value is: " + (position))
     }
 
 
@@ -61,12 +66,16 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
         : RecyclerView.ViewHolder(itemView), UpdateViewHolder {
 
         // get the views reference from itemView... TODO: might not be doing this. whoops if so.
+        private var view: View = itemView
+        private var message: TextMessage? = null
 
         override fun bindViews(message: TextMessage) {
-            val newMessage = message as TextMessage
-            itemView.messageText.text = message.text
+            //val newMessage = message as TextMessage
+            this.message = message
+            view.messageText.text = message.text
             val dateFormat = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT)
-            itemView.messageTextTime.text = dateFormat.format(message.time)
+            view.messageTextTime.text = dateFormat.format(message.time)
+            Log.v("IMUC", "In User binding the message to right side")
 
         }
     }
@@ -76,12 +85,16 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
 
         // get the views reference from itemView... TODO: might not be doing this. whoops if so.
 
-        override fun bindViews(message: TextMessage) {
-            val newMessage = message as TextMessage
-            itemView.messageTextOtherUser.text = message.text
-            val dateFormat = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT)
-            itemView.messageTextTimeOtherUser.text = dateFormat.format(message.time)
+        private var view: View = itemView
+        private var message: TextMessage? = null
 
+        override fun bindViews(message: TextMessage) {
+            this.message = message
+            //val newMessage = message as TextMessage
+            view.messageTextOtherUser.text = message.text
+            val dateFormat = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT)
+            view.messageTextTimeOtherUser.text = dateFormat.format(message.time)
+            Log.v("IMOUC", "In otherUser binding the message to left side")
         }
     }
 

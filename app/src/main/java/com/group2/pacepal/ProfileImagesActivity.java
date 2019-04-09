@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -31,6 +32,8 @@ public class ProfileImagesActivity extends AppCompatActivity implements ImageAda
     private String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
     private ProgressBar mProgressCircle;
+
+    private FirebaseFirestore fsdb = FirebaseFirestore.getInstance();
 
     private FirebaseStorage mStorage;
     private DatabaseReference mDatabaseRef;
@@ -110,8 +113,17 @@ public class ProfileImagesActivity extends AppCompatActivity implements ImageAda
     }
 
     @Override
-    public void onWhatEverClick(int position) {
-        Toast.makeText(this, "Coming Soon!", Toast.LENGTH_SHORT).show();
+    public void onChangeProfilePic(int position) {
+        Toast.makeText(this, "Profile Picture Changed!", Toast.LENGTH_SHORT).show();
+
+        Upload selectedItem = mUploads.get(position);
+        String imgURL = selectedItem.getImageUrl();
+
+        fsdb.collection("users").document(userId)
+                .update(
+                        "profilepic", imgURL
+                );
+
     }
 
     @Override

@@ -77,7 +77,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.setHeaderTitle("Select Action");
-            MenuItem doWhatever = menu.add(Menu.NONE, 1, 1, "Set Profile");
+            MenuItem doWhatever = menu.add(Menu.NONE, 1, 1, "Set as profile picture");
             MenuItem delete = menu.add(Menu.NONE, 2, 2, "Delete");
 
             doWhatever.setOnMenuItemClickListener(this);
@@ -92,7 +92,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
                     switch (item.getItemId()) {
                         case 1:
-                            mListener.onWhatEverClick(position);
+                            mListener.onChangeProfilePic(position);
                             return true;
                         case 2:
                             mListener.onDeleteClick(position);
@@ -107,7 +107,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public interface OnItemClickListener {
         void onItemClick(int position);
 
-        void onWhatEverClick(int position);
+        void onChangeProfilePic(int position);
 
         void onDeleteClick(int position);
     }

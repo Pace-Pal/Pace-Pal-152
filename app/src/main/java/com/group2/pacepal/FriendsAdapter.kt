@@ -166,7 +166,7 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                     //keep track of the fragemnt's position on the stack
                     //potentially buggy so we can take more looks at this in the future.
                     val activity = view.context as AppCompatActivity
-                    activity.supportFragmentManager.beginTransaction().replace(R.id.container, myFragment).addToBackStack(null).commit() //test
+                    activity.supportFragmentManager.beginTransaction().replace(R.id.frameLayout, myFragment).addToBackStack(null).commit() //test
 
 
 

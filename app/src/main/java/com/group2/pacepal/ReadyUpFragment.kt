@@ -18,7 +18,7 @@ import android.widget.TextView
 import com.google.firebase.database.*
 import com.google.firebase.database.DataSnapshot
 
-
+//add the mile that is clicked on , or the default of 1 mile, to the database at the root of the sessionIndex as the end condition for that session
 class ReadyUpFragment : Fragment() {
 
 

@@ -13,8 +13,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/messageList"
-        android:layout_width="366dp"
-        android:layout_height="430dp"
+        android:layout_width="427dp"
+        android:layout_height="657dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/relativeLayout_message"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,7 +32,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.882">
+        app:layout_constraintVertical_bias="0.976">
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_send_image"

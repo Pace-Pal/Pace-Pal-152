@@ -48,6 +48,7 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
         val itemFriend = friends[position]
         friends[position].feature
 
+
         friend.bindFriend(itemFriend)
     }
 
@@ -101,7 +102,6 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
 
                     val activity = view.context as AppCompatActivity
                     activity.supportFragmentManager.beginTransaction().replace(R.id.container, myFragment).addToBackStack(null).commit() //test
-
 
                 }else if(friend.activityType == 2){        //case for view in
 
@@ -197,6 +197,8 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
 
 
                 }
+
+
 
             })
         }

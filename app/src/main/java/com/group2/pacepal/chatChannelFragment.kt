@@ -187,7 +187,7 @@ class chatChannelFragment: Fragment() {
             }
             messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
         }
-        adapter.notifyDataSetChanged()
+        
     }
 
     fun checkUniqueMessage() {

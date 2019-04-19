@@ -179,6 +179,7 @@ class chatChannelFragment: Fragment() {
 
                 if (count == messages.size) {
                     textMessages.add(i)
+                    Log.v("MSG contents", "Msg text: " + i.text)
 
                 } else {
                     count = count + 1

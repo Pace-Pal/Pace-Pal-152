@@ -161,10 +161,12 @@ class chatChannelFragment: Fragment() {
     fun updateRecyclerView(messages:ArrayList<TextMessage>) {
         //want to add the list of text messages that are not already in the list of ArrayList<TextMessage> so that they do not all reload
         Log.v("Listener Active", "The listener is active")
-        var count = 1
+
         Log.v("Bool Value in update", "Bool is: " + firstMessage)
         Log.v("IM_Message_Array_Size", "Size is: " + messages.size)
-        if (firstMessage == true && messages.size >= 1) {
+
+
+        if (firstMessage == true) { // && messages.size >= 1
             Log.v("In first message loop", "Success")
             for(i in messages) {
                 Log.v("MSG contents", "Msg text: " + i.text)
@@ -175,19 +177,36 @@ class chatChannelFragment: Fragment() {
 
         }
         else {
-            for (i in messages) {   // update the current TextMessage Adapter to have the new messages (I am not getting rid of the old yet)
 
-                if (count == messages.size) {
-                    textMessages.add(i)
 
-                } else {
-                    count = count + 1
-                    continue
+                var messagesSize = messages.size
+                var textMessageSize = textMessages.size
+
+                var tempIndex = 1
+                var count = 1
+                var isElem = false
+
+                //Super hokey solution where I try to use an isElem functional programming style approach to see if a member of messages exists in existing TextMessage array for the recycler view
+                //It actually seems to work decently well. Definitely slow and far from perfect. I'll use an actual object, probably a FirebaseRecyclerAdapter to do chat later.
+                for (n in messages.size downTo 1) {
+                    isElem = false
+                    for (i in textMessages.size downTo 1) {
+                        if (textMessages.get(i-1).text == messages.get(n-1).text && textMessages.get(i-1).time == messages.get(n-1).time ) {
+                            isElem = true
+                        }
+                    }
+
+                    if (isElem == false) {
+                        tempIndex = n-1
+                        break
+                    }
                 }
+
+                textMessages.add(messages.get(tempIndex))
             }
-            messageList.scrollToPosition(messageList.adapter!!.itemCount - 1) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
-        }
+
         adapter.notifyDataSetChanged()
+
     }
 
     fun checkUniqueMessage() {

@@ -8,20 +8,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".chatChannelFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/messageList"
-        android:layout_width="363dp"
-        android:layout_height="442dp"
+        android:layout_width="298dp"
+        android:layout_height="437dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/relativeLayout_message"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.858"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />  <!-- TODO: Rename ID -->
+        app:layout_constraintVertical_bias="0.794" />  <!-- TODO: Rename ID -->
 
     <RelativeLayout
         android:id="@+id/relativeLayout_message"

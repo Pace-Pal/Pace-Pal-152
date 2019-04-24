@@ -3,7 +3,7 @@ package com.group2.pacepal
 import android.content.Context
 
 
-data class Friend (val profilePictureURL: String, val userName: String, val realName: String, val uid: String, val activityType:Int, val feature: Context)
+data class Friend (val profilePictureURL: String?, val userName: String, val realName: String, val uid: String, val activityType:Int, val feature: Context)
 
 //In order
 //profilePictureURL = the url for the profile picture, ideally from Firebase Storage

@@ -28,4 +28,33 @@
     <string name="last_name">Last Name</string>
     <string name="username">Username</string>
     <string name="submit">Submit</string>
+
+    //Facebook sign in strings
+    <string name="facebook_app_id">2166744710299582</string>
+    <string name="fb_login_protocol_scheme">fb2166744710299582</string>
+    <string name="lorem_ipsum">lorem ipsum</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    //Add to strings resource file
+    <string-array name="Miles_Array">
+        <item>1 Mile</item>
+        <item>2 Mile</item>
+        <item>3 Mile</item>
+        <item>4 Miles</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
+
 </resources>

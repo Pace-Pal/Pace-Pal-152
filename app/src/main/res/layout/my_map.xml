@@ -4,16 +4,17 @@
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@drawable/gradient"
     android:layout_height="match_parent">
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="367dp"
+        android:layout_height="453dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        mapbox:layout_constraintBottom_toTopOf="@+id/sessionExitButton"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
         mapbox:layout_constraintEnd_toEndOf="parent"
         mapbox:layout_constraintHorizontal_bias="0.0"
         mapbox:layout_constraintStart_toStartOf="parent"
@@ -28,17 +29,9 @@
         android:layout_height="90dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        mapbox:layout_constraintBottom_toTopOf="@+id/sessionStatus"
         mapbox:layout_constraintStart_toStartOf="parent"
-        mapbox:layout_constraintTop_toTopOf="parent"
-        mapbox:srcCompat="@drawable/circle_profile_stats" />
-
-    <ImageView
-        android:id="@+id/palSessionPic"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        mapbox:layout_constraintEnd_toEndOf="parent"
         mapbox:layout_constraintTop_toTopOf="parent"
         mapbox:srcCompat="@drawable/circle_profile_stats" />
 
@@ -51,26 +44,10 @@
         android:layout_marginEnd="8dp"
         android:text="                        "
         android:textSize="18sp"
-        mapbox:layout_constraintEnd_toStartOf="@+id/palSessionPic"
-        mapbox:layout_constraintHorizontal_bias="0.0"
+        mapbox:layout_constraintEnd_toStartOf="@+id/sessionExitButton"
+        mapbox:layout_constraintHorizontal_bias="0.132"
         mapbox:layout_constraintStart_toEndOf="@+id/localSessionPic"
         mapbox:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/palSessionUname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="                         "
-        android:textSize="18sp"
-        mapbox:layout_constraintBottom_toTopOf="@+id/sessionStatus"
-        mapbox:layout_constraintEnd_toStartOf="@+id/palSessionPic"
-        mapbox:layout_constraintHorizontal_bias="1.0"
-        mapbox:layout_constraintStart_toEndOf="@+id/localSessionPic"
-        mapbox:layout_constraintTop_toBottomOf="@+id/localSessionUname" />
 
     <TextView
         android:id="@+id/localSessionMiles"
@@ -81,27 +58,9 @@
         android:layout_marginBottom="8dp"
         android:text="      "
         android:textSize="15sp"
-        mapbox:layout_constraintBottom_toTopOf="@+id/mapView"
-        mapbox:layout_constraintStart_toStartOf="parent"
-        mapbox:layout_constraintTop_toBottomOf="@+id/localSessionPic"
-        mapbox:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/palSessionMiles"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="      "
-        android:textSize="15sp"
-        mapbox:layout_constraintBottom_toTopOf="@+id/mapView"
-        mapbox:layout_constraintEnd_toStartOf="@+id/palMileTEXT"
-        mapbox:layout_constraintHorizontal_bias="1.0"
-        mapbox:layout_constraintStart_toEndOf="@+id/sessionStatus"
-        mapbox:layout_constraintTop_toBottomOf="@+id/palSessionPic"
-        mapbox:layout_constraintVertical_bias="0.0" />
+        mapbox:layout_constraintBottom_toTopOf="@+id/sessionStatus"
+        mapbox:layout_constraintStart_toEndOf="@+id/localSessionPic"
+        mapbox:layout_constraintTop_toBottomOf="@+id/localSessionUname" />
 
     <TextView
         android:id="@+id/localMileTEXT"
@@ -109,52 +68,50 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="132dp"
         android:layout_marginBottom="8dp"
         android:text=" "
         android:textSize="15sp"
-        mapbox:layout_constraintBottom_toTopOf="@+id/mapView"
-        mapbox:layout_constraintEnd_toStartOf="@+id/sessionStatus"
-        mapbox:layout_constraintHorizontal_bias="0.212"
+        mapbox:layout_constraintBottom_toTopOf="@+id/sessionStatus"
+        mapbox:layout_constraintEnd_toStartOf="@+id/sessionExitButton"
+        mapbox:layout_constraintHorizontal_bias="0.807"
         mapbox:layout_constraintStart_toEndOf="@+id/localSessionMiles"
-        mapbox:layout_constraintTop_toBottomOf="@+id/localSessionPic"
-        mapbox:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/sessionStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:text="   "
-        android:textSize="17sp"
-        mapbox:layout_constraintBottom_toTopOf="@+id/mapView"
-        tools:layout_editor_absoluteX="199dp" />
-
-    <TextView
-        android:id="@+id/palMileTEXT"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="8dp"
-        android:text="Miles"
-        android:textSize="15sp"
-        mapbox:layout_constraintBottom_toTopOf="@+id/mapView"
-        mapbox:layout_constraintEnd_toEndOf="parent"
-        mapbox:layout_constraintTop_toBottomOf="@+id/palSessionPic"
-        mapbox:layout_constraintVertical_bias="0.0" />
+        mapbox:layout_constraintTop_toBottomOf="@+id/localSessionUname" />
 
     <Button
         android:id="@+id/sessionExitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Quit"
+        mapbox:layout_constraintBottom_toTopOf="@+id/sessionStatus"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/remotePlayerRecycler"
+        android:layout_width="395dp"
+        android:layout_height="108dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Button"
-        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintBottom_toTopOf="@+id/mapView"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintHorizontal_bias="0.0"
+        mapbox:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/sessionStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="   "
+        mapbox:layout_constraintBottom_toTopOf="@+id/remotePlayerRecycler"
         mapbox:layout_constraintEnd_toEndOf="parent"
         mapbox:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
-

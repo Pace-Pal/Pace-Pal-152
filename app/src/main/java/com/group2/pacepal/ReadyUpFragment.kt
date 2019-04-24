@@ -6,62 +6,118 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.readyup_fragment.*
 import android.preference.PreferenceManager
-import android.content.SharedPreferences
-import android.support.v4.app.FragmentManager
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.TextView
-import android.widget.Toast
-import kotlinx.android.synthetic.main.session_activity.*
 
+import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
 
+//add the mile that is clicked on , or the default of 1 mile, to the database at the root of the sessionIndex as the end condition for that session
 class ReadyUpFragment : Fragment() {
-
 
 
     private val user = FirebaseAuth.getInstance().currentUser
     private val userid = user!!.uid
-    //private val sessionID = arguments!!.getString("sessionID")
     private val rtdb = FirebaseDatabase.getInstance().reference
-
-    //data class ReadyState(var p1Ready: String? = "",)
-
+    var playercount = 0
+    var players: MutableList<String> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-
-
 
 
         return inflater.inflate(R.layout.readyup_fragment, container, false)
         }
 
+    //Add to the ReadyUpFragment
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onResume() {
-        super.onResume()
+        val spinner = Options_Spinner
 
-        Log.d("readyUP", "resumed")
+        spinner.adapter = ArrayAdapter(activity,
+                R.layout.support_simple_spinner_dropdown_item,
+                resources.getStringArray(R.array.Miles_Array)
+        )
+
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                Log.v("Item Value", "This: " + parent.getItemAtPosition(position))
+                rtdb.child("sessionManager")
+                        .child("sessionIndex")
+                        .child(userid)
+                        .child("winCondition")
+                        .setValue(parent.getItemAtPosition(position))
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                /*Do something if nothing selected*/
+            }
+        }
+    }
+
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        //super.onResume()
+        super.onActivityCreated(savedInstanceState)
         val preferences = PreferenceManager.getDefaultSharedPreferences(this.context)
         val sessionID = preferences.getString("sessionID", "")
 
-        val palStatus = view!!.findViewById<TextView>(R.id.palStatus)
+        val adapter = ReadyUpRecyclerAdapter(players,this.context!!)
+        var recyclerInit = false
 
-        var p1Ready = false
-        var p2Ready = false
-        var absReady = false
+        val playerlistener = object : ChildEventListener {
+            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+
+                if((p0.key.toString() != "absoluteReady") && (p0.key.toString() != userid) && !players.contains(p0.key.toString())) {
+
+                    players.add(p0.key.toString())
+                }
+
+                if(!recyclerInit && (players.size > 0)){
+                    val invView = remotePlayersRecycler      //defines adapter for RecyclerView for invites
+                    invView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+                    invView.adapter = adapter
+                    recyclerInit = true
+
+                }
+                adapter.notifyDataSetChanged()
+
+            }
+            override fun onCancelled(p0: DatabaseError) {
+                Log.d("rtdb error", "lost connection to database profile updates")
+            }
+
+            //android studio yelled at me if i didn't include these three functions
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                //nothing
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                //nothing
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+                //nothing
+            }
+        }
+
+        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").addChildEventListener(playerlistener)
+
+
+
 
         var buttonState = false
 
-
         val readyClicker = readyButton
 
-        if (preferences.getBoolean("initState", false)) {
-            readyClicker.setOnClickListener {
+        readyClicker.setOnClickListener {
                 buttonState = !buttonState
 
                 if (buttonState){
@@ -73,74 +129,30 @@ class ReadyUpFragment : Fragment() {
                     yourStatus.text = "Not Ready"
                 }
 
-                if (sessionID == userid)
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child("p1Ready")
+                rtdb.child("sessionManager").child("sessionIndex").child(sessionID)
+                        .child("ready").child(user!!.uid)
                             .setValue(buttonState)
-                else
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child("p2Ready")
-                            .setValue(buttonState)
-
-
             }
-        }
 
 
 
-
-
-        val hostListener = object : ValueEventListener {
+        val readyListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                p2Ready = dataSnapshot.child("ready").child("p2Ready").value.toString().toBoolean()
+                var tempAbsolute = buttonState
+                Log.d("DATABASE_CHANGE", "changed")
 
-                if(p2Ready)
-                    palStatus.text = "Ready"
-                else
-                    palStatus.text = "Not Ready"
-
-                if(p2Ready && buttonState) {
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child("absoluteReady")
-                            .setValue(true)
-                    val editor = preferences.edit()
-                    editor.putBoolean("readyState", true)
-                    editor.commit()
-
-                    fragmentManager?.popBackStack()
-
-
-
+                for(p in players){
+                    if(!tempAbsolute)
+                        break
+                    tempAbsolute = dataSnapshot.child(p).value.toString().toBoolean()
                 }
 
+                if(tempAbsolute && (dataSnapshot.childrenCount > 2))
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID)
+                            .child("ready").child("absoluteReady").setValue(tempAbsolute)
+                    //launch session
 
-
-
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("loadPost:onCancelled ${databaseError.toException()}")
-            }
-        }
-
-        val p2Listener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                p1Ready = dataSnapshot.child("ready").child("p1Ready").value.toString().toBoolean()
-
-                if(p1Ready)
-                    palStatus.text = "Ready"
-                else
-                    palStatus.text = "Not Ready"
-
-
-
-                if(p1Ready && buttonState) {
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child("absoluteReady")
-                            .setValue(true)
-                    val editor = preferences.edit()
-                    editor.putBoolean("readyState", true)
-                    editor.commit()
-                    fragmentManager?.popBackStack()
-                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -150,12 +162,15 @@ class ReadyUpFragment : Fragment() {
 
         //Log.d("init readyUp session", sessionID)
         //Toast.makeText(context,sessionID,Toast.LENGTH_SHORT)
-        if(userid == sessionID)
-            rtdb.child("sessionManager").child("sessionIndex").child(sessionID).addValueEventListener(hostListener)
-        else {
-            rtdb.child("sessionManager").child("sessionIndex").child(sessionID).addValueEventListener(p2Listener)
-        }
+        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").addValueEventListener(readyListener)
+
     }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+
 
     companion object {
         fun newInstance(): ReadyUpFragment = ReadyUpFragment()
@@ -164,3 +179,4 @@ class ReadyUpFragment : Fragment() {
 
 
 }
+

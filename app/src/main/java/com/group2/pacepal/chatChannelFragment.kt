@@ -209,9 +209,6 @@ class chatChannelFragment: Fragment() {
 
     }
 
-    fun checkUniqueMessage() {
-        //body here
-    }
 
     fun sendMessage(message:TextMessage,  channelId: String) {
         chatChannelsCollectionRef.document(channelId)

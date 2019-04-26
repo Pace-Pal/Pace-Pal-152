@@ -1,12 +1,16 @@
 package com.group2.pacepal
 
+import android.app.Activity
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.imgmessageview_row_item.view.*
 import kotlinx.android.synthetic.main.messageview_row_item.view.*
 import kotlinx.android.synthetic.main.messageview_row_item_otheruser.view.*
 import java.text.SimpleDateFormat
@@ -16,16 +20,29 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
     companion object {
         const val USER_MESSAGE = 1
         const val OTHER_USER_MESSAGE = 2
+        const val USER_IMG_MESSAGE = 3
+        const val OTHER_USER_IMG_MESSAGE = 4
     }
 
     override fun getItemViewType(position: Int): Int {
         val type : Int
         if (messages[position].senderId  == FirebaseAuth.getInstance().currentUser!!.uid) { //TODO: Better way than this find it
-            type = USER_MESSAGE
+            if(messages[position].imagePath == "") {
+                type = USER_MESSAGE
+            } else {
+                Log.v("ImgU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+                type = USER_IMG_MESSAGE
+            }
             Log.v("IMUW", "App says I am me")
         } else {
-            type = OTHER_USER_MESSAGE
-            Log.v("IMUW", "App says I am not me")
+
+            if(messages[position].imagePath == "") {
+                type = OTHER_USER_MESSAGE
+            } else {
+                type = OTHER_USER_IMG_MESSAGE
+                Log.v("ImgMOU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+            }
+            //Log.v("IMUW", "App says I am not me")
         }
         return type
     }
@@ -34,9 +51,14 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
         val viewHolder: RecyclerView.ViewHolder = when (viewType) {
             USER_MESSAGE -> UserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.messageview_row_item, parent, false))
             // other view holders...
-            OTHER_USER_MESSAGE -> OtherUserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.messageview_row_item_otheruser, parent, false))
 
-            else ->  UserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.messageview_row_item, parent, false))
+            USER_IMG_MESSAGE -> UserImgMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
+
+            OTHER_USER_MESSAGE -> OtherUserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
+
+            OTHER_USER_IMG_MESSAGE -> UserImgMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
+
+            else ->  UserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false)) //make other user
         }
         return viewHolder
     }
@@ -51,10 +73,6 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
 
     override fun getItemCount() = messages.size
 
-    fun setMessageList(message: ArrayList<TextMessage>) {
-        messages = message
-        notifyDataSetChanged()
-    }
 
     interface UpdateViewHolder {
         fun bindViews(message: TextMessage)
@@ -89,12 +107,34 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
         private var message: TextMessage? = null
 
         override fun bindViews(message: TextMessage) {
-            this.message = message
+            //this.message = message
             //val newMessage = message as TextMessage
             view.messageTextOtherUser.text = message.text
             val dateFormat = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT)
             view.messageTextTimeOtherUser.text = dateFormat.format(message.time)
             Log.v("IMOUC", "In otherUser binding the message to left side")
+        }
+    }
+
+    class UserImgMessageViewHolder(itemView: View)
+        : RecyclerView.ViewHolder(itemView), UpdateViewHolder {
+        private var view: View = itemView
+        private var message: TextMessage? = null
+
+
+
+        override fun bindViews(message: TextMessage) {
+            //this.message = message
+
+
+            Log.v("ImgP", "i" + message.imagePath)
+            GlideApp.with(view.context)
+                    .load(message.imagePath)
+                    .placeholder( R.drawable.ic_send_black_24dp)
+                    .into(view.imageView_message_image)
+
+
+            //view.imageView_message_image
         }
     }
 

@@ -1,7 +1,11 @@
 package com.group2.pacepal
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -17,11 +21,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_chat_channel.*
 import kotlinx.android.synthetic.main.user_profile.*
+import java.io.ByteArrayOutputStream
 import java.util.*
+
+import android.content.ContentResolver
 
 /*
 Purpose:This class is what is used to handle the chatChannel functionality. It defines the user's ability to edit text and send a message. It is also
@@ -33,17 +42,18 @@ Purpose:This class is what is used to handle the chatChannel functionality. It d
         TODO: The app crashes when the chat is opened, used, closed, then reopened and used again. This is related to the scrollToPosition function so that will need to be addressed eventually.
  */
 
+private const val RC_SELECT_IMAGE = 2
+
 class chatChannelFragment: Fragment() {
 
     private val textMessages = ArrayList<TextMessage>(0)
-    private val adapter = messageAdapterMultipleViews(textMessages)
     private lateinit var messagesListenerRegistration: ListenerRegistration //will attach to other user's document to notify client of database message updates
     private val fsdb = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
     private val userid = user!!.uid
     private val dbChatChannels = fsdb.collection("chatChannels") //mispelled it, whoops
     var firstMessage = true
-
+    val adapter = messageAdapterMultipleViews(textMessages)
     //current user we want to use for later
     private val currentUserDocRef: DocumentReference
         get() = FirebaseFirestore.getInstance().document("users/${FirebaseAuth.getInstance().currentUser?.uid
@@ -52,10 +62,21 @@ class chatChannelFragment: Fragment() {
     private val chatChannelsCollectionRef = FirebaseFirestore.getInstance().collection("chatChannels")
     private lateinit var currentChannelId: String
 
+
+    //Variables for image messages
+    private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+
+    private val currentUserRef: StorageReference
+        get() = storageInstance.reference
+                .child(FirebaseAuth.getInstance().currentUser?.uid
+                        ?: throw NullPointerException("UID is null."))
+
+    //End of variables for image messaging
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?{
 
 
-        //grab the bundled arguments passed in from the friendsAdapter , activityType == 1
+
         val friendUID = arguments!!.getString("friend_uid")
         val friendUsername = arguments!!.getString("friend_userName")
         val friendRealName= arguments!!.getString("friend_real_name")
@@ -83,14 +104,14 @@ class chatChannelFragment: Fragment() {
 
             imageView_send.setOnClickListener {
                 val messageToSend =
-                        TextMessage(editText_message.text.toString(), Calendar.getInstance().time,
+                        TextMessage(editText_message.text.toString()," ", Calendar.getInstance().time,
                                 FirebaseAuth.getInstance().currentUser!!.uid,
                                 otherUserId, "test_name") //todo: Change test name
                 editText_message.setText("")
                 sendMessage(messageToSend, channelId)
             }
 
-            /*
+
             fab_send_image.setOnClickListener {
                 val intent = Intent().apply {
                     type = "image/*"
@@ -98,13 +119,9 @@ class chatChannelFragment: Fragment() {
                     putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
                 }
                 startActivityForResult(Intent.createChooser(intent, "Select Image"), RC_SELECT_IMAGE)
-            } */ */
+            }
+
         }
-
-
-    //}
-
-
 
         return view
     }
@@ -174,7 +191,6 @@ class chatChannelFragment: Fragment() {
             }
             firstMessage = false
             messageList.scrollToPosition(messageList.adapter!!.itemCount ) //todo: ensure we don't get the crash which means we need the adapter to be never empty I think.
-
         }
         else {
 
@@ -209,14 +225,61 @@ class chatChannelFragment: Fragment() {
 
     }
 
-    fun checkUniqueMessage() {
-        //body here
-    }
 
-    fun sendMessage(message:TextMessage,  channelId: String) {
+    fun sendMessage(message:Message,  channelId: String) {
         chatChannelsCollectionRef.document(channelId)
                 .collection("messages")
                 .add(message)
     }
 
+
+    //Section that handles image messaging functions [need to refactor this page]
+
+    //This code is called from the
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == RC_SELECT_IMAGE && resultCode == Activity.RESULT_OK &&
+                data != null && data.data != null) {
+
+            Log.v("ActivSucc", "Image not null")
+            val selectedImagePath = data.data!!
+
+
+            val selectedImageBmp = MediaStore.Images.Media.getBitmap( activity?.contentResolver , selectedImagePath) //This line may be broken
+
+            val outputStream = ByteArrayOutputStream()
+
+            selectedImageBmp.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+            val selectedImageBytes = outputStream.toByteArray()
+
+            data?.data?.also { uri ->
+                Log.i("Imgg", "Uri: $uri")
+                showImage(uri)
+            }
+
+            uploadMessageImage(selectedImageBytes) { imagePath ->
+                val messageToSend =
+                        TextMessage(" ", imagePath, Calendar.getInstance().time,
+                                FirebaseAuth.getInstance().currentUser!!.uid,
+                                "test_name", "test_name")
+                sendMessage(messageToSend, currentChannelId)
+            }
+        }
+    }
+
+    fun uploadMessageImage(imageBytes: ByteArray,
+                           onSuccess: (imagePath: String) -> Unit) {
+        val ref = currentUserRef.child("messages/${UUID.nameUUIDFromBytes(imageBytes)}")
+        ref.putBytes(imageBytes)
+                .addOnSuccessListener {
+                    onSuccess(ref.path)
+                }
+    }
+
+
+
+
 }
+
+

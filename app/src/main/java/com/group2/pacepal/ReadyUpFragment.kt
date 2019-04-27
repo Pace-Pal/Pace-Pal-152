@@ -31,6 +31,7 @@ class ReadyUpFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
 
+
         return inflater.inflate(R.layout.readyup_fragment, container, false)
         }
 
@@ -47,7 +48,7 @@ class ReadyUpFragment : Fragment() {
 
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 Log.v("Item Value", "This: " + parent.getItemAtPosition(position))
                 rtdb.child("sessionManager")
                         .child("sessionIndex")

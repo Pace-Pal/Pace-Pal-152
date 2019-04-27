@@ -114,4 +114,18 @@
         mapbox:layout_constraintEnd_toEndOf="parent"
         mapbox:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/playerPlace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text=" "
+        mapbox:layout_constraintBottom_toTopOf="@+id/sessionStatus"
+        mapbox:layout_constraintEnd_toStartOf="@+id/sessionExitButton"
+        mapbox:layout_constraintStart_toEndOf="@+id/localSessionUname"
+        mapbox:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

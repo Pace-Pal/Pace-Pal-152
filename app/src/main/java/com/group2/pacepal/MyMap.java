@@ -72,6 +72,7 @@ import com.squareup.picasso.Picasso;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import timber.log.Timber;
@@ -84,6 +85,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
     private double locLong = 0;          //declares variables for location
     private double locLat = 0;           //"loc" is always the local player
+    private double locPlace = 0;
     double oldLon,oldLat;
     double localDistance = 0;            //variables for calculating total distance
 
@@ -100,8 +102,8 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     private GoogleApiClient googleApiClient;         //for location API
     private LocationRequest mLocationRequest;
 
-    private List<RemotePlayer> remotePlayers =new ArrayList<RemotePlayer>();
-    private List<PolylineOptions> polylines=new ArrayList<PolylineOptions>();
+    private ArrayList<RemotePlayer> remotePlayers =new ArrayList<RemotePlayer>();
+    private ArrayList<PolylineOptions> polylines=new ArrayList<PolylineOptions>();
 
 
     String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();     //gets firebase info for current user and databases
@@ -199,10 +201,15 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         handler.postDelayed(new Runnable() {
             public void run() {
 
+                sortPlayers(remotePlayers);
+
                 TextView localDistText = findViewById(R.id.localSessionMiles);
                 String setMilesText = String.valueOf(round(localDistance,2)) + " Miles";
                 localDistText.setText(setMilesText);
                 Log.d("mymap",remotePlayers.toString());
+
+                TextView locPlaceText = findViewById(R.id.playerPlace);
+                locPlaceText.setText(String.valueOf(locPlace));
 
                 if(remotePlayers.size() != 0)
                 {
@@ -393,6 +400,46 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         rtdb = FirebaseDatabase.getInstance().getReference();
         stopUpdates = true;
         finish();
+    }
+
+
+    private void sortPlayers(ArrayList<RemotePlayer> l){
+        insertSortPlayers(l);
+
+
+        boolean locPlayerRanked = true;
+
+        for(int i = 0; i < l.size(); i++){
+            if(l.get(i).getDistance() > localDistance) {
+                l.get(i).setPlace(i + 1);
+            }
+            else{
+                if(locPlayerRanked) {
+                    locPlayerRanked = false;
+                    locPlace = i + 1;
+                }
+                l.get(i).setPlace(i+2);
+            }
+
+        }
+    }
+
+    private void insertSortPlayers(ArrayList<RemotePlayer> l){
+        for (int i = 0; i < l.size() - 1; i++)  //runs for every element -1
+        {
+            int pos = i;
+            if (l.get(pos + 1).getDistance() > l.get(pos).getDistance())  //if next value is less than current value
+            {
+                while (l.get(pos + 1).getDistance() > l.get(pos).getDistance()) //searches for proper place for value
+                {
+                    Collections.swap(l,pos+1,pos);
+                    if (pos == 0)
+                        break;
+                    else
+                        pos -= 1;
+                }
+            }
+        }
     }
 
 

@@ -74,7 +74,7 @@ class RemotePlayerRecyclerAdapter (private val players: MutableList<RemotePlayer
             if(listenerOption == "players") {
                 val postListener = object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        view.playerStatus.text = round((dataSnapshot.value.toString().toDouble()),2).toString() + " mi"
+                        view.playerStatus.text = player.getPlace().toString() + ": " + round((dataSnapshot.value.toString().toDouble()),2).toString() + " mi"
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {

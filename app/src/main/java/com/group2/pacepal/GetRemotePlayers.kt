@@ -11,7 +11,7 @@ import com.google.firebase.database.ValueEventListener
 
 data class GetRemotePlayers(val sessionID:String){
 
-    private var playerClassList: MutableList<RemotePlayer> = ArrayList()
+    private var playerClassList: ArrayList<RemotePlayer> = ArrayList()
     private var remotePlayerCount = 0
 
     init{generatePlayers()}
@@ -41,7 +41,7 @@ data class GetRemotePlayers(val sessionID:String){
         rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").addListenerForSingleValueEvent(playersGet)
     }
 
-    fun getPlayerList():MutableList<RemotePlayer> {return this.playerClassList }
+    fun getPlayerList():ArrayList<RemotePlayer> {return this.playerClassList }
     fun getPlayerCount():Int {return this.remotePlayerCount}
 
 }

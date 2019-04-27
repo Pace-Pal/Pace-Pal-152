@@ -21,6 +21,7 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
     private var long = 0.0
     private var lat = 0.0
     private var remotePolyline = PolylineOptions()
+    private var place = 0;
 
     private var pictureURL = "https://firebasestorage.googleapis.com/v0/b/pace-pal-ad8c4.appspot.com/o/defaultAVI.png?alt=media&token=6c9c47df-8151-4e5b-8843-3440e317346c"
     private var username = ""
@@ -77,6 +78,8 @@ data class RemotePlayer(val userID:String, val sessionID:String) {
     fun getLong():Double {return this.long }
     fun getLat():Double {return this.lat }
     fun getID():String { return this.userID }
+    fun getPlace(): Int { return this.place}
+    fun setPlace(x:Int) { this.place = x }
     fun getUsername():String {return this.username}
     fun getPic():String {return this.pictureURL}
     fun getPolyline(): PolylineOptions {return this.remotePolyline}

@@ -63,8 +63,8 @@ class SessionFragment : Fragment() {
 
         //**********Need to pull the value of the sharedpreference that states if tts is on or off. Default is off
 
-        var prefs = PreferenceManager.getDefaultSharedPreferences(activity)
-        ttsVal = prefs.getString("TTSValue", null )
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        ttsVal = prefs.getString("TTSValue", "preference not set" )
 
 
         //Reads off values from the strings passed in

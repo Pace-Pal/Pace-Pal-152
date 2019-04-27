@@ -2,6 +2,7 @@ package com.group2.pacepal                //The main fragment in the home menu, 
 
 import android.app.ActionBar
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.se.omapi.Session
@@ -43,7 +44,9 @@ class SessionFragment : Fragment() {
     private val invitesList = ArrayList<Invite>(0)                   //holds invites
     private val adapter = RecyclerAdapter1(invitesList)                           //adapter for RecyclerView for invites
     private val rtdb = FirebaseDatabase.getInstance().reference  //realtiem database to look for invites
+    private val TTSHolder = ArrayList<TextToSpeech>(0)
 
+    var ttsVal = "false"
 
     private lateinit var inviteRefrence: DatabaseReference
 
@@ -57,6 +60,16 @@ class SessionFragment : Fragment() {
         val invView = view?.findViewById(R.id.sessionInvites) as RecyclerView      //defines adapter for RecyclerView for invites
         invView.layoutManager = LinearLayoutManager(this.context)
         invView.adapter = adapter
+
+        //**********Need to pull the value of the sharedpreference that states if tts is on or off. Default is off
+
+        var prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        ttsVal = prefs.getString("TTSValue", null )
+
+
+        //Reads off values from the strings passed in
+        val A = TextToSpeech(this.context)
+        TTSHolder.add(A)
 
         val refreshButton = view.findViewById<Button>(R.id.inviteRefresh)    //sets listener for invite refresh
         refreshButton.setOnClickListener { refreshInvites() }
@@ -136,6 +149,9 @@ class SessionFragment : Fragment() {
                     if (task.isSuccessful) {
                         if (task.result!!.size() == 0)
                             Toast.makeText(context, "No friends found.", Toast.LENGTH_SHORT).show()
+                            if(ttsVal == "true") {
+                                TTSHolder[0].speak("No friends found")
+                            }
                         for (document in task.result!!) {
                             inviteRefrence = FirebaseDatabase.getInstance().reference                       //sets gets rtDatabase for current sessions
 
@@ -157,6 +173,9 @@ class SessionFragment : Fragment() {
 
                                                 invitesList.add(Invite(hostUsername, hostUID, sessionType,intentContext))
                                                 adapter.notifyDataSetChanged()
+                                                if(ttsVal == "true") {
+                                                    TTSHolder[0].speak("Invite: from" + hostUsername + "Mode: " + sessionType)
+                                                }
                                             }
                                         }
 
@@ -181,6 +200,11 @@ class SessionFragment : Fragment() {
 
 
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        TTSHolder[0].pause()
     }
 
 

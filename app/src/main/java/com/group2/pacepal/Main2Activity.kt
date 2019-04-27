@@ -62,6 +62,8 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         val sessionFragment = SessionFragment.newInstance()
+
+
         openFragment(sessionFragment)
 
 

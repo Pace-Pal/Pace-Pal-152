@@ -207,7 +207,8 @@ class chatChannelFragment: Fragment() {
                 for (n in messages.size downTo 1) {
                     isElem = false
                     for (i in textMessages.size downTo 1) {
-                        if (textMessages.get(i-1).text == messages.get(n-1).text && textMessages.get(i-1).time == messages.get(n-1).time ) {
+                        if ( (textMessages.get(i-1).text == messages.get(n-1).text && textMessages.get(i-1).time == messages.get(n-1).time )) {
+                                //|| (textMessages.get(i-1).imagePath == messages.get(n-1).imagePath && textMessages.get(i-1).time == messages.get(n-1).time )) {
                             isElem = true
                         }
                     }
@@ -252,11 +253,6 @@ class chatChannelFragment: Fragment() {
 
             selectedImageBmp.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
             val selectedImageBytes = outputStream.toByteArray()
-
-            data?.data?.also { uri ->
-                Log.i("Imgg", "Uri: $uri")
-                showImage(uri)
-            }
 
             uploadMessageImage(selectedImageBytes) { imagePath ->
                 val messageToSend =

@@ -10,12 +10,16 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.imgmessageview_row_item.view.*
 import kotlinx.android.synthetic.main.messageview_row_item.view.*
 import kotlinx.android.synthetic.main.messageview_row_item_otheruser.view.*
+import java.io.File
 import java.text.SimpleDateFormat
 
 class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    //val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
 
     companion object {
         const val USER_MESSAGE = 1
@@ -27,7 +31,9 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
     override fun getItemViewType(position: Int): Int {
         val type : Int
         if (messages[position].senderId  == FirebaseAuth.getInstance().currentUser!!.uid) { //TODO: Better way than this find it
-            if(messages[position].imagePath == "") {
+            Log.v("imgPL", "Value: " + messages[position].imagePath.length)
+            if(messages[position].imagePath.length == 1) {
+                Log.v("TxtU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
                 type = USER_MESSAGE
             } else {
                 Log.v("ImgU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
@@ -36,7 +42,7 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
             Log.v("IMUW", "App says I am me")
         } else {
 
-            if(messages[position].imagePath == "") {
+            if(messages[position].imagePath.length == 1) {
                 type = OTHER_USER_MESSAGE
             } else {
                 type = OTHER_USER_IMG_MESSAGE
@@ -64,7 +70,6 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) { //TODO: Used to be ViewHolder?
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         (holder as UpdateViewHolder).bindViews(messages.get(position))
 
         Log.v("Adapter I Pos", "Value is: " + (position))
@@ -116,25 +121,23 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
         }
     }
 
+    //fun pathToReference(path: String) = storageInstance.getReference(path)
+
     class UserImgMessageViewHolder(itemView: View)
         : RecyclerView.ViewHolder(itemView), UpdateViewHolder {
         private var view: View = itemView
         private var message: TextMessage? = null
-
+        val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
 
 
         override fun bindViews(message: TextMessage) {
             //this.message = message
 
-
             Log.v("ImgP", "i" + message.imagePath)
             GlideApp.with(view.context)
-                    .load(message.imagePath)
+                    .load(storageInstance.getReference(message.imagePath))
                     .placeholder( R.drawable.ic_send_black_24dp)
                     .into(view.imageView_message_image)
-
-
-            //view.imageView_message_image
         }
     }
 

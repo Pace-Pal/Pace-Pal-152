@@ -20,7 +20,7 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
 
     override fun getItemViewType(position: Int): Int {
         val type : Int
-        if (messages[position].senderId  == FirebaseAuth.getInstance().currentUser!!.uid) { //TODO: Better way than this find it
+        if (messages[position].senderId  == FirebaseAuth.getInstance().currentUser!!.uid) {
             type = USER_MESSAGE
             Log.v("IMUW", "App says I am me")
         } else {
@@ -41,8 +41,7 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
         return viewHolder
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) { //TODO: Used to be ViewHolder?
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as UpdateViewHolder).bindViews(messages.get(position))
 
         Log.v("Adapter I Pos", "Value is: " + (position))
@@ -65,7 +64,7 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
     class UserMessageViewHolder(itemView: View)
         : RecyclerView.ViewHolder(itemView), UpdateViewHolder {
 
-        // get the views reference from itemView... TODO: might not be doing this. whoops if so.
+        // get the views reference from itemView
         private var view: View = itemView
         private var message: TextMessage? = null
 

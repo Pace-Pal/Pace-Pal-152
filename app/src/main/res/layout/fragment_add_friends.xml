@@ -31,8 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addFriendsBtnAdd" />
-
+        app:layout_constraintTop_toBottomOf="@+id/addFriendsBtnAdd"/>
     <Button
         android:id="@+id/addFriendsBtnAdd"
         android:layout_width="126dp"

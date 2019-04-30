@@ -1,7 +1,7 @@
 package com.group2.pacepal
 
-import android.content.Intent
 import android.os.Bundle
+import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -10,13 +10,11 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
-import android.support.v4.view.MenuItemCompat.getActionView
+import android.support.v7.widget.SearchView;
 
-import android.support.v7.widget.SearchView
 import android.view.*
-import android.support.v4.view.MenuItemCompat
-import android.text.method.TextKeyListener.clear
-import android.view.MenuInflater
+import kotlinx.android.synthetic.main.fragment_add_friends.*
+import android.support.v4.view.MenuItemCompat.getActionView
 
 
 
@@ -34,10 +32,18 @@ class AddFriendsFragment : Fragment() {
 
     private lateinit var friendReference: DatabaseReference
 
+    override fun onCreate(@Nullable savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         //inflates the layout xml to be displayed
         val view = inflater.inflate(R.layout.fragment_add_friends, container, false)
+
 
         //initializes the recyclerView with its adapter
         val invView = view.findViewById(R.id.addFriendsList) as RecyclerView
@@ -87,6 +93,36 @@ class AddFriendsFragment : Fragment() {
         fun newInstance(): FriendRequestFragment = FriendRequestFragment()
     }
 
+    override fun onCreateOptionsMenu(menu : Menu, inflater : MenuInflater){
+        //inflater.inflate(R.menu.main, menu)
+        //super.onCreateOptionsMenu(menu, inflater)
+
+        menu.findItem(R.id.action_search).setVisible(true)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextChange(newText: String): Boolean {
+
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                // task HERE
+                addFriends(query.toLowerCase())
+                return false
+            }
+
+
+        })
+
+
+
+
+    }
+
     private fun addFriends(nameSearch: String){
         friendsList.clear() //starting here on updates
 
@@ -106,11 +142,20 @@ class AddFriendsFragment : Fragment() {
 
                             friendGet.get().addOnSuccessListener { friendProfile ->
 
+                                var profilePic = friendProfile.getString("profilepic").toString()
+                                var userName = friendProfile.getString("username").toString()
+                                var firstName = friendProfile.getString("first").toString()
+                                var lastName = friendProfile.getString("last").toString()
+                                var fullName = firstName + " " + lastName
+
                                 if(nameSearch == ""){
+
+                                }
+                                else if(userName.toLowerCase().contains(nameSearch) || fullName.toLowerCase().contains(nameSearch) ){
                                     friendsList.add(Friend(
-                                            friendProfile.getString("profilepic").toString(),
-                                            friendProfile.getString("username").toString(),
-                                            friendProfile.getString("first") + " " + friendProfile.getString("last"),
+                                            profilePic,
+                                            userName,
+                                            firstName + " " + lastName,
                                             document.id,
                                             1,
                                             intentContext

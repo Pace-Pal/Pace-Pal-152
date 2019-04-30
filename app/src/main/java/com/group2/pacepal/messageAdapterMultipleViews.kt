@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.messageview_row_item.view.*
 import kotlinx.android.synthetic.main.messageview_row_item_otheruser.view.*
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.*
 
 class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

@@ -45,4 +45,23 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <!-- Add to strings resource file -->
+    <string-array name="Miles_Array">
+        <item>1 Mile</item>
+        <item>2 Mile</item>
+        <item>3 Mile</item>
+        <item>4 Miles</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
+
+    <!-- Strings for position read by TTS -->
+    <string name="first_place">First Place</string>
+    <string name="second_place">Second Place</string>
+    <string name="third_place">Third Place</string>
+    <string name="four_place">Fourth Place </string>
+
+
 </resources>

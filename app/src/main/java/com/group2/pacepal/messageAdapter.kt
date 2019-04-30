@@ -37,12 +37,6 @@ internal class messageAdapter constructor( private var messages: ArrayList<TextM
             v.setOnClickListener { this }
         }
 
-        /*override fun onClick(v: View?) {
-            Log.d("RecyclerView", "CLICK!")       //delete if selecting friend works
-
-
-        }*/
-
         fun bindMessage(message: TextMessage) { //TODO: Bind views to test
             this.message = message
             view.messageText.text = message.text

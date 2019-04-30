@@ -14,6 +14,7 @@ Purpose: The TextMessage class is used to define the data type that is stored in
 
 
 data class TextMessage(val text: String,
+                       val imagePath: String,
                        override val time: Date,
                        override val senderId: String,
                        override val recipientId: String,
@@ -22,5 +23,5 @@ data class TextMessage(val text: String,
                        override val type: String = MessageType.TEXT
                        )
     : Message {
-    constructor() : this("", Date(0), "", "", "", 0)
+    constructor() : this("", "", Date(0), "", "", "")
 }

@@ -13,8 +13,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
-
-
+import kotlinx.android.synthetic.main.app_bar_main.*
 
 
 class FriendsFragment : Fragment() {
@@ -53,10 +52,12 @@ class FriendsFragment : Fragment() {
         friendRequestBtn.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
 
+                //toolbar.setTitle("Requests") // DOES NOT WORK.
+
                 val friendRequests = FriendRequestFragment()
 
                 val fragmentTransaction = fragmentManager?.beginTransaction()
-                fragmentTransaction?.replace(R.id.container, friendRequests)
+                fragmentTransaction?.replace(R.id.frameLayout, friendRequests)
                 fragmentTransaction?.addToBackStack(null)
                 fragmentTransaction?.commit()
 
@@ -68,10 +69,12 @@ class FriendsFragment : Fragment() {
         val addFriendsBtn = view.findViewById<Button>(R.id.addFriendsBtn)
         addFriendsBtn.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?){
+
+
                 val addFriendsFragment = AddFriendsFragment()
 
                 val fragmentTransaction = fragmentManager?.beginTransaction()
-                fragmentTransaction?.replace(R.id.container, addFriendsFragment)
+                fragmentTransaction?.replace(R.id.frameLayout, addFriendsFragment)
                 fragmentTransaction?.addToBackStack(null)
                 fragmentTransaction?.commit()
             }
@@ -96,17 +99,6 @@ class FriendsFragment : Fragment() {
         fun newInstance(): FriendsFragment = FriendsFragment()
     }
 
-    private val clickListener: View.OnClickListener = View.OnClickListener { view ->
-        when (view.id) {
-            R.id.friendsRefresh -> {
-                refreshFriends()
-                Toast.makeText(context,"Clicked!", Toast.LENGTH_SHORT).show()
-            }
-            //R.id.textview2-> {
-            //    Toast.makeText(this, "Clicked 2", Toast.LENGTH_SHORT).show()
-            //}
-        }
-    }
 
     private fun refreshFriends() {
 
@@ -143,47 +135,5 @@ class FriendsFragment : Fragment() {
                         Toast.makeText(context,"Connection error.", Toast.LENGTH_SHORT)
                 }
 
-
-
     }
-
-    private fun friendRequests(){
-        friendsList.clear() //starting here on updates
-        //inviteRefresh.text = "loading.."
-        val intentContext = this.context!!
-        val friendsFromFS = fsdb.collection("users").document(userid).collection("friendRequests")
-        friendsFromFS.get()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        if (task.result!!.size() == 0)
-                            Toast.makeText(context, "No requests at this time!", Toast.LENGTH_SHORT).show()
-                        for (document in task.result!!) {
-
-                            val friendGet = fsdb.collection("users").document(document.id)
-                            friendGet.get().addOnSuccessListener { friendProfile ->
-
-                                friendsList.add(Friend(
-                                        friendProfile.getString("profilepic").toString(),
-                                        friendProfile.getString("username").toString(),
-                                        friendProfile.getString("first") + " " + friendProfile.getString("last"),
-                                        document.id,
-                                        0,
-                                        intentContext
-                                ))
-                                adapter.notifyDataSetChanged()
-
-                            }
-
-                        }
-                        //adapter.notifyDataSetChanged()
-
-                    }
-                    else
-                        Toast.makeText(context,"Connection error.", Toast.LENGTH_SHORT)
-                }
-
-
-    }
-
-
 }

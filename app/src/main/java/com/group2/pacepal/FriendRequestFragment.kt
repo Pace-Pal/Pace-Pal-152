@@ -46,7 +46,7 @@ class FriendRequestFragment : Fragment() {
             val friendsFragment = FriendsFragment()
 
             val fragmentTransaction = fragmentManager?.beginTransaction()
-            fragmentTransaction?.replace(R.id.container, friendsFragment)
+            fragmentTransaction?.replace(R.id.frameLayout, friendsFragment)
             fragmentTransaction?.addToBackStack(null)
             fragmentTransaction?.commit()
 
@@ -58,7 +58,7 @@ class FriendRequestFragment : Fragment() {
                 val addFriendsFragment = AddFriendsFragment()
 
                 val fragmentTransaction = fragmentManager?.beginTransaction()
-                fragmentTransaction?.replace(R.id.container, addFriendsFragment)
+                fragmentTransaction?.replace(R.id.frameLayout, addFriendsFragment)
                 fragmentTransaction?.addToBackStack(null)
                 fragmentTransaction?.commit()
             }

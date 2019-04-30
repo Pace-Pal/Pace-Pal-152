@@ -2,6 +2,7 @@ package com.group2.pacepal                //The main fragment in the home menu, 
 
 import android.app.ActionBar
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.se.omapi.Session
@@ -43,7 +44,9 @@ class SessionFragment : Fragment() {
     private val invitesList = ArrayList<Invite>(0)                   //holds invites
     private val adapter = RecyclerAdapter1(invitesList)                           //adapter for RecyclerView for invites
     private val rtdb = FirebaseDatabase.getInstance().reference  //realtiem database to look for invites
+    private val TTSHolder = ArrayList<TextToSpeech>(0)
 
+    var ttsVal = "false"
 
     private lateinit var inviteRefrence: DatabaseReference
 
@@ -53,66 +56,40 @@ class SessionFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val view = inflater.inflate(R.layout.session_menu, container, false)       //inflates layout
-        val preferences = PreferenceManager.getDefaultSharedPreferences(context)               //gets SharedPreferences
 
         val invView = view?.findViewById(R.id.sessionInvites) as RecyclerView      //defines adapter for RecyclerView for invites
         invView.layoutManager = LinearLayoutManager(this.context)
         invView.adapter = adapter
+
+        //**********Need to pull the value of the sharedpreference that states if tts is on or off. Default is off
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        ttsVal = prefs.getString("TTSValue", "preference not set" )
+
+
+        //Reads off values from the strings passed in
+        val A = TextToSpeech(this.context)
+        TTSHolder.add(A)
 
         val refreshButton = view.findViewById<Button>(R.id.inviteRefresh)    //sets listener for invite refresh
         refreshButton.setOnClickListener { refreshInvites() }
 
         val socialButton = view.findViewById<Button>(R.id.socialCreate)      //sets listener for creating Social session
         socialButton.setOnClickListener{
-            val editor = preferences.edit()
-            editor.clear()
-            editor.commit()
-            //editor.putBoolean("readyState", false)
-            //editor.putBoolean("initState", false)
-            editor.putString("sessionID", userid)
-            editor.putString("sessionType","3")
-            //editor.putBoolean("friendInvited", false)
-            editor.commit()
-            val parentContext = context
-            val intent = Intent(parentContext, SessionActivity::class.java)
-            parentContext!!.startActivity(intent)
+            createSession(3)
         }
 
-        val compButton = view.findViewById<Button>(R.id.compCreate)      //sets listener for creating Social session
+        val compButton = view.findViewById<Button>(R.id.compCreate)      //sets listener for creating competitive session
         compButton.setOnClickListener{
-            val editor = preferences.edit()
-            editor.clear()
-            editor.commit()
-            //editor.putBoolean("readyState", false)
-            //editor.putBoolean("initState", false)
-            editor.putString("sessionID", userid)
-            editor.putString("sessionType","1")
-            //editor.putBoolean("friendInvited", false)
-            editor.commit()
-            val parentContext = context
-            val intent = Intent(parentContext, SessionActivity::class.java)
-            parentContext!!.startActivity(intent)
+            createSession(1)
         }
 
-        val colabButton = view.findViewById<Button>(R.id.colabCreate)      //sets listener for creating Social session
+        val colabButton = view.findViewById<Button>(R.id.colabCreate)      //sets listener for creating colab session
         colabButton.setOnClickListener{
-            val editor = preferences.edit()
-            editor.clear()
-            editor.commit()
-            //editor.putBoolean("readyState", false)
-            //editor.putBoolean("initState", false)
-            editor.putString("sessionID", userid)
-            editor.putString("sessionType","2")
-            //editor.putBoolean("friendInvited", false)
-            editor.commit()
-            val parentContext = context
-            val intent = Intent(parentContext, SessionActivity::class.java)
-            parentContext!!.startActivity(intent)
+            createSession(2)
         }
-
 
         refreshInvites()                        //initial refresh for invites
-
 
 
 
@@ -120,6 +97,32 @@ class SessionFragment : Fragment() {
     }
 
 
+    private fun createSession(sesType:Int) {  //create session
+        //init info for leader location
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("players").child(user!!.uid).child("long").setValue(0.0)
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("players").child(user!!.uid).child("lat").setValue(0.0)
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("players").child(user!!.uid).child("distance").setValue(0.0)
+        //init info for leader ready up
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("ready").child("absoluteReady").setValue(false)
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("ready").child(user!!.uid).setValue(false)
+        //init general session info
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("sessionComplete").setValue(false)
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("type").setValue(sesType)
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)               //gets SharedPreferences
+        val editor = preferences.edit()
+        editor.clear()
+        editor.commit()
+        editor.putString("sessionID", userid)
+        editor.commit()
+
+        //launches session activity
+        val parentContext = context
+        val intent = Intent(parentContext, SessionActivity::class.java)
+        parentContext!!.startActivity(intent)
+
+
+
+    }
     companion object {
         fun newInstance(): SessionFragment = SessionFragment()
     }
@@ -138,23 +141,25 @@ class SessionFragment : Fragment() {
 
 
     private fun refreshInvites() {
-        invitesList.clear()
-        //inviteRefresh.text = "loading.."
-        val intentContext = this.context!!
-        val friendsList = fsdb.collection("users").document(userid).collection("friends")
+        invitesList.clear()                              //clears any previously loaded entries
+        val intentContext = this.context!!               //i still dont know how intent works
+        val friendsList = fsdb.collection("users").document(userid).collection("friends")       //sets Firestore location for users friends list
         friendsList.get()
-                .addOnCompleteListener { task ->
+                .addOnCompleteListener { task ->                                        //gets friends list from Firestore
                     if (task.isSuccessful) {
                         if (task.result!!.size() == 0)
                             Toast.makeText(context, "No friends found.", Toast.LENGTH_SHORT).show()
+                            if(ttsVal == "true") {
+                                TTSHolder[0].speak("No friends found")
+                            }
                         for (document in task.result!!) {
-                            //invitesList.add(Invite(document.id, document.id, document.id))
-                            inviteRefrence = FirebaseDatabase.getInstance().reference
+                            inviteRefrence = FirebaseDatabase.getInstance().reference                       //sets gets rtDatabase for current sessions
 
                             val invListener = object : ValueEventListener {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                                    if(dataSnapshot.child("P2").value.toString() == userid) {
+
+                                    if(dataSnapshot.child("players").hasChild(userid)){                       //checks for any friend sessions where user is an invites player
 
                                         val host = fsdb.collection("users").document(document.id)
                                         host.get().addOnSuccessListener { hostProfile ->
@@ -162,12 +167,15 @@ class SessionFragment : Fragment() {
                                             val hostUID = document.id
                                             var sessionType = dataSnapshot.child("type").value.toString()
                                             if(sessionType != "0") {
-                                                if(sessionType == "1") sessionType = "Competitive"
+                                                if(sessionType == "1") sessionType = "Competitive"                          //sets text for location type
                                                 if(sessionType == "2") sessionType = "Collaborative"
                                                 if(sessionType == "3") sessionType = "Social"
 
                                                 invitesList.add(Invite(hostUsername, hostUID, sessionType,intentContext))
                                                 adapter.notifyDataSetChanged()
+                                                if(ttsVal == "true") {
+                                                    TTSHolder[0].speak("Invite: from" + hostUsername + "Mode: " + sessionType)
+                                                }
                                             }
                                         }
 
@@ -183,7 +191,7 @@ class SessionFragment : Fragment() {
                         }
 
 
-                        adapter.notifyDataSetChanged()
+                        adapter.notifyDataSetChanged()                         //notifies recycler of change and reloads
 
                     }
                     else
@@ -192,6 +200,11 @@ class SessionFragment : Fragment() {
 
 
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        TTSHolder[0].pause()
     }
 
 

@@ -4,6 +4,7 @@
     android:id="@+id/addFriends"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="5dp"
     android:orientation="vertical">
 
     <ImageView
@@ -31,13 +32,6 @@
         android:text=" "
         android:textAlignment="center" />
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_weight="3"
-        android:background="?android:attr/listDivider" />
-
     <Button
         android:id="@+id/addBtn"
         style="@style/Widget.AppCompat.Button"
@@ -45,6 +39,13 @@
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:text="Add" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_weight="3"
+        android:background="?android:attr/listDivider" />
 
 
 </LinearLayout>

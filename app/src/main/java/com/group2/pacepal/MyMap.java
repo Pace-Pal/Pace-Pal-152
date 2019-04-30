@@ -19,6 +19,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -69,6 +71,9 @@ import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -80,31 +85,32 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
     private double locLong = 0;          //declares variables for location
     private double locLat = 0;           //"loc" is always the local player
+    private double locPlace = 0;
     double oldLon,oldLat;
     double localDistance = 0;            //variables for calculating total distance
-    double p2Dist = 0;
-    double p2Long = 0;                   //"p2" is always the remote player
-    double p2Lat = 0;
-    double colabDistance = 0;
-    String textColabDistance = "0";
 
     String sessionType;
     String sessionID;
-    Boolean sessionHost = false;
 
     TextView sessionStatus;
 
     Boolean stopUpdates = false;             //stop interacting with database after session end
 
-    boolean locLineInit = false;            //variables for creating the line on the map view
-    boolean p2LineInit = false;
+    boolean lineInit = false;            //variables for creating the line on the map view
+
 
     private GoogleApiClient googleApiClient;         //for location API
     private LocationRequest mLocationRequest;
 
+    private ArrayList<RemotePlayer> remotePlayers =new ArrayList<RemotePlayer>();
+    private ArrayList<PolylineOptions> polylines=new ArrayList<PolylineOptions>();
+
+
     String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();     //gets firebase info for current user and databases
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DatabaseReference rtdb = FirebaseDatabase.getInstance().getReference();
+
+
 
 
     @Override
@@ -117,11 +123,12 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
-        sessionStatus = findViewById(R.id.sessionStatus);
+        //sessionStatus = findViewById(R.id.sessionStatus);
 
         //gets shared preferences to find current session
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyMap.this);
-
+        sessionID = sharedPref.getString("sessionID","");
+        sessionType = sharedPref.getString("sessionID","");
 
         findViewById(R.id.sessionExitButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,12 +140,11 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         //start updating location variables
         startLocationUpdates();
 
-        //pulls info on where to find session in database
-        String friendUID = sharedPref.getString("friendUID","");
-        sessionType = sharedPref.getString("sessionType", "");
-        sessionID = sharedPref.getString("sessionID", "");
-        if(sessionID == userid)
-            sessionHost = true;
+        //gets remote players from database
+
+        GetRemotePlayers remotePlayerClass = new GetRemotePlayers(sessionID);
+        remotePlayers = remotePlayerClass.getPlayerList();
+
 
         //accessess and displays profile for current user from firestore
         DocumentReference docRef = db.collection("users").document(userid);
@@ -161,60 +167,18 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
             }
         });
 
-        //accesses and displays player 2 from firestore
-        DocumentReference docRef2 = db.collection("users").document(friendUID);
-        docRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        TextView paltextViewUName = findViewById(R.id.palSessionUname);
-                        paltextViewUName.setText(document.get("username").toString());
-                        ImageView palUserPic = findViewById(R.id.palSessionPic);
-                        Picasso.with(getApplicationContext()).load(document.get("profilepic").toString()).into(palUserPic);
-                    } else {
-                        //Log.d(TAG, "No such document");
-                    }
-                } else {
-                    // Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
-
-        //updates location data from other player on each change
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get Post object and use the values to update the UI
-                if(sessionHost){
-                    p2Dist = dataSnapshot.child("p2distance").getValue(Double.class);
-                    p2Long = dataSnapshot.child("p2long").getValue(Double.class);
-                    p2Lat = dataSnapshot.child("p2lat").getValue(Double.class);
-                }
-                else{
-                    p2Dist =  dataSnapshot.child("p1distance").getValue(Double.class);
-                    p2Lat = dataSnapshot.child("p1lat").getValue(Double.class);
-                    p2Long  = dataSnapshot.child("p1long").getValue(Double.class);
-                }
-                // ...
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
-            }
-        };
 
 
-        //starts listening for changes above
-        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").addValueEventListener(postListener);
+        RecyclerView recyclerView = findViewById(R.id.remotePlayerRecycler);
+        RemotePlayerRecyclerAdapter adapter = new RemotePlayerRecyclerAdapter(remotePlayers,"players",this);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        recyclerView.setAdapter(adapter);
+        Log.d("mymap",remotePlayers.toString());
 
 
 
-
+        //Not sure if actually needed
         //Instantiating the GoogleApiClient
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -223,94 +187,76 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                 .build();
 
 
-        //creates handler to handle runnable for updating location
-
-        //interval to update location
-        int delay = 2000; //milliseconds
-
-
-
         //declares local players line on the map
         PolylineOptions locLine = new com.mapbox.mapboxsdk.annotations.PolylineOptions();
-        PolylineOptions p2Line = new com.mapbox.mapboxsdk.annotations.PolylineOptions();
 
-        TextView palDistText = findViewById(R.id.palSessionMiles);
+        //TextView palDistText = findViewById(R.id.palSessionMiles);
+
+        //creates handler to handle runnable for updating location
+        //interval to update location
+        int delay = 2000; //milliseconds
         Handler handler = new Handler();
 
         //runnable for updating location
         handler.postDelayed(new Runnable() {
             public void run() {
-                /*MarkerOptions marker2 = new MarkerOptions()
-                        .position(new LatLng(locLat, locLong))
-                        .title("Player1")
-                        .snippet("Player 1 location");
-                MarkerOptions marker3 = new MarkerOptions()
-                        .position(new LatLng(p2Lat,p2Long))
-                        .title("Player 2")
-                        .snippet("Player 2 location");*/
 
-                //case for ending session
-                if(p2Dist == -1 || p2Dist == -1){
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").removeEventListener(postListener);
-                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).removeValue();
-                    finish();
-                    return;
-                }
-                else if(stopUpdates) {
-
-                    return;
-                }
-
-                //case for collaborative session
-                if(sessionType == "2"){
-                    colabDistance = localDistance + p2Dist;
-                    textColabDistance = "Total Distance: " + String.valueOf(round(colabDistance,2));
-                    sessionStatus.setText(textColabDistance);
-                }
-
-                if(sessionType == "1"){
-                    if(localDistance > p2Dist)
-                        textColabDistance = "You are leading by: " + String.valueOf(round(localDistance - p2Dist,2));
-                    else
-                        textColabDistance = "You are behind by: " + String.valueOf(round(p2Dist - localDistance,2));
-
-                    sessionStatus.setText(textColabDistance);
-                }
-
-                //associates distance texts to update
-
-                palDistText.setText(String.valueOf(round(p2Dist,2)));
+                sortPlayers(remotePlayers);
 
                 TextView localDistText = findViewById(R.id.localSessionMiles);
                 String setMilesText = String.valueOf(round(localDistance,2)) + " Miles";
                 localDistText.setText(setMilesText);
+                Log.d("mymap",remotePlayers.toString());
+
+                TextView locPlaceText = findViewById(R.id.playerPlace);
+                locPlaceText.setText(String.valueOf(locPlace));
+
+                if(remotePlayers.size() != 0)
+                {
+                    adapter.notifyDataSetChanged();
+                }
+
 
                 //code for updating map view markers
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(MapboxMap mapboxMap) {
 
+                        Player tempPlayer = new Player(locLong,locLat,localDistance);
+                        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players")
+                                .child(userid).setValue(tempPlayer);
+
+
                         //if the line had not been initialized, add it to the map
-                        if(!locLineInit){
+                        if(!lineInit){
                             locLine.add(new LatLng(locLat, locLong));
                             locLine.color(Color.GREEN);
                             locLine.width(3);
                             mapboxMap.addPolyline(locLine);
-                            locLineInit = true;
+                            Log.d("myMap", "remotePlayerCount " + remotePlayerClass.getPlayerCount());
+                            for(int x = 0; x < remotePlayerClass.getPlayerCount();x++){
+                                //PolylineOptions templine = new PolylineOptions();
+
+
+                                //templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
+                                //templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
+                                //templine.color(Color.RED);
+                                //templine.width(3);
+                                //polylines.add(templine);
+                                mapboxMap.addPolyline(remotePlayers.get(x).getPolyline());
+                            }
+                            lineInit = true;
                         }
-                        else {   //add new point to polyline
-                            locLine.add(new LatLng(locLat, locLong));
-                        }
-                        if(!p2LineInit){
-                            p2Line.add(new LatLng(locLat, locLong));
-                            p2Line.color(Color.GRAY);
-                            p2Line.width(3);
-                            mapboxMap.addPolyline(p2Line);
-                            p2LineInit = true;
-                        }
-                        else{
-                            p2Line.add(new LatLng(p2Lat, p2Long));
-                        }
+
+
+
+                        locLine.add(new LatLng(locLat, locLong));
+
+                        /*for(int x = 0; x < remotePlayerClass.getPlayerCount();x++){
+                            PolylineOptions templine = new PolylineOptions();
+                            templine = polylines.get(x);
+                            templine.add(new LatLng(remotePlayers.get(x).getLat(),remotePlayers.get(x).getLat()));
+                        }*/
 
 
                         //mapboxMap.clear();/
@@ -355,6 +301,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onConnectionFailed(ConnectionResult connectionResult) {
     }
 
+
     //location code I dont entirely understand
 
     protected void startLocationUpdates() {
@@ -396,8 +343,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                 Looper.myLooper());
     }
 
-    Location loc1 = new Location("");
-    Location loc2 = new Location("");
+
 
     public void onLocationChanged(Location location) {
         // New location has now been determined
@@ -428,6 +374,9 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     public void distance(double lat1, double lat2, double lon1,
                          double lon2) {
 
+        Location loc1 = new Location(""); //old location
+        Location loc2 = new Location(""); //new location
+
         loc1.setLatitude(lat1);
         loc1.setLongitude(lon1);
         loc2.setLatitude(lat2);
@@ -435,19 +384,8 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         localDistance += loc1.distanceTo(loc2) * 0.00062137;
 
 
-        rtdb = FirebaseDatabase.getInstance().getReference();
-        Log.d("mymapsesid",sessionID);
-        Log.d("mymapuid",userid);
-        if(sessionHost) {
-            rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p1distance").setValue(localDistance);
-            rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p1long").setValue(lon2);
-            rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p1lat").setValue(lat2);
-        }
-        else{
-            rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p2distance").setValue(localDistance);
-            rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p2long").setValue(lon2);
-            rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("locations").child("p2lat").setValue(lat2);
-        }
+        Log.d("mymapsesid", sessionID);
+        Log.d("mymapuid", userid);
     }
 
     public static double round(double value, int places) {
@@ -462,6 +400,46 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         rtdb = FirebaseDatabase.getInstance().getReference();
         stopUpdates = true;
         finish();
+    }
+
+
+    private void sortPlayers(ArrayList<RemotePlayer> l){
+        insertSortPlayers(l);
+
+
+        boolean locPlayerRanked = true;
+
+        for(int i = 0; i < l.size(); i++){
+            if(l.get(i).getDistance() > localDistance) {
+                l.get(i).setPlace(i + 1);
+            }
+            else{
+                if(locPlayerRanked) {
+                    locPlayerRanked = false;
+                    locPlace = i + 1;
+                }
+                l.get(i).setPlace(i+2);
+            }
+
+        }
+    }
+
+    private void insertSortPlayers(ArrayList<RemotePlayer> l){
+        for (int i = 0; i < l.size() - 1; i++)  //runs for every element -1
+        {
+            int pos = i;
+            if (l.get(pos + 1).getDistance() > l.get(pos).getDistance())  //if next value is less than current value
+            {
+                while (l.get(pos + 1).getDistance() > l.get(pos).getDistance()) //searches for proper place for value
+                {
+                    Collections.swap(l,pos+1,pos);
+                    if (pos == 0)
+                        break;
+                    else
+                        pos -= 1;
+                }
+            }
+        }
     }
 
 

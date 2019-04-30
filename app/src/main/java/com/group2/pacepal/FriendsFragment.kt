@@ -2,12 +2,13 @@ package com.group2.pacepal
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.support.v7.widget.SearchView
+import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -29,6 +30,11 @@ class FriendsFragment : Fragment() {
 
     private lateinit var friendReference: DatabaseReference
 
+    override fun onCreate(@Nullable savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         //inflates the layout xml to be displayed
@@ -43,7 +49,7 @@ class FriendsFragment : Fragment() {
         //refresh button to refresh friends list
         val refreshButton = view.findViewById<Button>(R.id.friendsRefresh)
         refreshButton.setOnClickListener {
-            refreshFriends()
+            refreshFriends("")
         }
 
         val friendRequestBtn = view.findViewById<Button>(R.id.friendRequestsBtn)
@@ -90,7 +96,7 @@ class FriendsFragment : Fragment() {
 
 
         //initial load of friends list
-        refreshFriends()
+        refreshFriends("")
 
         return view
     }
@@ -99,8 +105,36 @@ class FriendsFragment : Fragment() {
         fun newInstance(): FriendsFragment = FriendsFragment()
     }
 
+    override fun onCreateOptionsMenu(menu : Menu, inflater : MenuInflater){
+       //inflater.inflate(R.menu.main, menu)
+        //super.onCreateOptionsMenu(menu, inflater)
 
-    private fun refreshFriends() {
+
+        menu.findItem(R.id.action_search).setVisible(true)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as SearchView
+
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextChange(newText: String): Boolean {
+
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                // task HERE
+                refreshFriends(query.toLowerCase())
+                return false
+            }
+
+        })
+
+    }
+
+
+    private fun refreshFriends(nameSearch : String) {
 
         friendsList.clear() //starting here on updates
         //inviteRefresh.text = "loading.."
@@ -116,14 +150,25 @@ class FriendsFragment : Fragment() {
                             val friendGet = fsdb.collection("users").document(document.id)
                             friendGet.get().addOnSuccessListener { friendProfile ->
 
-                                friendsList.add(Friend(
-                                        friendProfile.getString("profilepic").toString(),
-                                        friendProfile.getString("username").toString(),
-                                        friendProfile.getString("first") + " " + friendProfile.getString("last"),
-                                        document.id,
-                                        1,
-                                        intentContext
-                                ))
+                                var profilePic = friendProfile.getString("profilepic").toString()
+                                var userName = friendProfile.getString("username").toString()
+                                var firstName = friendProfile.getString("first").toString()
+                                var lastName = friendProfile.getString("last").toString()
+                                var fullName = firstName + " " + lastName
+
+                                if(userName.toLowerCase().contains(nameSearch) || fullName.toLowerCase().contains(nameSearch) ){
+                                    friendsList.add(Friend(
+                                            profilePic,
+                                            userName,
+                                            firstName + " " + lastName,
+                                            document.id,
+                                            1,
+                                            intentContext
+                                    ))
+                                }
+                                else {
+
+                                }
                                 adapter.notifyDataSetChanged()
                             }
 

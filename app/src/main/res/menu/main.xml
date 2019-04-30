@@ -9,4 +9,12 @@
         android:id="@+id/signOutBtn"
         android:orderInCategory="101"
         android:title="Sign Out" />
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="Seach"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        />
 </menu>

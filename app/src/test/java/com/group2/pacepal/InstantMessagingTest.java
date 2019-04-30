@@ -85,10 +85,13 @@ public class InstantMessagingTest {
         }
 
         textMessages.add(messages.get(tempIndex));
-    }
-
 
 
         return;
     }
+
+
+
+
+
 }

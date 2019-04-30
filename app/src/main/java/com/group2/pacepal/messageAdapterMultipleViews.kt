@@ -61,7 +61,7 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
 
             USER_IMG_MESSAGE -> UserImgMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
 
-            OTHER_USER_MESSAGE -> OtherUserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
+            OTHER_USER_MESSAGE -> OtherUserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.messageview_row_item_otheruser, parent, false))
 
             OTHER_USER_IMG_MESSAGE -> OtherUserImgMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
 

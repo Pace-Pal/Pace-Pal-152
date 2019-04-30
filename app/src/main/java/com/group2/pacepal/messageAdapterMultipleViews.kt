@@ -63,7 +63,7 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
 
             OTHER_USER_MESSAGE -> OtherUserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
 
-            OTHER_USER_IMG_MESSAGE -> UserImgMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
+            OTHER_USER_IMG_MESSAGE -> OtherUserImgMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
 
             else ->  UserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false)) //make other user
         }
@@ -126,6 +126,25 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
     //fun pathToReference(path: String) = storageInstance.getReference(path)
 
     class UserImgMessageViewHolder(itemView: View)
+        : RecyclerView.ViewHolder(itemView), UpdateViewHolder {
+        private var view: View = itemView
+        private var message: TextMessage? = null
+        val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+
+
+        override fun bindViews(message: TextMessage) {
+            //this.message = message
+
+            Log.v("ImgP", "i" + message.imagePath)
+            GlideApp.with(view.context)
+                    .load(storageInstance.getReference(message.imagePath))
+                    .placeholder( R.drawable.ic_send_black_24dp)
+                    .into(view.imageView_message_image)
+        }
+    }
+
+
+    class OtherUserImgMessageViewHolder(itemView: View)
         : RecyclerView.ViewHolder(itemView), UpdateViewHolder {
         private var view: View = itemView
         private var message: TextMessage? = null

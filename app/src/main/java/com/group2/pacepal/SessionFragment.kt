@@ -123,9 +123,8 @@ class SessionFragment : Fragment() {
         rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("type").setValue(sesType)
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)               //gets SharedPreferences
         val editor = preferences.edit()
-        editor.clear()
-        editor.commit()
         editor.putString("sessionID", userid)
+        editor.putString("sessionType", sesType.toString())
         editor.commit()
 
         //launches session activity

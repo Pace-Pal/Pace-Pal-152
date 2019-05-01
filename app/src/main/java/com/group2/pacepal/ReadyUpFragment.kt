@@ -41,10 +41,11 @@ class ReadyUpFragment : Fragment() {
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(activity)               //gets SharedPreferences
         val sessionID = preferences.getString("sessionID", "")
+        val sessionType = preferences.getString("sessionType","")
 
         val spinner = Options_Spinner
 
-        if(sessionID != userid){ //Hides the spinner from non-host users.
+        if((sessionID != userid) || (sessionType == "3")){ //Hides the spinner from non-host users.
             spinner.visibility = View.INVISIBLE
         }
         else{

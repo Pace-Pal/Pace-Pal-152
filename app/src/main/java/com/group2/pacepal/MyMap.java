@@ -133,7 +133,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         //gets shared preferences to find current session
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyMap.this);
         sessionID = sharedPref.getString("sessionID","");
-        sessionType = sharedPref.getString("sessionID","");
+        sessionType = sharedPref.getString("sessionType","");
 
         findViewById(R.id.sessionExitButton).setOnClickListener(new View.OnClickListener() {
             @Override

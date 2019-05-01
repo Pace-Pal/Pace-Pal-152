@@ -115,17 +115,17 @@ class FriendsFragment : Fragment() {
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
 
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
             override fun onQueryTextChange(newText: String): Boolean {
-
+                refreshFriends(newText.toLowerCase())
                 return false
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
-                // task HERE
-                refreshFriends(query.toLowerCase())
+
                 return false
             }
 
@@ -137,6 +137,9 @@ class FriendsFragment : Fragment() {
     private fun refreshFriends(nameSearch : String) {
 
         friendsList.clear() //starting here on updates
+
+
+
         //inviteRefresh.text = "loading.."
         val intentContext = this.context!!
         val friendsFromFS = fsdb.collection("users").document(userid).collection("friends")
@@ -150,17 +153,17 @@ class FriendsFragment : Fragment() {
                             val friendGet = fsdb.collection("users").document(document.id)
                             friendGet.get().addOnSuccessListener { friendProfile ->
 
-                                var profilePic = friendProfile.getString("profilepic").toString()
-                                var userName = friendProfile.getString("username").toString()
-                                var firstName = friendProfile.getString("first").toString()
-                                var lastName = friendProfile.getString("last").toString()
-                                var fullName = firstName + " " + lastName
+                                var friendProfilePic = friendProfile.getString("profilepic").toString()
+                                var friendUserName = friendProfile.getString("username").toString()
+                                var friendFirstName = friendProfile.getString("first").toString()
+                                var friendLastName = friendProfile.getString("last").toString()
+                                var friendFullName = friendFirstName + " " + friendLastName
 
-                                if(userName.toLowerCase().contains(nameSearch) || fullName.toLowerCase().contains(nameSearch) ){
+                                if(friendUserName.toLowerCase().contains(nameSearch) || friendFullName.toLowerCase().contains(nameSearch)){
                                     friendsList.add(Friend(
-                                            profilePic,
-                                            userName,
-                                            firstName + " " + lastName,
+                                            friendProfilePic,
+                                            friendUserName,
+                                            friendFirstName + " " + friendLastName,
                                             document.id,
                                             1,
                                             intentContext

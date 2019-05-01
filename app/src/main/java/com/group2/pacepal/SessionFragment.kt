@@ -172,7 +172,7 @@ class SessionFragment : Fragment() {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
 
 
-                                    if(dataSnapshot.child("players").hasChild(userid)){                       //checks for any friend sessions where user is an invites player
+                                    if(dataSnapshot.child("invite").hasChild(userid)){                       //checks for any friend sessions where user is an invites player
 
                                         val host = fsdb.collection("users").document(document.id)
                                         host.get().addOnSuccessListener { hostProfile ->

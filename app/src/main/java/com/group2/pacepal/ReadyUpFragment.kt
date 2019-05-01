@@ -39,28 +39,40 @@ class ReadyUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val preferences = PreferenceManager.getDefaultSharedPreferences(activity)               //gets SharedPreferences
+        val sessionID = preferences.getString("sessionID", "")
+
         val spinner = Options_Spinner
 
-        spinner.adapter = ArrayAdapter(activity,
-                R.layout.support_simple_spinner_dropdown_item,
-                resources.getStringArray(R.array.Miles_Array)
-        )
+        if(sessionID != userid){ //Hides the spinner from non-host users.
+            spinner.visibility = View.INVISIBLE
+        }
+        else{
 
+            spinner.adapter = ArrayAdapter(activity,
+                    R.layout.support_simple_spinner_dropdown_item,
+                    resources.getStringArray(R.array.Miles_Array)
+            )
 
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                Log.v("Item Value", "This: " + parent.getItemAtPosition(position))
-                rtdb.child("sessionManager")
-                        .child("sessionIndex")
-                        .child(userid)
-                        .child("winCondition")
-                        .setValue(parent.getItemAtPosition(position))
-            }
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    Log.v("Item Value", "This: " + parent.getItemAtPosition(position))
+                    rtdb.child("sessionManager")
+                            .child("sessionIndex")
+                            .child(userid)
+                            .child("winCondition")
+                            .setValue(parent.getItemAtPosition(position))
+                }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                /*Do something if nothing selected*/
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                    /*Do something if nothing selected*/
+                }
             }
         }
+
+
+
+
     }
 
 
@@ -152,7 +164,14 @@ class ReadyUpFragment : Fragment() {
                 if(tempAbsolute && (dataSnapshot.childrenCount > 2))
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID)
                             .child("ready").child("absoluteReady").setValue(tempAbsolute)
-                    //launch session
+                //launch session
+
+                if(dataSnapshot.child("sessionManager").child("sessionIndex").child(sessionID).exists()){
+                    activity?.finish()
+                }
+                else{
+
+                }
 
             }
 

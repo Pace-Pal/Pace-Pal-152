@@ -433,9 +433,9 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         for (int i = 0; i < l.size() - 1; i++)  //runs for every element -1
         {
             int pos = i;
-            if (l.get(pos + 1).getDistance() > l.get(pos).getDistance())  //if next value is less than current value
+            if (l.get(pos + 1).getDistance() < l.get(pos).getDistance())  //if next value is less than current value
             {
-                while (l.get(pos + 1).getDistance() > l.get(pos).getDistance()) //searches for proper place for value
+                while (l.get(pos + 1).getDistance() < l.get(pos).getDistance()) //searches for proper place for value
                 {
                     Collections.swap(l,pos+1,pos);
                     if (pos == 0)

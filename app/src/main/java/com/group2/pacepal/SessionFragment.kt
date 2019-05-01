@@ -74,13 +74,15 @@ class SessionFragment : Fragment() {
 
         //**********Need to pull the value of the sharedpreference that states if tts is on or off. Default is off
 
-        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
-        ttsVal = prefs.getString("TTSValue", "preference not set" )
+        var prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        ttsVal = prefs.getString("TTSValue", "potato" )
 
 
         //Reads off values from the strings passed in
         val A = TextToSpeech(this.context)
         TTSHolder.add(A)
+
+
 
         val refreshButton = view.findViewById<Button>(R.id.inviteRefresh)    //sets listener for invite refresh
         refreshButton.setOnClickListener { refreshInvites() }

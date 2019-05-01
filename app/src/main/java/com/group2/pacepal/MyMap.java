@@ -85,9 +85,12 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
     private double locLong = 0;          //declares variables for location
     private double locLat = 0;           //"loc" is always the local player
-    private double locPlace = 0;
+    private int locPlace = 0;
+    private int locOldPlace = 0;
     double oldLon,oldLat;
     double localDistance = 0;            //variables for calculating total distance
+
+    private TextToSpeech TSS;
 
     String sessionType;
     String sessionID;
@@ -122,6 +125,8 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         setContentView(R.layout.my_map);
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
+
+        TSS = new TextToSpeech(this);
 
         //sessionStatus = findViewById(R.id.sessionStatus);
 
@@ -216,7 +221,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                     adapter.notifyDataSetChanged();
                 }
 
-
+                placeChangeSpeech();
                 //code for updating map view markers
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
@@ -266,8 +271,8 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
                         Log.d("MapRefresh", "refreshed");
 
-
                     }
+
                 });
                 handler.postDelayed(this, delay);
             }
@@ -442,6 +447,13 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         }
     }
 
+    private void placeChangeSpeech(){
+        if(locPlace != locOldPlace){
+            TSS.speak("you are now in place" + locPlace);
+            locOldPlace = locPlace;
+        }
+    }
+
 
     @Override
     public void onResume() {
@@ -467,7 +479,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-
+        TSS.pause();
     }
 
     @Override

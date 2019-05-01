@@ -62,6 +62,7 @@ class RecyclerAdapter1 (private val invites: ArrayList<Invite>)  : RecyclerView.
             editor.putString("sessionType",invite.type)
             editor.putBoolean("initState", true)
             editor.commit()
+
             view.inviteButton.setOnClickListener{
                 val parentContext = invite.feature
                 val intent = Intent(parentContext, SessionActivity::class.java)

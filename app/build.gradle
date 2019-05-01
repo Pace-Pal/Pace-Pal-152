@@ -27,11 +27,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+
+
 }
 repositories {
     mavenCentral()
-
     google()
+
 }
 dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.6'
@@ -60,8 +67,8 @@ dependencies {
     implementation 'com.facebook.android:facebook-login:[4,5)'
 
     //glide (for images messaging)
-    implementation 'com.github.bumptech.glide:glide:4.6.1'
-    kapt 'com.github.bumptech.glide:compiler:4.6.1'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    kapt 'com.github.bumptech.glide:compiler:4.9.0'
 
     //firebase storage
     implementation 'com.firebaseui:firebase-ui-storage:3.2.2'
@@ -75,7 +82,22 @@ dependencies {
     //for kotlin annotations
     apply plugin: 'kotlin-kapt'
 
+
+    // Required -- JUnit 4 framework
+    testImplementation 'junit:junit:4.12'
+    // Optional -- Robolectric environment
+    testImplementation 'androidx.test:core:1.0.0'
+    // Optional -- Mockito framework
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.0.6'
+    testImplementation 'com.nhaarman:mockito-kotlin-kt1.1:1.5.0'
+    testImplementation 'org.amshove.kluent:kluent:1.14'
+
+
 }
+
+
 
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android-extensions'

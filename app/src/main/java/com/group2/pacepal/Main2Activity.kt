@@ -11,14 +11,11 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.app_bar_main.*
-
-
+import android.view.inputmethod.EditorInfo
+import android.support.v7.widget.SearchView
 
 
 class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
-
-
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_friends -> {
@@ -56,12 +53,13 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         super.onCreate(savedInstanceState)
         setContentView(R.layout.app_bar_main)
         //toolbar = supportActionBar!!
+
         val navigation: BottomNavigationView = findViewById(R.id.navigationView)
         setSupportActionBar(toolbar)
-
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         val sessionFragment = SessionFragment.newInstance()
+
 
 
         openFragment(sessionFragment)
@@ -77,6 +75,29 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
+
+        menu.findItem(R.id.action_search).setVisible(false)
+
+        /*
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextChange(newText: String): Boolean {
+
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                // task HERE
+                Toast.makeText(applicationContext, "Test!", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+        })
+        */
+
         return true
     }
 

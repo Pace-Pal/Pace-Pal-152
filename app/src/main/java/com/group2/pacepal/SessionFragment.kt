@@ -6,13 +6,10 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.se.omapi.Session
+import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import com.google.api.Distribution
 import com.google.firebase.auth.FirebaseAuth
@@ -31,6 +28,7 @@ import kotlinx.android.synthetic.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.support.v7.widget.RecyclerView.LayoutManager
+import android.view.*
 import java.util.*
 
 //import com.google.firebase.database.ValueEventListener
@@ -53,6 +51,19 @@ class SessionFragment : Fragment() {
 
     private lateinit var linearLayoutManager:LinearLayoutManager
 
+    /*
+    override fun onCreate(@Nullable savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu : Menu, inflater : MenuInflater){
+        inflater.inflate(R.menu.main, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+
+        //menu.findItem(R.id.searchNewFriends).setVisible(false)
+    }
+*/
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val view = inflater.inflate(R.layout.session_menu, container, false)       //inflates layout
@@ -208,6 +219,8 @@ class SessionFragment : Fragment() {
         super.onPause()
         TTSHolder[0].pause()
     }
+
+
 
 
 }

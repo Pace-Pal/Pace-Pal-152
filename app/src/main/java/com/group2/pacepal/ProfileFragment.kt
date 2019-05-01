@@ -56,7 +56,7 @@ class ProfileFragment : Fragment() {
                     profileUsername.text = currentProfile.getString("username")
                     profileMiles.text = currentProfile.getDouble("miles").toString()
                     profileChallenges.text = currentProfile.get("challenges").toString()
-                    profileRealName.text = currentProfile.get("first").toString() + " " + currentProfile.get("last").toString()
+                    profileRealName.text = currentProfile.get("first").toString() + " " + currentProfile?.get("last").toString()
                     Picasso.with(context).load(currentProfile.getString("profilepic")).fit().into(profileImage)
 
 

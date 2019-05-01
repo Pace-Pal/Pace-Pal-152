@@ -20,7 +20,7 @@ import java.util.*
 
 class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    //val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+
 
     companion object {
         const val USER_MESSAGE = 1

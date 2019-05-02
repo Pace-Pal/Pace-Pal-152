@@ -228,6 +228,7 @@
         custom:colorLeft="@color/green_light"
         custom:colorRight="@color/green_dark"
         custom:drawableLeft="@drawable/trophy"
+        custom:rightPartWidth="500dp"
         android:layout_width="match_parent"
         android:layout_height="59dp"
         android:layout_marginTop="32dp"

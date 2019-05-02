@@ -122,6 +122,7 @@ class ProfileFragment : Fragment() {
     }
 
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+<<<<<<< HEAD
         super.onViewCreated(view, savedInstanceState)
 
 
@@ -129,16 +130,20 @@ class ProfileFragment : Fragment() {
 
 
 
+=======
+         super.onViewCreated(view, savedInstanceState)
+         val userid = user!!.uid
+>>>>>>> b15a71b5c170fb9339b27b4e3770c84c732f9d3e
 
 
          db.collection("users").document(userid).collection("Achievements")
                  .get()
-                 .addOnSuccessListener { documents->
-                     var item : Achievement
+                 .addOnSuccessListener { documents ->
+                     var item: Achievement
                      for (document in documents) {
 
                          var temp = document.toObject(Achievement::class.java)
-                         var tempView : TextView
+                         var tempView: TextView
                          tempView = TextView(activity)
                          AchievementPanel.addView(tempView)
                          tempView.layoutParams.height = 1000
@@ -147,28 +152,28 @@ class ProfileFragment : Fragment() {
                          textViewList.add(tempView)
 
                      }
-                    }
+                 }
 
 
+/*
+         val docRef = db.collection("users").document(userid)
+         docRef.get().addOnCompleteListener { task ->
+             if (task.isSuccessful) {
+                 val currentProfile = task.result
+                 if (currentProfile!!.exists()) {
+                     var myMiles = currentProfile.getDouble("miles").toString()
 
-
-        val achievementView2 = achievement_view
-
-        // show the achievement with a single line
-        achievementView2.show("Raging Runner!", "You unlocked an achievement :)")
-
-        // var task : Task<DocumentSnapshot> = docRef.get()
-        // var snap : DocumentSnapshot = Tasks.await(task)
-
-         getMiles()
-
-
-    }
-
-
+                     if ((myMiles == "0.0")) {
+                         val achievementView1 = achievement_view
+                         achievementView1.show("Noob", "You succesfully  joined the app :)")
+                     }
+                 }
+             }
+         }
+     }
     companion object {
         fun newInstance(): ProfileFragment = ProfileFragment()
-    }
+    } */
 
     fun getMiles() {
         db.collection("users").document(userid).

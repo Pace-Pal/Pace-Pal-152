@@ -60,6 +60,11 @@
         <activity
             android:name=".SessionActivity"
             android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".Achievement_Page"
+            android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

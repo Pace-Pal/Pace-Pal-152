@@ -145,36 +145,20 @@ class ProfileFragment : Fragment() {
                  }
 
 
-/*
-         val docRef = db.collection("users").document(userid)
-         docRef.get().addOnCompleteListener { task ->
-             if (task.isSuccessful) {
-                 val currentProfile = task.result
-                 if (currentProfile!!.exists()) {
-                     var myMiles = currentProfile.getDouble("miles").toString()
+         getMiles()
 
-                     if ((myMiles == "0.0")) {
-                         val achievementView1 = achievement_view
-                         achievementView1.show("Noob", "You succesfully  joined the app :)")
-                     }
+         val btn_click_me : Button = achievements_b
+        
+// set on-click listener
+         btn_click_me.setOnClickListener {
 
-                     if ((myMiles == "3.0")) {
-                         val achievementView1 = achievement_view
-                         achievementView1.show("You doin OK", "You have a lifetime distance of 3 miles.")
-                     }
-
-                     if ((myMiles == "5.0" && isNotElem() == True)) {
-                         val achievementView1 = achievement_view
-                         achievementView1.show("Master of Athletes", "5 miles ran. Not amazing, but we'll make you feel good.")
-                         //Add achievement to db
-                     }
-                 }
-             }
+             val intent = Intent(activity, Achievement_Page::class.java)
+// To pass any data to next activity
+             //intent.putExtra("keyIdentifier", value)
+// start your next activity
+             startActivity(intent)
          }
-     }
-    companion object {
-        fun newInstance(): ProfileFragment = ProfileFragment()
-    } */
+
 
      }
 
@@ -196,12 +180,26 @@ class ProfileFragment : Fragment() {
 
                         }
 
-                        //given you have a total of 5 miles, you get tachievement A if it does not exists
-                        //Put your logic here 
-                        for(achievement in AchievementList) {
-                            achievement.Title
-                            return true
+
+                        if ((miles >= 0)) {
+                            val achievementView1 = achievement_view
+                            achievementView1.show("Noob", "You succesfully  joined the app :)")
                         }
+
+                        if ((miles == 3)) {
+                            val achievementView1 = achievement_view
+                            achievementView1.show("You doin OK", "You have a lifetime distance of 3 miles.")
+                        }
+
+                        if (miles == 5 && isNotElem(AchievementList, "Master of Athletes") ) {
+                            val achievementView1 = achievement_view
+                            achievementView1.show("Master of Athletes", "5 miles ran. Not amazing, but we'll make you feel good.")
+                            //Add achievement to db
+                        }
+
+                        //given you have a total of 5 miles, you get tachievement A if it does not exists
+                        //Put your logic here
+
 
 
 
@@ -211,16 +209,26 @@ class ProfileFragment : Fragment() {
 
 
         }
+
+
     }
 
 
+    fun isNotElem ( a : ArrayList <Achievement>, title : String) : Boolean {
+        var value = false
+        for(achievement in a) {
+            if (achievement.Title == title) {
+                return false
+            }
 
-    fun ( a : ArrayList <Achievement>) {
+        }
+        return true
 
-
-        //do the logic
-
-        return false
     }
+
+    companion object {
+        fun newInstance(): ProfileFragment = ProfileFragment()
+    }
+
 
 }

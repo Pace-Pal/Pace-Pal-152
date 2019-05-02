@@ -1,12 +1,9 @@
 package com.group2.pacepal
 
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,14 +13,14 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 
 
-class ProfileSettingFragment : Fragment() {
+class SettingsPageFragment : Fragment() {
 
     val stringList = arrayOf("Account Settings", "Change Profile Picture", "Text To Speech On/Off")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         //inflates the layout xml to be displayed
-        val view = inflater.inflate(R.layout.fragment_profile_setting, container, false)
+        val view = inflater.inflate(R.layout.fragment_settings_page, container, false)
 
         val list = view.findViewById<ListView>(R.id.settingListView)
         //listView.
@@ -40,12 +37,18 @@ class ProfileSettingFragment : Fragment() {
 
             override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 if (position == 0){
-                    Toast.makeText(context, "Coming Soon!", Toast.LENGTH_SHORT).show()
+                    val accountSettings = AccountSettingsFragment()
+
+                    val fragmentTransaction = fragmentManager?.beginTransaction()
+                    fragmentTransaction?.replace(R.id.frameLayout, accountSettings)
+                    fragmentTransaction?.addToBackStack(null)
+                    fragmentTransaction?.commit()
                 }
-                if (position==1){
+                else if (position==1){
                     val intent = Intent(context, ProfileImagesActivity::class.java)
                     startActivity(intent)
-                } else { //add value and toast. Value is on or off. Toast states which is which.
+                }
+                else if(position==2){ //add value and toast. Value is on or off. Toast states which is which.
                     var value = preferences.getString("TTSValue", null)
                     if (value == "true") {
                         editor.putString("TTSValue", "false")

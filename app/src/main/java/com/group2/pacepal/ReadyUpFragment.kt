@@ -27,6 +27,7 @@ class ReadyUpFragment : Fragment() {
     private val rtdb = FirebaseDatabase.getInstance().reference
     var playercount = 0
     var players: MutableList<String> = ArrayList()
+    var keyList: MutableList<String> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -100,6 +101,8 @@ class ReadyUpFragment : Fragment() {
                     recyclerInit = true
 
                 }
+
+                keyList.add(p0.key.toString())
                 adapter.notifyDataSetChanged()
 
             }
@@ -117,7 +120,9 @@ class ReadyUpFragment : Fragment() {
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {
-                //nothing
+                //var index = keyList.indexOf(p0.key.toString())
+                //players.removeAt(index)
+                //adapter.notifyDataSetChanged()
             }
         }
 

@@ -93,6 +93,7 @@ class SessionFragment : Fragment() {
         val compButton = view.findViewById<Button>(R.id.compCreate)      //sets listener for creating competitive session
         compButton.setOnClickListener{
             createSession(1)
+            adapter.notifyDataSetChanged()
         }
 
         val colabButton = view.findViewById<Button>(R.id.colabCreate)      //sets listener for creating colab session

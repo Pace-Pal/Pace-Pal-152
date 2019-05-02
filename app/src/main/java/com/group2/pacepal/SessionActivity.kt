@@ -1,6 +1,7 @@
 package com.group2.pacepal
 
 import android.Manifest
+import android.R.attr.data
 import android.app.PendingIntent.getActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -41,7 +42,7 @@ class SessionActivity : AppCompatActivity() {
 
         Log.d("sessionActivity", "init")
 
-
+        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("invite").child(userid).removeValue()
 
         if (ContextCompat.checkSelfPermission(this,          //checks if app has location permission
                         Manifest.permission.ACCESS_FINE_LOCATION)
@@ -68,7 +69,6 @@ class SessionActivity : AppCompatActivity() {
         inviteButton.setOnClickListener{openFragment(SessionInitFragment.newInstance())}  //invite function
 
 
-
         //sets listener for when the session is ready to start
         val stateCheck = object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -79,6 +79,7 @@ class SessionActivity : AppCompatActivity() {
                 //if absoluteReady for the session is true, the session is ready to start
                 Log.d("sessionAct", "state checked")
                 Log.d("sessionAct", dataSnapshot.value.toString())
+
                 if(dataSnapshot.value == true) {                       //checks for any friend sessions where user is an invites player
                     Log.d("sessionActivity", "Launching session")
                     //val intent = Intent(this@SessionActivity, MyMap::class.java)

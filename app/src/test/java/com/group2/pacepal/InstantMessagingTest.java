@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.mock;
 
-
+/*
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class InstantMessagingTest {
 
@@ -30,7 +30,7 @@ public class InstantMessagingTest {
                  search, there are no messages in the spylist that match the message selected from the DynamicSpyList. A match is when a mockMessage's
                  time and messageText values are equal.
 
-    */
+    *../
 
     @Test
     public void isElem() {
@@ -58,7 +58,7 @@ public class InstantMessagingTest {
         Mockito.when(mockMessage3.getMessageText()).thenReturn("Garbanzos");
 
         Mockito.when(mockMessage4.getTimes()).thenReturn("1:15 PM");
-        Mockito.when(mockMessage4.getMessageText()).thenReturn("Clamato"); */
+        Mockito.when(mockMessage4.getMessageText()).thenReturn("Clamato");
 
         List DynamicSpyList = Mockito.spy(new ArrayList());
         DynamicSpyList.add(mockMessage1);
@@ -94,4 +94,4 @@ public class InstantMessagingTest {
 
 
 
-}
+} */

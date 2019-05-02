@@ -108,9 +108,7 @@ class ProfileFragment : Fragment() {
 
         }
 
-        //var achievementPanelVal = AchievementPanel
 
-        //Dynamic addition test
 
 
 
@@ -122,18 +120,10 @@ class ProfileFragment : Fragment() {
     }
 
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-<<<<<<< HEAD
-        super.onViewCreated(view, savedInstanceState)
 
 
-        var docRef =  db.collection("users").document(userid)
+         var docRef = db.collection("users").document(userid)
 
-
-
-=======
-         super.onViewCreated(view, savedInstanceState)
-         val userid = user!!.uid
->>>>>>> b15a71b5c170fb9339b27b4e3770c84c732f9d3e
 
 
          db.collection("users").document(userid).collection("Achievements")
@@ -175,6 +165,8 @@ class ProfileFragment : Fragment() {
         fun newInstance(): ProfileFragment = ProfileFragment()
     } */
 
+     }
+
     fun getMiles() {
         db.collection("users").document(userid).
                 get().addOnSuccessListener { document ->
@@ -212,7 +204,7 @@ class ProfileFragment : Fragment() {
 
 
 
-    fun (a : ArrayList <Achivemenent>) {
+    fun ( a : ArrayList <Achievement>) {
 
 
         //do the logic

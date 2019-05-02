@@ -72,7 +72,7 @@ class SessionInitFragment : Fragment() {
                             friendGet.get().addOnSuccessListener { friendProfile ->
 
                                 friendsList.add(Friend(
-                                        friendProfile.getString("profliepic").toString(),
+                                        friendProfile.getString("profilepic").toString(),
                                         friendProfile.getString("username").toString(),
                                         friendProfile.getString("first") + " " + friendProfile.getString("last"),
                                         document.id,

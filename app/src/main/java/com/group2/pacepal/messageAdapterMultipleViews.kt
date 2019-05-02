@@ -16,10 +16,11 @@ import kotlinx.android.synthetic.main.messageview_row_item.view.*
 import kotlinx.android.synthetic.main.messageview_row_item_otheruser.view.*
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.*
 
 class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    //val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+
 
     companion object {
         const val USER_MESSAGE = 1
@@ -60,14 +61,15 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
 
             USER_IMG_MESSAGE -> UserImgMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
 
-            OTHER_USER_MESSAGE -> OtherUserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
+            OTHER_USER_MESSAGE -> OtherUserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.messageview_row_item_otheruser, parent, false))
 
-            OTHER_USER_IMG_MESSAGE -> UserImgMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
+            OTHER_USER_IMG_MESSAGE -> OtherUserImgMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false))
 
             else ->  UserMessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.imgmessageview_row_item, parent, false)) //make other user
         }
         return viewHolder
     }
+
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) { //TODO: Used to be ViewHolder?
         (holder as UpdateViewHolder).bindViews(messages.get(position))
@@ -88,7 +90,7 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
     class UserMessageViewHolder(itemView: View)
         : RecyclerView.ViewHolder(itemView), UpdateViewHolder {
 
-        // get the views reference from itemView... TODO: might not be doing this. whoops if so.
+        // get the views reference from itemView
         private var view: View = itemView
         private var message: TextMessage? = null
 
@@ -124,6 +126,25 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
     //fun pathToReference(path: String) = storageInstance.getReference(path)
 
     class UserImgMessageViewHolder(itemView: View)
+        : RecyclerView.ViewHolder(itemView), UpdateViewHolder {
+        private var view: View = itemView
+        private var message: TextMessage? = null
+        val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+
+
+        override fun bindViews(message: TextMessage) {
+            //this.message = message
+
+            Log.v("ImgP", "i" + message.imagePath)
+            GlideApp.with(view.context)
+                    .load(storageInstance.getReference(message.imagePath))
+                    .placeholder( R.drawable.ic_send_black_24dp)
+                    .into(view.imageView_message_image)
+        }
+    }
+
+
+    class OtherUserImgMessageViewHolder(itemView: View)
         : RecyclerView.ViewHolder(itemView), UpdateViewHolder {
         private var view: View = itemView
         private var message: TextMessage? = null

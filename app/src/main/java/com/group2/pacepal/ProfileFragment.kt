@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.squareup.picasso.Picasso
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.tasks.Tasks
 import kotlinx.android.synthetic.*
 import org.w3c.dom.Text
 import java.util.*
@@ -46,6 +47,8 @@ class ProfileFragment : Fragment() {
     lateinit var textView : TextView
     val db = FirebaseFirestore.getInstance()
     val user = FirebaseAuth.getInstance().currentUser
+    val userid = user!!.uid
+    var miles = 5
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -105,9 +108,7 @@ class ProfileFragment : Fragment() {
 
         }
 
-        //var achievementPanelVal = AchievementPanel
 
-        //Dynamic addition test
 
 
 
@@ -119,8 +120,10 @@ class ProfileFragment : Fragment() {
     }
 
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-         super.onViewCreated(view, savedInstanceState)
-         val userid = user!!.uid
+
+
+         var docRef = db.collection("users").document(userid)
+
 
 
          db.collection("users").document(userid).collection("Achievements")
@@ -142,15 +145,7 @@ class ProfileFragment : Fragment() {
                  }
 
 
-         /*Example of how to declare an achievement
-        val achievementView2 = achievement_view
-
-        // show the achievement with a single line
-        achievementView2.show("Raging Runner!", "You unlocked an achievement :)")
-
-        if ((myMiles == "0.0") && "Raging Runner".exists()) {
-         */
-
+/*
          val docRef = db.collection("users").document(userid)
          docRef.get().addOnCompleteListener { task ->
              if (task.isSuccessful) {
@@ -179,7 +174,53 @@ class ProfileFragment : Fragment() {
      }
     companion object {
         fun newInstance(): ProfileFragment = ProfileFragment()
+    } */
+
+     }
+
+    fun getMiles() {
+        db.collection("users").document(userid).
+                get().addOnSuccessListener { document ->
+            if (document != null) {
+                miles = document.get("miles").toString().toInt()
+            }
+
+
+            db.collection("users").document(userid).collection("Achievements")
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents) {
+                            var temp = document.toObject(Achievement::class.java)
+                            AchievementList.add(temp)
+                            Log.v("silly", "heeey" + miles)
+
+                        }
+
+                        //given you have a total of 5 miles, you get tachievement A if it does not exists
+                        //Put your logic here 
+                        for(achievement in AchievementList) {
+                            achievement.Title
+                            return true
+                        }
+
+
+
+
+                    }
+
+
+
+        }
     }
 
+
+
+    fun ( a : ArrayList <Achievement>) {
+
+
+        //do the logic
+
+        return false
+    }
 
 }

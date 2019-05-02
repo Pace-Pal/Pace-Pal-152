@@ -17,12 +17,11 @@ data class GetRemotePlayers(val sessionID:String, val c: Context){
     private var remotePlayerCount = 0
     private var winCondition = 0
     private var sessionEnded = false
-    private lateinit var contextt:Context
+    private var contextt = c
 
 
     init{generatePlayers()
-    grabWinCondition()
-    contextt = c}
+    grabWinCondition() }
 
     private fun generatePlayers(){
         val rtdb = FirebaseDatabase.getInstance().reference

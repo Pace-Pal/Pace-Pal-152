@@ -147,7 +147,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
         //gets remote players from database
 
-        GetRemotePlayers remotePlayerClass = new GetRemotePlayers(sessionID);
+        GetRemotePlayers remotePlayerClass = new GetRemotePlayers(sessionID, this);
         remotePlayers = remotePlayerClass.getPlayerList();
 
 

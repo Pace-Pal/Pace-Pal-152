@@ -1,6 +1,7 @@
 package com.group2.pacepal;
 
 import android.content.Context;
+import com.group2.pacepal.AchievementUnlocked;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -75,8 +76,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     CallbackManager mCallbackManager = CallbackManager.Factory.create();
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +108,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         EditText username = findViewById(R.id.unameField);
 
 
-
         //facebook shite
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
@@ -137,13 +135,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             }
 
 
-
-
         });
-
-
-
-
 
 
         // Configure sign-in to request the user's ID, email address, and basic
@@ -159,7 +151,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         printHashKey(this);
 
 
-
         String emailParam = email.getText().toString();
         String usernameParam = username.getText().toString();
         String passwordParam = password.getText().toString();
@@ -170,13 +161,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
 
 
-
     //todo: ensure fields for email and password are unique before getting here
     private void createAccount() {
 
         EditText passwordParam = findViewById(R.id.password_field);
         EditText emailParam = findViewById(R.id.emailField);
-        EditText fName = (EditText)findViewById(R.id.fnameField);
+        EditText fName = (EditText) findViewById(R.id.fnameField);
         EditText lName = (EditText) findViewById(R.id.lnameField);
         EditText uName = (EditText) findViewById(R.id.unameField);
 
@@ -201,8 +191,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                             data.put("email", emailParamString);
                             data.put("password", passwordParamString);
                             data.put("miles", 0);
-                            data.put("friends",0);
-                            data.put("challenges",0);
+                            data.put("friends", 0);
+                            data.put("challenges", 0);
                             data.put("profilepic", "https://firebasestorage.googleapis.com/v0/b/pace-pal-ad8c4.appspot.com/o/defaultAVI.png?alt=media&token=6c9c47df-8151-4e5b-8843-3440e317346c");
                             db.collection("users").document(userid).set(data);
 
@@ -221,9 +211,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 });
 
         //remember to make checks for fields before this. Also need to add username and the other fields into the database
-
-
-
 
 
         //toMenu();
@@ -292,7 +279,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
 
 
-
     //third step of signing in via google
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d("FAGA", "firebaseAuthWithGoogle:" + acct.getId());
@@ -306,7 +292,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("FAGAS", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Log.d("FAGASU", "The user google found is" + user); 
+                            Log.d("FAGASU", "The user google found is" + user);
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -319,6 +305,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     }
                 });
     }
+
     //third step of signing in via Facebook
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
@@ -362,7 +349,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) { //in this scenario a user has already signed in once before and has a username, first name, and last name in the system. Simply continue to main menu now
                             Log.d("User exists", "DocumentSnapshot data: " + document.getData());
-                           // findViewById(R.id.continue_button).setVisibility(View.VISIBLE);
+                            // findViewById(R.id.continue_button).setVisibility(View.VISIBLE);
                             //findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
                             toMenu();
                         } else { //in this scenario a user has signed in either with email, FB, or google, for the very first time. So we prompt the user to give fname, lname, and username to store in the database
@@ -409,23 +396,22 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     //and different actions required.
     //TODO: Make unqiue username checking work
     public void toMenuSubmit() {
-        EditText fName = (EditText)findViewById(R.id.fnameField);
+        EditText fName = (EditText) findViewById(R.id.fnameField);
         EditText lName = (EditText) findViewById(R.id.lnameField);
         EditText uName = (EditText) findViewById(R.id.unameField);
-         boolean[] usernameExists = new boolean[1];
+        boolean[] usernameExists = new boolean[1];
 
-        if((fName.getText().toString().matches("") == false) && (lName.getText().toString().matches("") == false) && (uName.getText().toString().matches("") == false))
-        {
+        if ((fName.getText().toString().matches("") == false) && (lName.getText().toString().matches("") == false) && (uName.getText().toString().matches("") == false)) {
             String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            Toast.makeText(this,userid,Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, userid, Toast.LENGTH_SHORT).show();
             Map<String, Object> data = new HashMap<>();
 
             data.put("first", fName.getText().toString());
             data.put("last", lName.getText().toString());
             data.put("username", uName.getText().toString());
             data.put("miles", 0);
-            data.put("friends",0);
-            data.put("challenges",0);
+            data.put("friends", 0);
+            data.put("challenges", 0);
             data.put("profilepic", "https://firebasestorage.googleapis.com/v0/b/pace-pal-ad8c4.appspot.com/o/defaultAVI.png?alt=media&token=6c9c47df-8151-4e5b-8843-3440e317346c");
 
             db.collection("users")
@@ -450,22 +436,17 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
             Log.v("After", "Bool value after is" + usernameExists[0]);
 
-            if(usernameExists[0]){
-                Toast.makeText(this,"Username taken!", Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
+            if (usernameExists[0]) {
+                Toast.makeText(this, "Username taken!", Toast.LENGTH_SHORT).show();
+            } else {
                 db.collection("users").document(userid).set(data);
                 toMenu();
             }
 
 
-
-        }
-        else {
+        } else {
             Toast.makeText(this, "All fields required", Toast.LENGTH_SHORT).show();
         }
-
 
 
     }
@@ -474,13 +455,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public boolean validateEmailAccountCreationForm() {
         boolean formValid = false;
 
-        EditText fName = (EditText)findViewById(R.id.fnameField);
+        EditText fName = (EditText) findViewById(R.id.fnameField);
         EditText lName = (EditText) findViewById(R.id.lnameField);
         EditText uName = (EditText) findViewById(R.id.unameField);
         EditText email = (EditText) findViewById(R.id.emailField);
         EditText pwWord = (EditText) findViewById(R.id.password_field);
 
-        if((fName.getText().toString().matches("") == false)
+        if ((fName.getText().toString().matches("") == false)
                 && (lName.getText().toString().matches("") == false)
                 && (uName.getText().toString().matches("") == false)
                 && (email.getText().toString().matches("") == false)
@@ -493,7 +474,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         return formValid;
     }
-
 
 
     //easy way to generate a key necessary for FaceBook sign in integration on development machines
@@ -519,7 +499,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 signIn();
                 break;
             case R.id.createAccount2:
-                if(validateEmailAccountCreationForm()) {
+                if (validateEmailAccountCreationForm()) {
                     createAccount();
                 }
                 break;
@@ -527,7 +507,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 displayEmailAcctCreationForm();
                 break;
             case R.id.email_sign_in:
-                if(validateEmailSignInForm()) {
+                if (validateEmailSignInForm()) {
                     emailSignIn();
                 }
                 break;
@@ -537,14 +517,14 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
 
-   //TODO: Validate that the form with the database. Basically we need to make sure that the email and password are actually in the database before continuing
+    //TODO: Validate that the form with the database. Basically we need to make sure that the email and password are actually in the database before continuing
     private boolean validateEmailSignInForm() {
         boolean formValid = false;
 
         EditText email = (EditText) findViewById(R.id.emailField);
         EditText pwWord = (EditText) findViewById(R.id.password_field);
 
-        if((email.getText().toString().matches("") == false)
+        if ((email.getText().toString().matches("") == false)
                 && (pwWord.getText().toString().matches("") == false)) {
 
             String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -589,5 +569,17 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         return;
     }
 
+    public void main() {
+        AchievementUnlocked achievementUnlocked = new AchievementUnlocked(getApplicationContext());
+        achievementUnlocked.setRounded(true).setLarge(true).setTopAligned(true).setDismissible(true);
 
+        AchievementData data0 = new AchievementData();
+        data0.setTitle("Welcome!");
+        data0.setSubtitle("You opened the app...cool :)");
+        //data0.setIcon(iconFinal);
+        data0.setTextColor(000000);
+        //data0.setIconBackgroundColor(iconBG);
+        data0.setBackgroundColor(00574);
+        achievementUnlocked.show(data0);
+    }
 }

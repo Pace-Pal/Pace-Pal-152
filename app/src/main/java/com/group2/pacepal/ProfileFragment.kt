@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.Task
 import android.support.annotation.NonNull
 import android.widget.Button
 import android.widget.Toast
+import com.cdev.achievementview.AchievementView
 import com.google.android.gms.tasks.OnCompleteListener
 import com.squareup.picasso.Picasso
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -36,7 +37,6 @@ class ProfileFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val db = FirebaseFirestore.getInstance()
         val user = FirebaseAuth.getInstance().currentUser
-
 
 
         //findViewByID(R.id.profileUsername) =
@@ -94,9 +94,18 @@ class ProfileFragment : Fragment() {
         return inflater.inflate(R.layout.user_profile, container, false)
     }
 
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val achievementView2 = achievement_view
+
+// show the achievement with a single line
+        achievementView2.show("Raging Runner!", "You unlocked an achievement :)")
+    }
+
+
     companion object {
         fun newInstance(): ProfileFragment = ProfileFragment()
     }
-
 
 }

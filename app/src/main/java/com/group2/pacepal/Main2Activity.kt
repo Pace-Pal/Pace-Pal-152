@@ -147,7 +147,5 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         val startIntent = Intent(this, MainActivity::class.java)
         startActivity(startIntent)
     }
-
-
 }
 

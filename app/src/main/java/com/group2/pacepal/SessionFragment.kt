@@ -220,6 +220,3 @@ class SessionFragment : Fragment() {
 
 }
 
-
-
-}

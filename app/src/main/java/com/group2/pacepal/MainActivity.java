@@ -1,7 +1,6 @@
 package com.group2.pacepal;
 
 import android.content.Context;
-import com.group2.pacepal.AchievementUnlocked;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -567,19 +566,5 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     }
                 });
         return;
-    }
-
-    public void main() {
-        AchievementUnlocked achievementUnlocked = new AchievementUnlocked(getApplicationContext());
-        achievementUnlocked.setRounded(true).setLarge(true).setTopAligned(true).setDismissible(true);
-
-        AchievementData data0 = new AchievementData();
-        data0.setTitle("Welcome!");
-        data0.setSubtitle("You opened the app...cool :)");
-        //data0.setIcon(iconFinal);
-        data0.setTextColor(000000);
-        //data0.setIconBackgroundColor(iconBG);
-        data0.setBackgroundColor(00574);
-        achievementUnlocked.show(data0);
     }
 }

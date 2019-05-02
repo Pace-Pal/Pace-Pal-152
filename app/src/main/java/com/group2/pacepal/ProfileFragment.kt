@@ -119,18 +119,18 @@ class ProfileFragment : Fragment() {
     }
 
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val userid = user!!.uid
+         super.onViewCreated(view, savedInstanceState)
+         val userid = user!!.uid
 
 
          db.collection("users").document(userid).collection("Achievements")
                  .get()
-                 .addOnSuccessListener { documents->
-                     var item : Achievement
+                 .addOnSuccessListener { documents ->
+                     var item: Achievement
                      for (document in documents) {
 
                          var temp = document.toObject(Achievement::class.java)
-                         var tempView : TextView
+                         var tempView: TextView
                          tempView = TextView(activity)
                          AchievementPanel.addView(tempView)
                          tempView.layoutParams.height = 1000
@@ -139,17 +139,33 @@ class ProfileFragment : Fragment() {
                          textViewList.add(tempView)
 
                      }
-                    }
+                 }
 
 
-
+         /*Example of how to declare an achievement
         val achievementView2 = achievement_view
 
         // show the achievement with a single line
         achievementView2.show("Raging Runner!", "You unlocked an achievement :)")
-    }
 
+        if ((myMiles == "0.0") && "Raging Runner".exists()) {
+         */
 
+         val docRef = db.collection("users").document(userid)
+         docRef.get().addOnCompleteListener { task ->
+             if (task.isSuccessful) {
+                 val currentProfile = task.result
+                 if (currentProfile!!.exists()) {
+                     var myMiles = currentProfile.getDouble("miles").toString()
+
+                     if ((myMiles == "0.0")) {
+                         val achievementView1 = achievement_view
+                         achievementView1.show("Noob", "You succesfully  joined the app :)")
+                     }
+                 }
+             }
+         }
+     }
     companion object {
         fun newInstance(): ProfileFragment = ProfileFragment()
     }

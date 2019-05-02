@@ -11,8 +11,6 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.app_bar_main.*
-import android.view.inputmethod.EditorInfo
-import android.support.v7.widget.SearchView
 
 
 class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -128,7 +126,7 @@ class Main2Activity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     private fun openSetting() {
         //val intent = Intent(this, UploadPictureActivity::class.java)
         //startActivity(intent)
-        val profileSet = ProfileSettingFragment()
+        val profileSet = SettingsPageFragment()
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameLayout, profileSet)

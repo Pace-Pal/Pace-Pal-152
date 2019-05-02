@@ -60,6 +60,7 @@ class SessionActivity : AppCompatActivity() {
             }
             else{ //Removes the user from a session if user is NOT the host
                 rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(userid).removeValue()
+                rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child(userid).removeValue()
             }
 
             this.finish()

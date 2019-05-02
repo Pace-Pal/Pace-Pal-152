@@ -16,6 +16,7 @@ import android.view.*
 import kotlinx.android.synthetic.main.fragment_add_friends.*
 import android.support.v4.view.MenuItemCompat.getActionView
 import android.view.inputmethod.EditorInfo
+import java.util.*
 
 
 class AddFriendsFragment : Fragment() {

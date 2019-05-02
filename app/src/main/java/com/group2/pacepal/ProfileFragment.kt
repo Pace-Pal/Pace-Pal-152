@@ -20,22 +20,37 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.android.gms.tasks.Task
 import android.support.annotation.NonNull
+import android.text.Layout
+import android.util.Log
 import android.widget.Button
+import android.widget.ScrollView
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
 import com.squareup.picasso.Picasso
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import kotlinx.android.synthetic.*
+import org.w3c.dom.Text
+import java.util.*
 import kotlin.math.sign
 
 
 class ProfileFragment : Fragment() {
 
     lateinit var mAuth: FirebaseAuth
+    var AchievementList = ArrayList<Achievement>(0)
+    var AchievementListT = ArrayList<String>(0)
+    var textViewList = ArrayList<TextView>(0)
+    lateinit var textView : TextView
+    val db = FirebaseFirestore.getInstance()
+    val user = FirebaseAuth.getInstance().currentUser
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val db = FirebaseFirestore.getInstance()
-        val user = FirebaseAuth.getInstance().currentUser
+
+
+
 
 
 
@@ -90,12 +105,53 @@ class ProfileFragment : Fragment() {
 
         }
 
+        //var achievementPanelVal = AchievementPanel
 
-        return inflater.inflate(R.layout.user_profile, container, false)
+        //Dynamic addition test
+
+
+
+        val view = inflater.inflate(R.layout.user_profile, container, false)
+
+
+
+        return view
     }
+
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val userid = user!!.uid
+
+
+         db.collection("users").document(userid).collection("Achievements")
+                 .get()
+                 .addOnSuccessListener { documents->
+                     var item : Achievement
+                     for (document in documents) {
+
+                         var temp = document.toObject(Achievement::class.java)
+                         var tempView : TextView
+                         tempView = TextView(activity)
+                         AchievementPanel.addView(tempView)
+                         tempView.layoutParams.height = 1000
+                         tempView.layoutParams.width = 1000
+                         tempView.text = temp.Title //achievement.Points
+                         textViewList.add(tempView)
+
+                     }
+                    }
+
+    }
+
 
     companion object {
         fun newInstance(): ProfileFragment = ProfileFragment()
+    }
+
+    fun addValues(Value : Achievement) {
+
+            AchievementList.add(Value)
+
     }
 
 

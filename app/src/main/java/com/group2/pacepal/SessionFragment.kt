@@ -219,7 +219,3 @@ class SessionFragment : Fragment() {
     }
 
 }
-
-
-
-}

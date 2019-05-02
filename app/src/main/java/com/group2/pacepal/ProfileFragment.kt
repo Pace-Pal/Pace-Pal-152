@@ -162,6 +162,17 @@ class ProfileFragment : Fragment() {
                          val achievementView1 = achievement_view
                          achievementView1.show("Noob", "You succesfully  joined the app :)")
                      }
+
+                     if ((myMiles == "3.0")) {
+                         val achievementView1 = achievement_view
+                         achievementView1.show("You doin OK", "You have a lifetime distance of 3 miles.")
+                     }
+
+                     if ((myMiles == "5.0" && isNotElem() == True)) {
+                         val achievementView1 = achievement_view
+                         achievementView1.show("Master of Athletes", "5 miles ran. Not amazing, but we'll make you feel good.")
+                         //Add achievement to db
+                     }
                  }
              }
          }

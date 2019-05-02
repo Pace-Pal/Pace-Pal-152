@@ -98,13 +98,6 @@ public class InsertionSortTest {
         int localDistance = 0;
         int locPlace = 0;
 
-        /*
-        //Array with expected Output
-        ArrayList<RemotePlayerTest> orderedPlayerList = new ArrayList(0);
-        orderedPlayerList.add(player2);
-        orderedPlayerList.add(player1);
-        */
-
         boolean locPlayerRanked = true;
 
         //operates on a sorted list of players

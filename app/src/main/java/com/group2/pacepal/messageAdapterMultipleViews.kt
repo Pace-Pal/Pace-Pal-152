@@ -32,22 +32,22 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
     override fun getItemViewType(position: Int): Int {
         val type : Int
         if (messages[position].senderId  == FirebaseAuth.getInstance().currentUser!!.uid) { //TODO: Better way than this find it
-            Log.v("imgPL", "Value: " + messages[position].imagePath.length)
+            //Log.v("imgPL", "Value: " + messages[position].imagePath.length)
             if(messages[position].imagePath.length == 1) {
-                Log.v("TxtU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+                //Log.v("TxtU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
                 type = USER_MESSAGE
             } else {
-                Log.v("ImgU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+                //Log.v("ImgU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
                 type = USER_IMG_MESSAGE
             }
-            Log.v("IMUW", "App says I am me")
+            //Log.v("IMUW", "App says I am me")
         } else {
 
             if(messages[position].imagePath.length == 1) {
                 type = OTHER_USER_MESSAGE
             } else {
                 type = OTHER_USER_IMG_MESSAGE
-                Log.v("ImgMOU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+                //Log.v("ImgMOU", "Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
             }
             //Log.v("IMUW", "App says I am not me")
         }
@@ -74,7 +74,7 @@ class messageAdapterMultipleViews ( private var messages : ArrayList<TextMessage
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) { //TODO: Used to be ViewHolder?
         (holder as UpdateViewHolder).bindViews(messages.get(position))
 
-        Log.v("Adapter I Pos", "Value is: " + (position))
+        //Log.v("Adapter I Pos", "Value is: " + (position))
     }
 
 

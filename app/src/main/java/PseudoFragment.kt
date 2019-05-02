@@ -12,4 +12,4 @@ import com.google.firebase.storage.StorageReference
 
 val db = FirebaseFirestore.getInstance()
 val user = FirebaseAuth.getInstance().currentUser
-var ref = firebase.db().ref("dinosaurs")
+//var ref = firebase.db().ref("dinosaurs")

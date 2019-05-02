@@ -64,6 +64,7 @@ dependencies {
     implementation "com.mapzen.android:lost:3.0.2"
     implementation 'com.cdev.android:achievement-view:0.9.1'
 
+
     //to allow facebook signin
     implementation 'com.facebook.android:facebook-login:[4,5)'
 

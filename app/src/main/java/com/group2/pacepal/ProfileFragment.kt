@@ -26,6 +26,7 @@ import android.widget.Button
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import com.cdev.achievementview.AchievementView
 import com.google.android.gms.tasks.OnCompleteListener
 import com.squareup.picasso.Picasso
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -48,7 +49,6 @@ class ProfileFragment : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
 
 
 
@@ -141,17 +141,17 @@ class ProfileFragment : Fragment() {
                      }
                     }
 
+
+
+        val achievementView2 = achievement_view
+
+        // show the achievement with a single line
+        achievementView2.show("Raging Runner!", "You unlocked an achievement :)")
     }
 
 
     companion object {
         fun newInstance(): ProfileFragment = ProfileFragment()
-    }
-
-    fun addValues(Value : Achievement) {
-
-            AchievementList.add(Value)
-
     }
 
 

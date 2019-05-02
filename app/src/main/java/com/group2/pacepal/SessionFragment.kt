@@ -118,6 +118,7 @@ class SessionFragment : Fragment() {
         //init info for leader ready up
         rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("ready").child("absoluteReady").setValue(false)
         rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("ready").child(user!!.uid).setValue(false)
+        rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("sessionEnded").setValue(false)
         //init general session info
         rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("sessionComplete").setValue(false)
         rtdb.child("sessionManager").child("sessionIndex").child(user!!.uid).child("type").setValue(sesType)

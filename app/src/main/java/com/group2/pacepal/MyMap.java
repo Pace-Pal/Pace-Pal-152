@@ -95,8 +95,6 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
     String sessionType;
     String sessionID;
 
-    TextView sessionStatus;
-
     Boolean stopUpdates = false;             //stop interacting with database after session end
 
     boolean lineInit = false;            //variables for creating the line on the map view
@@ -135,6 +133,8 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         sessionID = sharedPref.getString("sessionID","");
         sessionType = sharedPref.getString("sessionType","");
 
+        Log.d("sessionType",sessionType);
+
         findViewById(R.id.sessionExitButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,6 +149,9 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
         GetRemotePlayers remotePlayerClass = new GetRemotePlayers(sessionID);
         remotePlayers = remotePlayerClass.getPlayerList();
+
+
+        //gets end goal if there is one
 
 
         //accessess and displays profile for current user from firestore
@@ -201,10 +204,14 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         //interval to update location
         int delay = 2000; //milliseconds
         Handler handler = new Handler();
+        TextView sessionStatus = findViewById(R.id.sessionStatus);
 
         //runnable for updating location
         handler.postDelayed(new Runnable() {
             public void run() {
+
+                if(remotePlayerClass.getSessionEnded())
+                    endingInit();
 
                 sortPlayers(remotePlayers);
 
@@ -213,8 +220,25 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
                 localDistText.setText(setMilesText);
                 Log.d("mymap",remotePlayers.toString());
 
-                TextView locPlaceText = findViewById(R.id.playerPlace);
-                locPlaceText.setText(String.valueOf(locPlace));
+
+                Log.d("sessionType", sessionType);
+                if(sessionType.equals("1")){
+                    sessionStatus.setText("You are in place " + locPlace);
+                    if(localDistance >= remotePlayerClass.getWinCondition()){
+                        endingInit();
+                    }
+                }
+                if (sessionType.equals("2")){
+                    Double totalDistanceText = localDistance;
+                    for(int i = 0; i < remotePlayers.size();i++){
+                        totalDistanceText += remotePlayers.get(i).getDistance();
+                    }
+                    totalDistanceText = round(totalDistanceText,2);
+                    sessionStatus.setText("Your total distance is: " + totalDistanceText.toString());
+                    if(totalDistanceText >= remotePlayerClass.getWinCondition()){
+                        endingInit();
+                    }
+                }
 
                 if(remotePlayers.size() != 0)
                 {
@@ -403,8 +427,14 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
 
     private void endingInit(){
         rtdb = FirebaseDatabase.getInstance().getReference();
+        rtdb.child("sessionManager")
+                .child("sessionIndex")
+                .child(sessionID)
+                .child("sessionEnded")
+                .setValue(true);
         stopUpdates = true;
         finish();
+        //TODO:Post session screen
     }
 
 

@@ -30,6 +30,7 @@ class SessionActivity : AppCompatActivity() {
     private val fsdb = FirebaseFirestore.getInstance()
     private val rtdb = FirebaseDatabase.getInstance().reference
     private val players = arrayOfNulls<String>(4)
+    private var sessionID = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,7 @@ class SessionActivity : AppCompatActivity() {
         setContentView(R.layout.session_activity)
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)               //gets SharedPreferences
-        val sessionID = preferences.getString("sessionID", "")
+        sessionID = preferences.getString("sessionID", "")
 
         Log.d("sessionActivity", "init")
 
@@ -120,6 +121,8 @@ class SessionActivity : AppCompatActivity() {
             if(supportFragmentManager.findFragmentByTag("readyup") == null){
                 //close the session
             }
+
+
         }
 
 
@@ -138,7 +141,20 @@ class SessionActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-
+        var ended = false
+        val rtdb = FirebaseDatabase.getInstance().reference
+        val conditionGet = object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+            override fun onDataChange(p0: DataSnapshot) {
+                ended = p0.value.toString().toBoolean()
+            }
+        }
+        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("sessionEnded").addListenerForSingleValueEvent(conditionGet)
+        if(ended){
+            finish()
+        }
 
 
     }

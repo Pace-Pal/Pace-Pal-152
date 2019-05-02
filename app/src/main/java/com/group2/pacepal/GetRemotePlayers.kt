@@ -1,5 +1,6 @@
 package com.group2.pacepal
 
+import android.preference.PreferenceManager
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -13,8 +14,12 @@ data class GetRemotePlayers(val sessionID:String){
 
     private var playerClassList: ArrayList<RemotePlayer> = ArrayList()
     private var remotePlayerCount = 0
+    private var winCondition = 0
+    private var sessionEnded = false
 
-    init{generatePlayers()}
+
+    init{generatePlayers()
+    grabWinCondition()}
 
     private fun generatePlayers(){
         val rtdb = FirebaseDatabase.getInstance().reference
@@ -41,7 +46,47 @@ data class GetRemotePlayers(val sessionID:String){
         rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").addListenerForSingleValueEvent(playersGet)
     }
 
+    fun grabWinCondition() {
+        val rtdb = FirebaseDatabase.getInstance().reference
+        var prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val sessionType = prefs.getString("sessionType", "" )
+
+        val conditionGet = object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                var conditionSnap = p0.child("winCondition").value
+                var conditionString = conditionSnap.toString()
+                if(!sessionType.equals("3"))
+                    winCondition = conditionString.split(" ")[0].toString().toInt()
+            }
+        }
+        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).addListenerForSingleValueEvent(conditionGet)
+    }
+
+    fun listenEnding() {
+        val rtdb = FirebaseDatabase.getInstance().reference
+
+
+        val endListen = object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                sessionEnded = p0.value.toString().toBoolean()
+            }
+        }
+        rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("sessionEnded").addValueEventListener(endListen)
+    }
+
+
+
     fun getPlayerList():ArrayList<RemotePlayer> {return this.playerClassList }
     fun getPlayerCount():Int {return this.remotePlayerCount}
+    fun getWinCondition(): Int { return this.winCondition}
+    fun getSessionEnded(): Boolean {return sessionEnded}
 
 }

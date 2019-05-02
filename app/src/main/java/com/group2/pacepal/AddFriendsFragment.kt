@@ -93,8 +93,6 @@ class AddFriendsFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu : Menu, inflater : MenuInflater){
-        //inflater.inflate(R.menu.main, menu)
-        //super.onCreateOptionsMenu(menu, inflater)
 
         menu.findItem(R.id.action_search).setVisible(true)
 

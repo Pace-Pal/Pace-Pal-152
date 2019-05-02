@@ -89,9 +89,12 @@ class ReadyUpFragment : Fragment() {
         val playerlistener = object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
 
+
+
                 if((p0.key.toString() != "absoluteReady") && (p0.key.toString() != userid) && !players.contains(p0.key.toString())) {
 
                     players.add(p0.key.toString())
+                    keyList.add(p0.key.toString())
                 }
 
                 if(!recyclerInit && (players.size > 0)){
@@ -102,7 +105,7 @@ class ReadyUpFragment : Fragment() {
 
                 }
 
-                keyList.add(p0.key.toString())
+
                 adapter.notifyDataSetChanged()
 
             }
@@ -120,9 +123,12 @@ class ReadyUpFragment : Fragment() {
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {
-                //var index = keyList.indexOf(p0.key.toString())
-                //players.removeAt(index)
-                //adapter.notifyDataSetChanged()
+                //if(userid != p0.key.toString()){
+                //    var index = keyList.indexOf(p0.key.toString())
+                //   players.removeAt(index)
+                //   adapter.notifyDataSetChanged()
+                //}
+
             }
         }
 

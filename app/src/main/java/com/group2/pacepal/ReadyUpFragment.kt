@@ -17,6 +17,7 @@ import android.widget.TextView
 
 import com.google.firebase.database.*
 import com.google.firebase.database.DataSnapshot
+import java.util.*
 
 //add the mile that is clicked on , or the default of 1 mile, to the database at the root of the sessionIndex as the end condition for that session
 class ReadyUpFragment : Fragment() {
@@ -27,6 +28,7 @@ class ReadyUpFragment : Fragment() {
     private val rtdb = FirebaseDatabase.getInstance().reference
     var playercount = 0
     var players: MutableList<String> = ArrayList()
+    var keyList: MutableList<String> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -39,28 +41,40 @@ class ReadyUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val preferences = PreferenceManager.getDefaultSharedPreferences(activity)               //gets SharedPreferences
+        val sessionID = preferences.getString("sessionID", "")
+
         val spinner = Options_Spinner
 
-        spinner.adapter = ArrayAdapter(activity,
-                R.layout.support_simple_spinner_dropdown_item,
-                resources.getStringArray(R.array.Miles_Array)
-        )
+        if(sessionID != userid){ //Hides the spinner from non-host users.
+            spinner.visibility = View.INVISIBLE
+        }
+        else{
 
+            spinner.adapter = ArrayAdapter(activity,
+                    R.layout.support_simple_spinner_dropdown_item,
+                    resources.getStringArray(R.array.Miles_Array)
+            )
 
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                Log.v("Item Value", "This: " + parent.getItemAtPosition(position))
-                rtdb.child("sessionManager")
-                        .child("sessionIndex")
-                        .child(userid)
-                        .child("winCondition")
-                        .setValue(parent.getItemAtPosition(position))
-            }
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    Log.v("Item Value", "This: " + parent.getItemAtPosition(position))
+                    rtdb.child("sessionManager")
+                            .child("sessionIndex")
+                            .child(userid)
+                            .child("winCondition")
+                            .setValue(parent.getItemAtPosition(position))
+                }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                /*Do something if nothing selected*/
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                    /*Do something if nothing selected*/
+                }
             }
         }
+
+
+
+
     }
 
 
@@ -76,9 +90,12 @@ class ReadyUpFragment : Fragment() {
         val playerlistener = object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
 
+
+
                 if((p0.key.toString() != "absoluteReady") && (p0.key.toString() != userid) && !players.contains(p0.key.toString())) {
 
                     players.add(p0.key.toString())
+                    keyList.add(p0.key.toString())
                 }
 
                 if(!recyclerInit && (players.size > 0)){
@@ -88,6 +105,8 @@ class ReadyUpFragment : Fragment() {
                     recyclerInit = true
 
                 }
+
+
                 adapter.notifyDataSetChanged()
 
             }
@@ -105,7 +124,12 @@ class ReadyUpFragment : Fragment() {
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {
-                //nothing
+                //if(userid != p0.key.toString()){
+                //    var index = keyList.indexOf(p0.key.toString())
+                //   players.removeAt(index)
+                //   adapter.notifyDataSetChanged()
+                //}
+
             }
         }
 
@@ -152,7 +176,14 @@ class ReadyUpFragment : Fragment() {
                 if(tempAbsolute && (dataSnapshot.childrenCount > 2))
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID)
                             .child("ready").child("absoluteReady").setValue(tempAbsolute)
-                    //launch session
+                //launch session
+
+                if(dataSnapshot.child("sessionManager").child("sessionIndex").child(sessionID).exists()){
+                    activity?.finish()
+                }
+                else{
+
+                }
 
             }
 

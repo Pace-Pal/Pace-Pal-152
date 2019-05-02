@@ -115,6 +115,10 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
                     val sessionID = preferences.getString("sessionID", "")
                     val sessionType = preferences.getString("sessionType","")
 
+                    rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("invite").child(friend.uid).child("invited").setValue(true)
+
+
+
                     //inits new players locations
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("long").setValue(0.0)
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("players").child(friend.uid).child("lat").setValue(0.0)
@@ -122,6 +126,10 @@ internal class FriendsAdapter constructor (private var friends: ArrayList<Friend
 
                     //inits new players ready up
                     rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("ready").child(friend.uid).setValue(false)
+
+
+
+
 
                     //safe to delete after new session
                     /* rtdb.child("sessionManager").child("sessionIndex").child(sessionID).child("P2").setValue(friend.uid)

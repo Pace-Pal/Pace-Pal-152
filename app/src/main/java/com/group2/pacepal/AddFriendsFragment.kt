@@ -15,8 +15,8 @@ import android.support.v7.widget.SearchView;
 import android.view.*
 import kotlinx.android.synthetic.main.fragment_add_friends.*
 import android.support.v4.view.MenuItemCompat.getActionView
-
-
+import android.view.inputmethod.EditorInfo
+import java.util.*
 
 
 class AddFriendsFragment : Fragment() {
@@ -94,24 +94,23 @@ class AddFriendsFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu : Menu, inflater : MenuInflater){
-        //inflater.inflate(R.menu.main, menu)
-        //super.onCreateOptionsMenu(menu, inflater)
 
         menu.findItem(R.id.action_search).setVisible(true)
 
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
 
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
             override fun onQueryTextChange(newText: String): Boolean {
-
+                addFriends(newText.toLowerCase())
                 return false
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
-                // task HERE
-                addFriends(query.toLowerCase())
+
                 return false
             }
 
@@ -125,6 +124,17 @@ class AddFriendsFragment : Fragment() {
 
     private fun addFriends(nameSearch: String){
         friendsList.clear() //starting here on updates
+
+        val userPath = fsdb.collection("users").document(userid)
+        var userName = ""
+        var fullName = ""
+
+        userPath.get().addOnSuccessListener { userProfile ->
+
+            userName = "hello" //userProfile.getString("username").toString()
+            fullName = userProfile.getString("first").toString() + " " + userProfile.getString("last").toString()
+
+        }
 
         //inviteRefresh.text = "loading.."
         val intentContext = this.context!!
@@ -142,20 +152,21 @@ class AddFriendsFragment : Fragment() {
 
                             friendGet.get().addOnSuccessListener { friendProfile ->
 
-                                var profilePic = friendProfile.getString("profilepic").toString()
-                                var userName = friendProfile.getString("username").toString()
-                                var firstName = friendProfile.getString("first").toString()
-                                var lastName = friendProfile.getString("last").toString()
-                                var fullName = firstName + " " + lastName
+                                var friendProfilePic = friendProfile.getString("profilepic").toString()
+                                var friendUserName = friendProfile.getString("username").toString()
+                                var friendFirstName = friendProfile.getString("first").toString()
+                                var friendLastName = friendProfile.getString("last").toString()
+                                var friendFullName = friendFirstName + " " + friendLastName
 
                                 if(nameSearch == ""){
 
                                 }
-                                else if(userName.toLowerCase().contains(nameSearch) || fullName.toLowerCase().contains(nameSearch) ){
+                                else if((friendUserName.toLowerCase().equals(nameSearch) || friendFullName.toLowerCase().equals(nameSearch))  &&
+                                        (friendUserName.toLowerCase() != userName) && (friendFullName.toLowerCase() != fullName)){
                                     friendsList.add(Friend(
-                                            profilePic,
-                                            userName,
-                                            firstName + " " + lastName,
+                                            friendProfilePic,
+                                            friendUserName,
+                                            friendFirstName + " " + friendLastName,
                                             document.id,
                                             1,
                                             intentContext

@@ -93,6 +93,7 @@ class SessionFragment : Fragment() {
         val compButton = view.findViewById<Button>(R.id.compCreate)      //sets listener for creating competitive session
         compButton.setOnClickListener{
             createSession(1)
+            adapter.notifyDataSetChanged()
         }
 
         val colabButton = view.findViewById<Button>(R.id.colabCreate)      //sets listener for creating colab session
@@ -170,7 +171,7 @@ class SessionFragment : Fragment() {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
 
 
-                                    if(dataSnapshot.child("players").hasChild(userid)){                       //checks for any friend sessions where user is an invites player
+                                    if(dataSnapshot.child("invite").hasChild(userid)){                       //checks for any friend sessions where user is an invites player
 
                                         val host = fsdb.collection("users").document(document.id)
                                         host.get().addOnSuccessListener { hostProfile ->

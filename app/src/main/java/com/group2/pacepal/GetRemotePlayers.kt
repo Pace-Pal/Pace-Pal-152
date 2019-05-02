@@ -1,5 +1,6 @@
 package com.group2.pacepal
 
+import android.content.Context
 import android.preference.PreferenceManager
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
@@ -10,16 +11,18 @@ import com.google.firebase.database.ValueEventListener
 
 //pass in sessionID, get back ArrayList of players in session
 
-data class GetRemotePlayers(val sessionID:String){
+data class GetRemotePlayers(val sessionID:String, val c: Context){
 
     private var playerClassList: ArrayList<RemotePlayer> = ArrayList()
     private var remotePlayerCount = 0
     private var winCondition = 0
     private var sessionEnded = false
+    private lateinit var contextt:Context
 
 
     init{generatePlayers()
-    grabWinCondition()}
+    grabWinCondition()
+    contextt = c}
 
     private fun generatePlayers(){
         val rtdb = FirebaseDatabase.getInstance().reference
@@ -48,7 +51,7 @@ data class GetRemotePlayers(val sessionID:String){
 
     fun grabWinCondition() {
         val rtdb = FirebaseDatabase.getInstance().reference
-        var prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        var prefs = PreferenceManager.getDefaultSharedPreferences(contextt)
         val sessionType = prefs.getString("sessionType", "" )
 
         val conditionGet = object : ValueEventListener {

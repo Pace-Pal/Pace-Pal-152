@@ -200,27 +200,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/AchievementPanel">
-
-
-        <TextView
-            android:id="@+id/profileMilea"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Weeee"
-            android:textColor="@android:color/background_light"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-
-        </LinearLayout>
-    </ScrollView>
+        app:layout_constraintTop_toBottomOf="@+id/textView8"/>
 
     <com.cdev.achievementview.AchievementView
         android:id="@+id/achievement_view"
@@ -240,15 +220,14 @@
         android:id="@+id/achievements"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="86dp"
-        android:layout_marginTop="94dp"
-        android:layout_marginEnd="29dp"
-        android:layout_marginBottom="18dp"
-        android:text="Button"
-        app:layout_constraintBottom_toTopOf="@+id/imageView4"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Achievements"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profileUsername"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/AchievementsScrollView" />
 
 
 </android.support.constraint.ConstraintLayout>

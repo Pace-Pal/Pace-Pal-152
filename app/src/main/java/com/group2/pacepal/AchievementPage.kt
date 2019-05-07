@@ -1,18 +1,12 @@
 package com.group2.pacepal
 
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.achievements_page.*
-import kotlinx.android.synthetic.main.user_profile.*
 import com.cdev.achievementview.AchievementView
 import java.util.*
 

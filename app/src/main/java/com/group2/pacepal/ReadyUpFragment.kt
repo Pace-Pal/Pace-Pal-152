@@ -101,8 +101,8 @@ class ReadyUpFragment : Fragment() {
 
                 if(!recyclerInit && (players.size > 0)){
                     val invView = remotePlayersRecycler      //defines adapter for RecyclerView for invites
-                    invView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
-                    invView.adapter = adapter
+                    invView?.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+                    invView?.adapter = adapter
                     recyclerInit = true
 
                 }

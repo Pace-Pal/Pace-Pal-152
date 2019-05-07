@@ -2,9 +2,10 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/gradient"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient"
     tools:layout_editor_absoluteY="81dp">
 
     <TextView
@@ -31,7 +32,6 @@
         android:text="Challenges Won"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/textView8"
-        app:layout_constraintHorizontal_bias="0.406"
         app:layout_constraintStart_toEndOf="@+id/textView6"
         app:layout_constraintTop_toBottomOf="@+id/imageView3"
         tools:text="Challenges Won" />
@@ -189,6 +189,45 @@
         app:layout_constraintTop_toBottomOf="@+id/profileUsername" />
 
 
+    <ScrollView
+        android:layout_width="395dp"
+        android:layout_height="207dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:id="@+id/AchievementsScrollView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView8"/>
+
+    <com.cdev.achievementview.AchievementView
+        android:id="@+id/achievement_view"
+        collapseStartDelay="3500"
+        custom:colorLeft="@color/green_light"
+        custom:colorRight="@color/green_dark"
+        custom:drawableLeft="@drawable/trophy"
+        custom:rightPartWidth="500dp"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+    </com.cdev.achievementview.AchievementView>
+
+    <Button
+        android:id="@+id/achievements"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Achievements"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/AchievementsScrollView" />
 
 
 </android.support.constraint.ConstraintLayout>

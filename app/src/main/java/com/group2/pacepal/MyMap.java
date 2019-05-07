@@ -151,6 +151,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         remotePlayers = remotePlayerClass.getPlayerList();
 
 
+
         //gets end goal if there is one
 
 

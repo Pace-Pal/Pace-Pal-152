@@ -13,29 +13,27 @@ import kotlinx.android.synthetic.main.user_profile.*
 //import android.support.test.orchestrator.junit.BundleJUnitUtils.getResult
 //import org.junit.experimental.results.ResultMatchers.isSuccessful
 import com.google.firebase.auth.FirebaseAuth
-//import jdk.nashorn.internal.runtime.ECMAException.getException
-//import android.support.test.orchestrator.junit.BundleJUnitUtils.getResult
-import com.google.firebase.firestore.DocumentSnapshot
-//import org.junit.experimental.results.ResultMatchers.isSuccessful
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.android.gms.tasks.Task
-import android.support.annotation.NonNull
+
 import android.widget.Button
-import android.widget.Toast
-import com.google.android.gms.tasks.OnCompleteListener
+
+import android.widget.TextView
+
 import com.squareup.picasso.Picasso
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import kotlin.math.sign
+
+import java.util.*
+
 
 
 class ProfileFragment : Fragment() {
 
-    lateinit var mAuth: FirebaseAuth
+    val db = FirebaseFirestore.getInstance()
+    val user = FirebaseAuth.getInstance().currentUser
+    val userid = user!!.uid
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val db = FirebaseFirestore.getInstance()
-        val user = FirebaseAuth.getInstance().currentUser
+
+
 
 
 
@@ -91,8 +89,29 @@ class ProfileFragment : Fragment() {
         }
 
 
-        return inflater.inflate(R.layout.user_profile, container, false)
+
+
+
+        val view = inflater.inflate(R.layout.user_profile, container, false)
+
+
+
+        return view
     }
+
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+         val btn_click_me : Button = achievements
+        
+         // set on-click listener
+         btn_click_me.setOnClickListener {
+
+             val intent = Intent(activity, AchievementPage::class.java)
+             startActivity(intent)
+         }
+
+
+     }
 
     companion object {
         fun newInstance(): ProfileFragment = ProfileFragment()

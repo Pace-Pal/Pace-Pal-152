@@ -221,7 +221,4 @@ class SessionFragment : Fragment() {
         TTSHolder[0].pause()
     }
 
-
-
-
 }

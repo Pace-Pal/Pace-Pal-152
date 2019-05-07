@@ -26,7 +26,7 @@ import android.widget.Button
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import com.cdev.achievementview.AchievementView
+//import com.cdev.achievementview.AchievementView
 import com.google.android.gms.tasks.OnCompleteListener
 import com.squareup.picasso.Picasso
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -145,23 +145,19 @@ class ProfileFragment : Fragment() {
                  }
 
 
-         getMiles()
+         //getMiles()
 
-         val btn_click_me : Button = achievements_b
+         val btn_click_me : Button = achievements
         
 // set on-click listener
          btn_click_me.setOnClickListener {
-
              val intent = Intent(activity, Achievement_Page::class.java)
-// To pass any data to next activity
-             //intent.putExtra("keyIdentifier", value)
-// start your next activity
              startActivity(intent)
          }
 
 
      }
-
+/*
     fun getMiles() {
         db.collection("users").document(userid).
                 get().addOnSuccessListener { document ->
@@ -197,10 +193,6 @@ class ProfileFragment : Fragment() {
                             //Add achievement to db
                         }
 
-                        //given you have a total of 5 miles, you get tachievement A if it does not exists
-                        //Put your logic here
-
-
 
 
 
@@ -224,7 +216,7 @@ class ProfileFragment : Fragment() {
         }
         return true
 
-    }
+    } */
 
     companion object {
         fun newInstance(): ProfileFragment = ProfileFragment()

@@ -143,7 +143,7 @@ public class MyMap extends AppCompatActivity implements GoogleApiClient.Connecti
         //gets remote players from database
 
         GetRemotePlayers remotePlayerClass = new GetRemotePlayers(sessionID);
-        remotePlayers = remotePlayerClass.getPlayerList();
+        //remotePlayers = remotePlayerClass.getPlayerList();
 
 
         //accessess and displays profile for current user from firestore
